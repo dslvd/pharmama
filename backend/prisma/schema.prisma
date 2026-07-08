@@ -25,13 +25,13 @@ model TransactionItem {
   id            Int         @id @default(autoincrement())
   transactionId Int
   productId     Int
-  batchId       Int
+  stockId       Int
   quantity      Int
   unitPrice     Int
   subtotal      Int
   transaction   Transaction @relation(fields: [transactionId], references: [id])
   product       Product     @relation(fields: [productId], references: [id])
-  batch         Batch       @relation(fields: [batchId], references: [id])
+  stock         Stock       @relation(fields: [stockId], references: [id])
 }
 
 model Product {
@@ -42,11 +42,11 @@ model Product {
   price            Int
   updatedAt        DateTime          @updatedAt
   createdAt        DateTime          @default(now())
-  batches          Batch[]
+  stocks           Stock[]
   transactionItems TransactionItem[]
 }
 
-model Batch {
+model Stock {
   id               Int               @id @default(autoincrement())
   productId        Int
   batchNumber      String
