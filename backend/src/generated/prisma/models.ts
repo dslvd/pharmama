@@ -11,5 +11,5 @@
 export type * from './models/Transaction.js'
 export type * from './models/TransactionItem.js'
 export type * from './models/Product.js'
-export type * from './models/Batch.js'
+export type * from './models/Stock.js'
 export type * from './commonInputTypes.js'

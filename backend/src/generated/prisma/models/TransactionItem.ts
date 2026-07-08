@@ -30,7 +30,7 @@ export type TransactionItemAvgAggregateOutputType = {
   id: number | null
   transactionId: number | null
   productId: number | null
-  batchId: number | null
+  stockId: number | null
   quantity: number | null
   unitPrice: number | null
   subtotal: number | null
@@ -40,7 +40,7 @@ export type TransactionItemSumAggregateOutputType = {
   id: number | null
   transactionId: number | null
   productId: number | null
-  batchId: number | null
+  stockId: number | null
   quantity: number | null
   unitPrice: number | null
   subtotal: number | null
@@ -50,7 +50,7 @@ export type TransactionItemMinAggregateOutputType = {
   id: number | null
   transactionId: number | null
   productId: number | null
-  batchId: number | null
+  stockId: number | null
   quantity: number | null
   unitPrice: number | null
   subtotal: number | null
@@ -60,7 +60,7 @@ export type TransactionItemMaxAggregateOutputType = {
   id: number | null
   transactionId: number | null
   productId: number | null
-  batchId: number | null
+  stockId: number | null
   quantity: number | null
   unitPrice: number | null
   subtotal: number | null
@@ -70,7 +70,7 @@ export type TransactionItemCountAggregateOutputType = {
   id: number
   transactionId: number
   productId: number
-  batchId: number
+  stockId: number
   quantity: number
   unitPrice: number
   subtotal: number
@@ -82,7 +82,7 @@ export type TransactionItemAvgAggregateInputType = {
   id?: true
   transactionId?: true
   productId?: true
-  batchId?: true
+  stockId?: true
   quantity?: true
   unitPrice?: true
   subtotal?: true
@@ -92,7 +92,7 @@ export type TransactionItemSumAggregateInputType = {
   id?: true
   transactionId?: true
   productId?: true
-  batchId?: true
+  stockId?: true
   quantity?: true
   unitPrice?: true
   subtotal?: true
@@ -102,7 +102,7 @@ export type TransactionItemMinAggregateInputType = {
   id?: true
   transactionId?: true
   productId?: true
-  batchId?: true
+  stockId?: true
   quantity?: true
   unitPrice?: true
   subtotal?: true
@@ -112,7 +112,7 @@ export type TransactionItemMaxAggregateInputType = {
   id?: true
   transactionId?: true
   productId?: true
-  batchId?: true
+  stockId?: true
   quantity?: true
   unitPrice?: true
   subtotal?: true
@@ -122,7 +122,7 @@ export type TransactionItemCountAggregateInputType = {
   id?: true
   transactionId?: true
   productId?: true
-  batchId?: true
+  stockId?: true
   quantity?: true
   unitPrice?: true
   subtotal?: true
@@ -219,7 +219,7 @@ export type TransactionItemGroupByOutputType = {
   id: number
   transactionId: number
   productId: number
-  batchId: number
+  stockId: number
   quantity: number
   unitPrice: number
   subtotal: number
@@ -252,26 +252,26 @@ export type TransactionItemWhereInput = {
   id?: Prisma.IntFilter<"TransactionItem"> | number
   transactionId?: Prisma.IntFilter<"TransactionItem"> | number
   productId?: Prisma.IntFilter<"TransactionItem"> | number
-  batchId?: Prisma.IntFilter<"TransactionItem"> | number
+  stockId?: Prisma.IntFilter<"TransactionItem"> | number
   quantity?: Prisma.IntFilter<"TransactionItem"> | number
   unitPrice?: Prisma.IntFilter<"TransactionItem"> | number
   subtotal?: Prisma.IntFilter<"TransactionItem"> | number
   transaction?: Prisma.XOR<Prisma.TransactionScalarRelationFilter, Prisma.TransactionWhereInput>
   product?: Prisma.XOR<Prisma.ProductScalarRelationFilter, Prisma.ProductWhereInput>
-  batch?: Prisma.XOR<Prisma.BatchScalarRelationFilter, Prisma.BatchWhereInput>
+  stock?: Prisma.XOR<Prisma.StockScalarRelationFilter, Prisma.StockWhereInput>
 }
 
 export type TransactionItemOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   transactionId?: Prisma.SortOrder
   productId?: Prisma.SortOrder
-  batchId?: Prisma.SortOrder
+  stockId?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
   unitPrice?: Prisma.SortOrder
   subtotal?: Prisma.SortOrder
   transaction?: Prisma.TransactionOrderByWithRelationInput
   product?: Prisma.ProductOrderByWithRelationInput
-  batch?: Prisma.BatchOrderByWithRelationInput
+  stock?: Prisma.StockOrderByWithRelationInput
 }
 
 export type TransactionItemWhereUniqueInput = Prisma.AtLeast<{
@@ -281,20 +281,20 @@ export type TransactionItemWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.TransactionItemWhereInput | Prisma.TransactionItemWhereInput[]
   transactionId?: Prisma.IntFilter<"TransactionItem"> | number
   productId?: Prisma.IntFilter<"TransactionItem"> | number
-  batchId?: Prisma.IntFilter<"TransactionItem"> | number
+  stockId?: Prisma.IntFilter<"TransactionItem"> | number
   quantity?: Prisma.IntFilter<"TransactionItem"> | number
   unitPrice?: Prisma.IntFilter<"TransactionItem"> | number
   subtotal?: Prisma.IntFilter<"TransactionItem"> | number
   transaction?: Prisma.XOR<Prisma.TransactionScalarRelationFilter, Prisma.TransactionWhereInput>
   product?: Prisma.XOR<Prisma.ProductScalarRelationFilter, Prisma.ProductWhereInput>
-  batch?: Prisma.XOR<Prisma.BatchScalarRelationFilter, Prisma.BatchWhereInput>
+  stock?: Prisma.XOR<Prisma.StockScalarRelationFilter, Prisma.StockWhereInput>
 }, "id">
 
 export type TransactionItemOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   transactionId?: Prisma.SortOrder
   productId?: Prisma.SortOrder
-  batchId?: Prisma.SortOrder
+  stockId?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
   unitPrice?: Prisma.SortOrder
   subtotal?: Prisma.SortOrder
@@ -312,7 +312,7 @@ export type TransactionItemScalarWhereWithAggregatesInput = {
   id?: Prisma.IntWithAggregatesFilter<"TransactionItem"> | number
   transactionId?: Prisma.IntWithAggregatesFilter<"TransactionItem"> | number
   productId?: Prisma.IntWithAggregatesFilter<"TransactionItem"> | number
-  batchId?: Prisma.IntWithAggregatesFilter<"TransactionItem"> | number
+  stockId?: Prisma.IntWithAggregatesFilter<"TransactionItem"> | number
   quantity?: Prisma.IntWithAggregatesFilter<"TransactionItem"> | number
   unitPrice?: Prisma.IntWithAggregatesFilter<"TransactionItem"> | number
   subtotal?: Prisma.IntWithAggregatesFilter<"TransactionItem"> | number
@@ -324,14 +324,14 @@ export type TransactionItemCreateInput = {
   subtotal: number
   transaction: Prisma.TransactionCreateNestedOneWithoutTransactionItemsInput
   product: Prisma.ProductCreateNestedOneWithoutTransactionItemsInput
-  batch: Prisma.BatchCreateNestedOneWithoutTransactionItemsInput
+  stock: Prisma.StockCreateNestedOneWithoutTransactionItemsInput
 }
 
 export type TransactionItemUncheckedCreateInput = {
   id?: number
   transactionId: number
   productId: number
-  batchId: number
+  stockId: number
   quantity: number
   unitPrice: number
   subtotal: number
@@ -343,14 +343,14 @@ export type TransactionItemUpdateInput = {
   subtotal?: Prisma.IntFieldUpdateOperationsInput | number
   transaction?: Prisma.TransactionUpdateOneRequiredWithoutTransactionItemsNestedInput
   product?: Prisma.ProductUpdateOneRequiredWithoutTransactionItemsNestedInput
-  batch?: Prisma.BatchUpdateOneRequiredWithoutTransactionItemsNestedInput
+  stock?: Prisma.StockUpdateOneRequiredWithoutTransactionItemsNestedInput
 }
 
 export type TransactionItemUncheckedUpdateInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   transactionId?: Prisma.IntFieldUpdateOperationsInput | number
   productId?: Prisma.IntFieldUpdateOperationsInput | number
-  batchId?: Prisma.IntFieldUpdateOperationsInput | number
+  stockId?: Prisma.IntFieldUpdateOperationsInput | number
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.IntFieldUpdateOperationsInput | number
   subtotal?: Prisma.IntFieldUpdateOperationsInput | number
@@ -360,7 +360,7 @@ export type TransactionItemCreateManyInput = {
   id?: number
   transactionId: number
   productId: number
-  batchId: number
+  stockId: number
   quantity: number
   unitPrice: number
   subtotal: number
@@ -376,7 +376,7 @@ export type TransactionItemUncheckedUpdateManyInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   transactionId?: Prisma.IntFieldUpdateOperationsInput | number
   productId?: Prisma.IntFieldUpdateOperationsInput | number
-  batchId?: Prisma.IntFieldUpdateOperationsInput | number
+  stockId?: Prisma.IntFieldUpdateOperationsInput | number
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.IntFieldUpdateOperationsInput | number
   subtotal?: Prisma.IntFieldUpdateOperationsInput | number
@@ -396,7 +396,7 @@ export type TransactionItemCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   transactionId?: Prisma.SortOrder
   productId?: Prisma.SortOrder
-  batchId?: Prisma.SortOrder
+  stockId?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
   unitPrice?: Prisma.SortOrder
   subtotal?: Prisma.SortOrder
@@ -406,7 +406,7 @@ export type TransactionItemAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder
   transactionId?: Prisma.SortOrder
   productId?: Prisma.SortOrder
-  batchId?: Prisma.SortOrder
+  stockId?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
   unitPrice?: Prisma.SortOrder
   subtotal?: Prisma.SortOrder
@@ -416,7 +416,7 @@ export type TransactionItemMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   transactionId?: Prisma.SortOrder
   productId?: Prisma.SortOrder
-  batchId?: Prisma.SortOrder
+  stockId?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
   unitPrice?: Prisma.SortOrder
   subtotal?: Prisma.SortOrder
@@ -426,7 +426,7 @@ export type TransactionItemMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   transactionId?: Prisma.SortOrder
   productId?: Prisma.SortOrder
-  batchId?: Prisma.SortOrder
+  stockId?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
   unitPrice?: Prisma.SortOrder
   subtotal?: Prisma.SortOrder
@@ -436,7 +436,7 @@ export type TransactionItemSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
   transactionId?: Prisma.SortOrder
   productId?: Prisma.SortOrder
-  batchId?: Prisma.SortOrder
+  stockId?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
   unitPrice?: Prisma.SortOrder
   subtotal?: Prisma.SortOrder
@@ -526,45 +526,45 @@ export type TransactionItemUncheckedUpdateManyWithoutProductNestedInput = {
   deleteMany?: Prisma.TransactionItemScalarWhereInput | Prisma.TransactionItemScalarWhereInput[]
 }
 
-export type TransactionItemCreateNestedManyWithoutBatchInput = {
-  create?: Prisma.XOR<Prisma.TransactionItemCreateWithoutBatchInput, Prisma.TransactionItemUncheckedCreateWithoutBatchInput> | Prisma.TransactionItemCreateWithoutBatchInput[] | Prisma.TransactionItemUncheckedCreateWithoutBatchInput[]
-  connectOrCreate?: Prisma.TransactionItemCreateOrConnectWithoutBatchInput | Prisma.TransactionItemCreateOrConnectWithoutBatchInput[]
-  createMany?: Prisma.TransactionItemCreateManyBatchInputEnvelope
+export type TransactionItemCreateNestedManyWithoutStockInput = {
+  create?: Prisma.XOR<Prisma.TransactionItemCreateWithoutStockInput, Prisma.TransactionItemUncheckedCreateWithoutStockInput> | Prisma.TransactionItemCreateWithoutStockInput[] | Prisma.TransactionItemUncheckedCreateWithoutStockInput[]
+  connectOrCreate?: Prisma.TransactionItemCreateOrConnectWithoutStockInput | Prisma.TransactionItemCreateOrConnectWithoutStockInput[]
+  createMany?: Prisma.TransactionItemCreateManyStockInputEnvelope
   connect?: Prisma.TransactionItemWhereUniqueInput | Prisma.TransactionItemWhereUniqueInput[]
 }
 
-export type TransactionItemUncheckedCreateNestedManyWithoutBatchInput = {
-  create?: Prisma.XOR<Prisma.TransactionItemCreateWithoutBatchInput, Prisma.TransactionItemUncheckedCreateWithoutBatchInput> | Prisma.TransactionItemCreateWithoutBatchInput[] | Prisma.TransactionItemUncheckedCreateWithoutBatchInput[]
-  connectOrCreate?: Prisma.TransactionItemCreateOrConnectWithoutBatchInput | Prisma.TransactionItemCreateOrConnectWithoutBatchInput[]
-  createMany?: Prisma.TransactionItemCreateManyBatchInputEnvelope
+export type TransactionItemUncheckedCreateNestedManyWithoutStockInput = {
+  create?: Prisma.XOR<Prisma.TransactionItemCreateWithoutStockInput, Prisma.TransactionItemUncheckedCreateWithoutStockInput> | Prisma.TransactionItemCreateWithoutStockInput[] | Prisma.TransactionItemUncheckedCreateWithoutStockInput[]
+  connectOrCreate?: Prisma.TransactionItemCreateOrConnectWithoutStockInput | Prisma.TransactionItemCreateOrConnectWithoutStockInput[]
+  createMany?: Prisma.TransactionItemCreateManyStockInputEnvelope
   connect?: Prisma.TransactionItemWhereUniqueInput | Prisma.TransactionItemWhereUniqueInput[]
 }
 
-export type TransactionItemUpdateManyWithoutBatchNestedInput = {
-  create?: Prisma.XOR<Prisma.TransactionItemCreateWithoutBatchInput, Prisma.TransactionItemUncheckedCreateWithoutBatchInput> | Prisma.TransactionItemCreateWithoutBatchInput[] | Prisma.TransactionItemUncheckedCreateWithoutBatchInput[]
-  connectOrCreate?: Prisma.TransactionItemCreateOrConnectWithoutBatchInput | Prisma.TransactionItemCreateOrConnectWithoutBatchInput[]
-  upsert?: Prisma.TransactionItemUpsertWithWhereUniqueWithoutBatchInput | Prisma.TransactionItemUpsertWithWhereUniqueWithoutBatchInput[]
-  createMany?: Prisma.TransactionItemCreateManyBatchInputEnvelope
+export type TransactionItemUpdateManyWithoutStockNestedInput = {
+  create?: Prisma.XOR<Prisma.TransactionItemCreateWithoutStockInput, Prisma.TransactionItemUncheckedCreateWithoutStockInput> | Prisma.TransactionItemCreateWithoutStockInput[] | Prisma.TransactionItemUncheckedCreateWithoutStockInput[]
+  connectOrCreate?: Prisma.TransactionItemCreateOrConnectWithoutStockInput | Prisma.TransactionItemCreateOrConnectWithoutStockInput[]
+  upsert?: Prisma.TransactionItemUpsertWithWhereUniqueWithoutStockInput | Prisma.TransactionItemUpsertWithWhereUniqueWithoutStockInput[]
+  createMany?: Prisma.TransactionItemCreateManyStockInputEnvelope
   set?: Prisma.TransactionItemWhereUniqueInput | Prisma.TransactionItemWhereUniqueInput[]
   disconnect?: Prisma.TransactionItemWhereUniqueInput | Prisma.TransactionItemWhereUniqueInput[]
   delete?: Prisma.TransactionItemWhereUniqueInput | Prisma.TransactionItemWhereUniqueInput[]
   connect?: Prisma.TransactionItemWhereUniqueInput | Prisma.TransactionItemWhereUniqueInput[]
-  update?: Prisma.TransactionItemUpdateWithWhereUniqueWithoutBatchInput | Prisma.TransactionItemUpdateWithWhereUniqueWithoutBatchInput[]
-  updateMany?: Prisma.TransactionItemUpdateManyWithWhereWithoutBatchInput | Prisma.TransactionItemUpdateManyWithWhereWithoutBatchInput[]
+  update?: Prisma.TransactionItemUpdateWithWhereUniqueWithoutStockInput | Prisma.TransactionItemUpdateWithWhereUniqueWithoutStockInput[]
+  updateMany?: Prisma.TransactionItemUpdateManyWithWhereWithoutStockInput | Prisma.TransactionItemUpdateManyWithWhereWithoutStockInput[]
   deleteMany?: Prisma.TransactionItemScalarWhereInput | Prisma.TransactionItemScalarWhereInput[]
 }
 
-export type TransactionItemUncheckedUpdateManyWithoutBatchNestedInput = {
-  create?: Prisma.XOR<Prisma.TransactionItemCreateWithoutBatchInput, Prisma.TransactionItemUncheckedCreateWithoutBatchInput> | Prisma.TransactionItemCreateWithoutBatchInput[] | Prisma.TransactionItemUncheckedCreateWithoutBatchInput[]
-  connectOrCreate?: Prisma.TransactionItemCreateOrConnectWithoutBatchInput | Prisma.TransactionItemCreateOrConnectWithoutBatchInput[]
-  upsert?: Prisma.TransactionItemUpsertWithWhereUniqueWithoutBatchInput | Prisma.TransactionItemUpsertWithWhereUniqueWithoutBatchInput[]
-  createMany?: Prisma.TransactionItemCreateManyBatchInputEnvelope
+export type TransactionItemUncheckedUpdateManyWithoutStockNestedInput = {
+  create?: Prisma.XOR<Prisma.TransactionItemCreateWithoutStockInput, Prisma.TransactionItemUncheckedCreateWithoutStockInput> | Prisma.TransactionItemCreateWithoutStockInput[] | Prisma.TransactionItemUncheckedCreateWithoutStockInput[]
+  connectOrCreate?: Prisma.TransactionItemCreateOrConnectWithoutStockInput | Prisma.TransactionItemCreateOrConnectWithoutStockInput[]
+  upsert?: Prisma.TransactionItemUpsertWithWhereUniqueWithoutStockInput | Prisma.TransactionItemUpsertWithWhereUniqueWithoutStockInput[]
+  createMany?: Prisma.TransactionItemCreateManyStockInputEnvelope
   set?: Prisma.TransactionItemWhereUniqueInput | Prisma.TransactionItemWhereUniqueInput[]
   disconnect?: Prisma.TransactionItemWhereUniqueInput | Prisma.TransactionItemWhereUniqueInput[]
   delete?: Prisma.TransactionItemWhereUniqueInput | Prisma.TransactionItemWhereUniqueInput[]
   connect?: Prisma.TransactionItemWhereUniqueInput | Prisma.TransactionItemWhereUniqueInput[]
-  update?: Prisma.TransactionItemUpdateWithWhereUniqueWithoutBatchInput | Prisma.TransactionItemUpdateWithWhereUniqueWithoutBatchInput[]
-  updateMany?: Prisma.TransactionItemUpdateManyWithWhereWithoutBatchInput | Prisma.TransactionItemUpdateManyWithWhereWithoutBatchInput[]
+  update?: Prisma.TransactionItemUpdateWithWhereUniqueWithoutStockInput | Prisma.TransactionItemUpdateWithWhereUniqueWithoutStockInput[]
+  updateMany?: Prisma.TransactionItemUpdateManyWithWhereWithoutStockInput | Prisma.TransactionItemUpdateManyWithWhereWithoutStockInput[]
   deleteMany?: Prisma.TransactionItemScalarWhereInput | Prisma.TransactionItemScalarWhereInput[]
 }
 
@@ -573,13 +573,13 @@ export type TransactionItemCreateWithoutTransactionInput = {
   unitPrice: number
   subtotal: number
   product: Prisma.ProductCreateNestedOneWithoutTransactionItemsInput
-  batch: Prisma.BatchCreateNestedOneWithoutTransactionItemsInput
+  stock: Prisma.StockCreateNestedOneWithoutTransactionItemsInput
 }
 
 export type TransactionItemUncheckedCreateWithoutTransactionInput = {
   id?: number
   productId: number
-  batchId: number
+  stockId: number
   quantity: number
   unitPrice: number
   subtotal: number
@@ -618,7 +618,7 @@ export type TransactionItemScalarWhereInput = {
   id?: Prisma.IntFilter<"TransactionItem"> | number
   transactionId?: Prisma.IntFilter<"TransactionItem"> | number
   productId?: Prisma.IntFilter<"TransactionItem"> | number
-  batchId?: Prisma.IntFilter<"TransactionItem"> | number
+  stockId?: Prisma.IntFilter<"TransactionItem"> | number
   quantity?: Prisma.IntFilter<"TransactionItem"> | number
   unitPrice?: Prisma.IntFilter<"TransactionItem"> | number
   subtotal?: Prisma.IntFilter<"TransactionItem"> | number
@@ -629,13 +629,13 @@ export type TransactionItemCreateWithoutProductInput = {
   unitPrice: number
   subtotal: number
   transaction: Prisma.TransactionCreateNestedOneWithoutTransactionItemsInput
-  batch: Prisma.BatchCreateNestedOneWithoutTransactionItemsInput
+  stock: Prisma.StockCreateNestedOneWithoutTransactionItemsInput
 }
 
 export type TransactionItemUncheckedCreateWithoutProductInput = {
   id?: number
   transactionId: number
-  batchId: number
+  stockId: number
   quantity: number
   unitPrice: number
   subtotal: number
@@ -667,7 +667,7 @@ export type TransactionItemUpdateManyWithWhereWithoutProductInput = {
   data: Prisma.XOR<Prisma.TransactionItemUpdateManyMutationInput, Prisma.TransactionItemUncheckedUpdateManyWithoutProductInput>
 }
 
-export type TransactionItemCreateWithoutBatchInput = {
+export type TransactionItemCreateWithoutStockInput = {
   quantity: number
   unitPrice: number
   subtotal: number
@@ -675,7 +675,7 @@ export type TransactionItemCreateWithoutBatchInput = {
   product: Prisma.ProductCreateNestedOneWithoutTransactionItemsInput
 }
 
-export type TransactionItemUncheckedCreateWithoutBatchInput = {
+export type TransactionItemUncheckedCreateWithoutStockInput = {
   id?: number
   transactionId: number
   productId: number
@@ -684,36 +684,36 @@ export type TransactionItemUncheckedCreateWithoutBatchInput = {
   subtotal: number
 }
 
-export type TransactionItemCreateOrConnectWithoutBatchInput = {
+export type TransactionItemCreateOrConnectWithoutStockInput = {
   where: Prisma.TransactionItemWhereUniqueInput
-  create: Prisma.XOR<Prisma.TransactionItemCreateWithoutBatchInput, Prisma.TransactionItemUncheckedCreateWithoutBatchInput>
+  create: Prisma.XOR<Prisma.TransactionItemCreateWithoutStockInput, Prisma.TransactionItemUncheckedCreateWithoutStockInput>
 }
 
-export type TransactionItemCreateManyBatchInputEnvelope = {
-  data: Prisma.TransactionItemCreateManyBatchInput | Prisma.TransactionItemCreateManyBatchInput[]
+export type TransactionItemCreateManyStockInputEnvelope = {
+  data: Prisma.TransactionItemCreateManyStockInput | Prisma.TransactionItemCreateManyStockInput[]
   skipDuplicates?: boolean
 }
 
-export type TransactionItemUpsertWithWhereUniqueWithoutBatchInput = {
+export type TransactionItemUpsertWithWhereUniqueWithoutStockInput = {
   where: Prisma.TransactionItemWhereUniqueInput
-  update: Prisma.XOR<Prisma.TransactionItemUpdateWithoutBatchInput, Prisma.TransactionItemUncheckedUpdateWithoutBatchInput>
-  create: Prisma.XOR<Prisma.TransactionItemCreateWithoutBatchInput, Prisma.TransactionItemUncheckedCreateWithoutBatchInput>
+  update: Prisma.XOR<Prisma.TransactionItemUpdateWithoutStockInput, Prisma.TransactionItemUncheckedUpdateWithoutStockInput>
+  create: Prisma.XOR<Prisma.TransactionItemCreateWithoutStockInput, Prisma.TransactionItemUncheckedCreateWithoutStockInput>
 }
 
-export type TransactionItemUpdateWithWhereUniqueWithoutBatchInput = {
+export type TransactionItemUpdateWithWhereUniqueWithoutStockInput = {
   where: Prisma.TransactionItemWhereUniqueInput
-  data: Prisma.XOR<Prisma.TransactionItemUpdateWithoutBatchInput, Prisma.TransactionItemUncheckedUpdateWithoutBatchInput>
+  data: Prisma.XOR<Prisma.TransactionItemUpdateWithoutStockInput, Prisma.TransactionItemUncheckedUpdateWithoutStockInput>
 }
 
-export type TransactionItemUpdateManyWithWhereWithoutBatchInput = {
+export type TransactionItemUpdateManyWithWhereWithoutStockInput = {
   where: Prisma.TransactionItemScalarWhereInput
-  data: Prisma.XOR<Prisma.TransactionItemUpdateManyMutationInput, Prisma.TransactionItemUncheckedUpdateManyWithoutBatchInput>
+  data: Prisma.XOR<Prisma.TransactionItemUpdateManyMutationInput, Prisma.TransactionItemUncheckedUpdateManyWithoutStockInput>
 }
 
 export type TransactionItemCreateManyTransactionInput = {
   id?: number
   productId: number
-  batchId: number
+  stockId: number
   quantity: number
   unitPrice: number
   subtotal: number
@@ -724,13 +724,13 @@ export type TransactionItemUpdateWithoutTransactionInput = {
   unitPrice?: Prisma.IntFieldUpdateOperationsInput | number
   subtotal?: Prisma.IntFieldUpdateOperationsInput | number
   product?: Prisma.ProductUpdateOneRequiredWithoutTransactionItemsNestedInput
-  batch?: Prisma.BatchUpdateOneRequiredWithoutTransactionItemsNestedInput
+  stock?: Prisma.StockUpdateOneRequiredWithoutTransactionItemsNestedInput
 }
 
 export type TransactionItemUncheckedUpdateWithoutTransactionInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   productId?: Prisma.IntFieldUpdateOperationsInput | number
-  batchId?: Prisma.IntFieldUpdateOperationsInput | number
+  stockId?: Prisma.IntFieldUpdateOperationsInput | number
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.IntFieldUpdateOperationsInput | number
   subtotal?: Prisma.IntFieldUpdateOperationsInput | number
@@ -739,7 +739,7 @@ export type TransactionItemUncheckedUpdateWithoutTransactionInput = {
 export type TransactionItemUncheckedUpdateManyWithoutTransactionInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   productId?: Prisma.IntFieldUpdateOperationsInput | number
-  batchId?: Prisma.IntFieldUpdateOperationsInput | number
+  stockId?: Prisma.IntFieldUpdateOperationsInput | number
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.IntFieldUpdateOperationsInput | number
   subtotal?: Prisma.IntFieldUpdateOperationsInput | number
@@ -748,7 +748,7 @@ export type TransactionItemUncheckedUpdateManyWithoutTransactionInput = {
 export type TransactionItemCreateManyProductInput = {
   id?: number
   transactionId: number
-  batchId: number
+  stockId: number
   quantity: number
   unitPrice: number
   subtotal: number
@@ -759,13 +759,13 @@ export type TransactionItemUpdateWithoutProductInput = {
   unitPrice?: Prisma.IntFieldUpdateOperationsInput | number
   subtotal?: Prisma.IntFieldUpdateOperationsInput | number
   transaction?: Prisma.TransactionUpdateOneRequiredWithoutTransactionItemsNestedInput
-  batch?: Prisma.BatchUpdateOneRequiredWithoutTransactionItemsNestedInput
+  stock?: Prisma.StockUpdateOneRequiredWithoutTransactionItemsNestedInput
 }
 
 export type TransactionItemUncheckedUpdateWithoutProductInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   transactionId?: Prisma.IntFieldUpdateOperationsInput | number
-  batchId?: Prisma.IntFieldUpdateOperationsInput | number
+  stockId?: Prisma.IntFieldUpdateOperationsInput | number
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.IntFieldUpdateOperationsInput | number
   subtotal?: Prisma.IntFieldUpdateOperationsInput | number
@@ -774,13 +774,13 @@ export type TransactionItemUncheckedUpdateWithoutProductInput = {
 export type TransactionItemUncheckedUpdateManyWithoutProductInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   transactionId?: Prisma.IntFieldUpdateOperationsInput | number
-  batchId?: Prisma.IntFieldUpdateOperationsInput | number
+  stockId?: Prisma.IntFieldUpdateOperationsInput | number
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.IntFieldUpdateOperationsInput | number
   subtotal?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
-export type TransactionItemCreateManyBatchInput = {
+export type TransactionItemCreateManyStockInput = {
   id?: number
   transactionId: number
   productId: number
@@ -789,7 +789,7 @@ export type TransactionItemCreateManyBatchInput = {
   subtotal: number
 }
 
-export type TransactionItemUpdateWithoutBatchInput = {
+export type TransactionItemUpdateWithoutStockInput = {
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.IntFieldUpdateOperationsInput | number
   subtotal?: Prisma.IntFieldUpdateOperationsInput | number
@@ -797,7 +797,7 @@ export type TransactionItemUpdateWithoutBatchInput = {
   product?: Prisma.ProductUpdateOneRequiredWithoutTransactionItemsNestedInput
 }
 
-export type TransactionItemUncheckedUpdateWithoutBatchInput = {
+export type TransactionItemUncheckedUpdateWithoutStockInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   transactionId?: Prisma.IntFieldUpdateOperationsInput | number
   productId?: Prisma.IntFieldUpdateOperationsInput | number
@@ -806,7 +806,7 @@ export type TransactionItemUncheckedUpdateWithoutBatchInput = {
   subtotal?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
-export type TransactionItemUncheckedUpdateManyWithoutBatchInput = {
+export type TransactionItemUncheckedUpdateManyWithoutStockInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   transactionId?: Prisma.IntFieldUpdateOperationsInput | number
   productId?: Prisma.IntFieldUpdateOperationsInput | number
@@ -821,66 +821,66 @@ export type TransactionItemSelect<ExtArgs extends runtime.Types.Extensions.Inter
   id?: boolean
   transactionId?: boolean
   productId?: boolean
-  batchId?: boolean
+  stockId?: boolean
   quantity?: boolean
   unitPrice?: boolean
   subtotal?: boolean
   transaction?: boolean | Prisma.TransactionDefaultArgs<ExtArgs>
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
-  batch?: boolean | Prisma.BatchDefaultArgs<ExtArgs>
+  stock?: boolean | Prisma.StockDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["transactionItem"]>
 
 export type TransactionItemSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   transactionId?: boolean
   productId?: boolean
-  batchId?: boolean
+  stockId?: boolean
   quantity?: boolean
   unitPrice?: boolean
   subtotal?: boolean
   transaction?: boolean | Prisma.TransactionDefaultArgs<ExtArgs>
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
-  batch?: boolean | Prisma.BatchDefaultArgs<ExtArgs>
+  stock?: boolean | Prisma.StockDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["transactionItem"]>
 
 export type TransactionItemSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   transactionId?: boolean
   productId?: boolean
-  batchId?: boolean
+  stockId?: boolean
   quantity?: boolean
   unitPrice?: boolean
   subtotal?: boolean
   transaction?: boolean | Prisma.TransactionDefaultArgs<ExtArgs>
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
-  batch?: boolean | Prisma.BatchDefaultArgs<ExtArgs>
+  stock?: boolean | Prisma.StockDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["transactionItem"]>
 
 export type TransactionItemSelectScalar = {
   id?: boolean
   transactionId?: boolean
   productId?: boolean
-  batchId?: boolean
+  stockId?: boolean
   quantity?: boolean
   unitPrice?: boolean
   subtotal?: boolean
 }
 
-export type TransactionItemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "transactionId" | "productId" | "batchId" | "quantity" | "unitPrice" | "subtotal", ExtArgs["result"]["transactionItem"]>
+export type TransactionItemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "transactionId" | "productId" | "stockId" | "quantity" | "unitPrice" | "subtotal", ExtArgs["result"]["transactionItem"]>
 export type TransactionItemInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   transaction?: boolean | Prisma.TransactionDefaultArgs<ExtArgs>
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
-  batch?: boolean | Prisma.BatchDefaultArgs<ExtArgs>
+  stock?: boolean | Prisma.StockDefaultArgs<ExtArgs>
 }
 export type TransactionItemIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   transaction?: boolean | Prisma.TransactionDefaultArgs<ExtArgs>
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
-  batch?: boolean | Prisma.BatchDefaultArgs<ExtArgs>
+  stock?: boolean | Prisma.StockDefaultArgs<ExtArgs>
 }
 export type TransactionItemIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   transaction?: boolean | Prisma.TransactionDefaultArgs<ExtArgs>
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
-  batch?: boolean | Prisma.BatchDefaultArgs<ExtArgs>
+  stock?: boolean | Prisma.StockDefaultArgs<ExtArgs>
 }
 
 export type $TransactionItemPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -888,13 +888,13 @@ export type $TransactionItemPayload<ExtArgs extends runtime.Types.Extensions.Int
   objects: {
     transaction: Prisma.$TransactionPayload<ExtArgs>
     product: Prisma.$ProductPayload<ExtArgs>
-    batch: Prisma.$BatchPayload<ExtArgs>
+    stock: Prisma.$StockPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
     transactionId: number
     productId: number
-    batchId: number
+    stockId: number
     quantity: number
     unitPrice: number
     subtotal: number
@@ -1294,7 +1294,7 @@ export interface Prisma__TransactionItemClient<T, Null = never, ExtArgs extends 
   readonly [Symbol.toStringTag]: "PrismaPromise"
   transaction<T extends Prisma.TransactionDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TransactionDefaultArgs<ExtArgs>>): Prisma.Prisma__TransactionClient<runtime.Types.Result.GetResult<Prisma.$TransactionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   product<T extends Prisma.ProductDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductDefaultArgs<ExtArgs>>): Prisma.Prisma__ProductClient<runtime.Types.Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  batch<T extends Prisma.BatchDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BatchDefaultArgs<ExtArgs>>): Prisma.Prisma__BatchClient<runtime.Types.Result.GetResult<Prisma.$BatchPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  stock<T extends Prisma.StockDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.StockDefaultArgs<ExtArgs>>): Prisma.Prisma__StockClient<runtime.Types.Result.GetResult<Prisma.$StockPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1327,7 +1327,7 @@ export interface TransactionItemFieldRefs {
   readonly id: Prisma.FieldRef<"TransactionItem", 'Int'>
   readonly transactionId: Prisma.FieldRef<"TransactionItem", 'Int'>
   readonly productId: Prisma.FieldRef<"TransactionItem", 'Int'>
-  readonly batchId: Prisma.FieldRef<"TransactionItem", 'Int'>
+  readonly stockId: Prisma.FieldRef<"TransactionItem", 'Int'>
   readonly quantity: Prisma.FieldRef<"TransactionItem", 'Int'>
   readonly unitPrice: Prisma.FieldRef<"TransactionItem", 'Int'>
   readonly subtotal: Prisma.FieldRef<"TransactionItem", 'Int'>

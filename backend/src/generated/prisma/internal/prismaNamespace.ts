@@ -387,7 +387,7 @@ export const ModelName = {
   Transaction: 'Transaction',
   TransactionItem: 'TransactionItem',
   Product: 'Product',
-  Batch: 'Batch'
+  Stock: 'Stock'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -403,7 +403,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "transaction" | "transactionItem" | "product" | "batch"
+    modelProps: "transaction" | "transactionItem" | "product" | "stock"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -629,77 +629,77 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
-    Batch: {
-      payload: Prisma.$BatchPayload<ExtArgs>
-      fields: Prisma.BatchFieldRefs
+    Stock: {
+      payload: Prisma.$StockPayload<ExtArgs>
+      fields: Prisma.StockFieldRefs
       operations: {
         findUnique: {
-          args: Prisma.BatchFindUniqueArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$BatchPayload> | null
+          args: Prisma.StockFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StockPayload> | null
         }
         findUniqueOrThrow: {
-          args: Prisma.BatchFindUniqueOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$BatchPayload>
+          args: Prisma.StockFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StockPayload>
         }
         findFirst: {
-          args: Prisma.BatchFindFirstArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$BatchPayload> | null
+          args: Prisma.StockFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StockPayload> | null
         }
         findFirstOrThrow: {
-          args: Prisma.BatchFindFirstOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$BatchPayload>
+          args: Prisma.StockFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StockPayload>
         }
         findMany: {
-          args: Prisma.BatchFindManyArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$BatchPayload>[]
+          args: Prisma.StockFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StockPayload>[]
         }
         create: {
-          args: Prisma.BatchCreateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$BatchPayload>
+          args: Prisma.StockCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StockPayload>
         }
         createMany: {
-          args: Prisma.BatchCreateManyArgs<ExtArgs>
+          args: Prisma.StockCreateManyArgs<ExtArgs>
           result: BatchPayload
         }
         createManyAndReturn: {
-          args: Prisma.BatchCreateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$BatchPayload>[]
+          args: Prisma.StockCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StockPayload>[]
         }
         delete: {
-          args: Prisma.BatchDeleteArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$BatchPayload>
+          args: Prisma.StockDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StockPayload>
         }
         update: {
-          args: Prisma.BatchUpdateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$BatchPayload>
+          args: Prisma.StockUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StockPayload>
         }
         deleteMany: {
-          args: Prisma.BatchDeleteManyArgs<ExtArgs>
+          args: Prisma.StockDeleteManyArgs<ExtArgs>
           result: BatchPayload
         }
         updateMany: {
-          args: Prisma.BatchUpdateManyArgs<ExtArgs>
+          args: Prisma.StockUpdateManyArgs<ExtArgs>
           result: BatchPayload
         }
         updateManyAndReturn: {
-          args: Prisma.BatchUpdateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$BatchPayload>[]
+          args: Prisma.StockUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StockPayload>[]
         }
         upsert: {
-          args: Prisma.BatchUpsertArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$BatchPayload>
+          args: Prisma.StockUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StockPayload>
         }
         aggregate: {
-          args: Prisma.BatchAggregateArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.AggregateBatch>
+          args: Prisma.StockAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateStock>
         }
         groupBy: {
-          args: Prisma.BatchGroupByArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.BatchGroupByOutputType>[]
+          args: Prisma.StockGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.StockGroupByOutputType>[]
         }
         count: {
-          args: Prisma.BatchCountArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.BatchCountAggregateOutputType> | number
+          args: Prisma.StockCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.StockCountAggregateOutputType> | number
         }
       }
     }
@@ -756,7 +756,7 @@ export const TransactionItemScalarFieldEnum = {
   id: 'id',
   transactionId: 'transactionId',
   productId: 'productId',
-  batchId: 'batchId',
+  stockId: 'stockId',
   quantity: 'quantity',
   unitPrice: 'unitPrice',
   subtotal: 'subtotal'
@@ -778,7 +778,7 @@ export const ProductScalarFieldEnum = {
 export type ProductScalarFieldEnum = (typeof ProductScalarFieldEnum)[keyof typeof ProductScalarFieldEnum]
 
 
-export const BatchScalarFieldEnum = {
+export const StockScalarFieldEnum = {
   id: 'id',
   productId: 'productId',
   batchNumber: 'batchNumber',
@@ -787,7 +787,7 @@ export const BatchScalarFieldEnum = {
   createdAt: 'createdAt'
 } as const
 
-export type BatchScalarFieldEnum = (typeof BatchScalarFieldEnum)[keyof typeof BatchScalarFieldEnum]
+export type StockScalarFieldEnum = (typeof StockScalarFieldEnum)[keyof typeof StockScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -994,7 +994,7 @@ export type GlobalOmitConfig = {
   transaction?: Prisma.TransactionOmit
   transactionItem?: Prisma.TransactionItemOmit
   product?: Prisma.ProductOmit
-  batch?: Prisma.BatchOmit
+  stock?: Prisma.StockOmit
 }
 
 /* Types for Logging */
