@@ -1,15 +1,21 @@
-import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { TransactionService } from './transaction/transaction.service';
-import { TransactionModule } from './transaction/transaction.module';
-import { TransactionItemController } from './transaction-item/transaction-item.controller';
-import { TransactionItemModule } from './transaction-item/transaction-item.module';
-import { BatchService } from './batch/batch.service';
-import { BatchModule } from './batch/batch.module';
+import { Module } from "@nestjs/common";
+import { AppController } from "./app.controller";
+import { AppService } from "./app.service";
+import { TransactionService } from "./transaction/transaction.service";
+import { TransactionModule } from "./transaction/transaction.module";
+import { TransactionItemController } from "./transaction-item/transaction-item.controller";
+import { TransactionItemModule } from "./transaction-item/transaction-item.module";
+import { BatchService } from "./batch/batch.service";
+import { BatchModule } from "./batch/batch.module";
+import { PrismaModule } from "./prisma/prisma.module";
 
 @Module({
-  imports: [TransactionModule, TransactionItemModule, BatchModule],
+  imports: [
+    TransactionModule,
+    TransactionItemModule,
+    BatchModule,
+    PrismaModule,
+  ],
   controllers: [AppController, TransactionItemController],
   providers: [AppService, TransactionService, BatchService],
 })
