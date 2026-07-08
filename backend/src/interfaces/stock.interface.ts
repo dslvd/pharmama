@@ -1,4 +1,4 @@
-export interface Batch {
+export interface Stock {
   id: number;
   productId: number;
   batchNumber: number;

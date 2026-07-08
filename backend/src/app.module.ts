@@ -8,6 +8,7 @@ import { TransactionItemModule } from "./transaction-item/transaction-item.modul
 import { BatchService } from "./batch/batch.service";
 import { BatchModule } from "./batch/batch.module";
 import { PrismaModule } from "./prisma/prisma.module";
+import { StockModule } from './stock/stock.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { PrismaModule } from "./prisma/prisma.module";
     TransactionItemModule,
     BatchModule,
     PrismaModule,
+    StockModule,
   ],
   controllers: [AppController, TransactionItemController],
   providers: [AppService, TransactionService, BatchService],
