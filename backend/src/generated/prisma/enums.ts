@@ -11,7 +11,7 @@
 
 export const TransactionStatus = {
   PENDING: 'PENDING',
-  COMPLETTED: 'COMPLETTED',
+  COMPLETED: 'COMPLETED',
   CANCELLED: 'CANCELLED',
   REFUNDED: 'REFUNDED'
 } as const
