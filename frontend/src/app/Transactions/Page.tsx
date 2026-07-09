@@ -23,39 +23,39 @@ export default function Transactions({ userRole }: TransactionsProps) {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-3xl font-bold text-[#2D1B4E]">Transaction</h2>
+      <h2 className="text-3xl font-bold text-primary">Transaction</h2>
 
       {/* Top Section */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="bg-white rounded-lg border border-[#E0D5C7] p-6">
-          <p className="text-[#6B5B7F] text-sm">Total Amount</p>
-          <p className="text-3xl font-bold text-[#2D1B4E] mt-2">6.7 M</p>
+        <div className="bg-card rounded-lg border border-border p-6">
+          <p className="text-muted-foreground text-sm">Total Amount</p>
+          <p className="text-3xl font-bold text-primary mt-2">6.7 M</p>
         </div>
-        <div className="bg-white rounded-lg border border-[#E0D5C7] p-6">
-          <p className="text-[#6B5B7F] text-sm">Filter</p>
+        <div className="bg-card rounded-lg border border-border p-6">
+          <p className="text-muted-foreground text-sm">Filter</p>
           <input
             type="text"
             placeholder="Search..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full mt-2 px-3 py-2 border border-[#D4C8B8] rounded focus:outline-none focus:ring-2 focus:ring-[#2D1B4E]"
+            className="w-full mt-2 px-3 py-2 border border-muted rounded focus:outline-none focus:ring-2 focus:ring-primary"
           />
         </div>
       </div>
 
       {/* Action Buttons */}
       <div className="flex gap-2">
-        <button className="px-4 py-2 bg-[#2D1B4E] text-white rounded hover:bg-[#1a0f2e]">Decrement</button>
-        <button className="px-4 py-2 bg-[#2D1B4E] text-white rounded hover:bg-[#1a0f2e]">Increment</button>
+        <button className="px-4 py-2 bg-primary text-primary-foreground rounded hover:bg-primary/90">Add</button>
+        <button className="px-4 py-2 bg-primary text-primary-foreground rounded hover:bg-primary/90">Minus</button>
         <button className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">Delete</button>
       </div>
 
       {/* Transactions Table */}
-      <div className="bg-white rounded-lg border border-[#E0D5C7] overflow-hidden">
+      <div className="bg-card rounded-lg border border-border overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-[#2D1B4E] text-white">
+              <tr className="bg-primary text-primary-foreground">
                 <th className="px-4 py-3 text-left">ID</th>
                 <th className="px-4 py-3 text-left">Product Name</th>
                 <th className="px-4 py-3 text-left">Brand</th>
@@ -67,14 +67,14 @@ export default function Transactions({ userRole }: TransactionsProps) {
             </thead>
             <tbody>
               {filteredTransactions.map((tx, index) => (
-                <tr key={index} className="border-b border-[#E0D5C7] hover:bg-[#F5F1E8]">
-                  <td className="px-4 py-3 text-[#2D1B4E]">{tx.id}</td>
-                  <td className="px-4 py-3 text-[#2D1B4E]">{tx.productName}</td>
-                  <td className="px-4 py-3 text-[#2D1B4E]">{tx.brand}</td>
-                  <td className="px-4 py-3 text-[#2D1B4E]">{tx.date}</td>
-                  <td className="px-4 py-3 text-[#2D1B4E]">{tx.time}</td>
-                  <td className="px-4 py-3 text-[#2D1B4E]">{tx.quantity}</td>
-                  <td className="px-4 py-3 text-[#2D1B4E]">{tx.price}</td>
+                <tr key={index} className="border-b border-border hover:bg-background">
+                  <td className="px-4 py-3 text-primary">{tx.id}</td>
+                  <td className="px-4 py-3 text-primary">{tx.productName}</td>
+                  <td className="px-4 py-3 text-primary">{tx.brand}</td>
+                  <td className="px-4 py-3 text-primary">{tx.date}</td>
+                  <td className="px-4 py-3 text-primary">{tx.time}</td>
+                  <td className="px-4 py-3 text-primary">{tx.quantity}</td>
+                  <td className="px-4 py-3 text-primary">{tx.price}</td>
                 </tr>
               ))}
             </tbody>
@@ -83,9 +83,9 @@ export default function Transactions({ userRole }: TransactionsProps) {
       </div>
 
       {/* Sales Section */}
-      <div className="bg-white rounded-lg border border-[#E0D5C7] p-6">
-        <h3 className="font-bold text-[#2D1B4E] mb-4">Sales</h3>
-        <p className="text-[#6B5B7F] text-sm">- ID, Product Name, Brand, Date, Time, Quantity, Price</p>
+      <div className="bg-card rounded-lg border border-border p-6">
+        <h3 className="font-bold text-primary mb-4">Sales</h3>
+        <p className="text-muted-foreground text-sm">- ID, Product Name, Brand, Date, Time, Quantity, Price</p>
       </div>
     </div>
   )

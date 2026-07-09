@@ -47,52 +47,52 @@ export default function LogBook({ userRole }: LogBookProps) {
   })
 
   return (
-    <div className="space-y-6">
-      <h2 className="text-3xl font-bold text-[#2D1B4E]">Log Book</h2>
+    <main className="space-y-6">
+      <h2 className="text-3xl font-bold text-primary">Log Book</h2>
 
       {/* Search and Filter Button */}
-      <div className="flex flex-col md:flex-row gap-4">
+      <section className="flex flex-col md:flex-row gap-4">
         <input
           type="text"
           placeholder="Search logs..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="flex-1 px-4 py-2 border border-[#D4C8B8] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2D1B4E]"
+          className="flex-1 px-4 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
         />
-        <button className="px-4 py-2 bg-[#2D1B4E] text-white rounded-lg hover:bg-[#1a0f2e]">Filter Button</button>
-      </div>
+        <button className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90">Filter Button</button>
+      </section>
 
       {/* Filter Checkboxes */}
-      <div className="bg-white rounded-lg border border-[#E0D5C7] p-4 space-y-2">
-        <p className="font-semibold text-[#2D1B4E] mb-3">Activity Type</p>
+      <div className="bg-card rounded-lg border border-border p-4 space-y-2">
+        <p className="font-semibold text-primary mb-3">Activity Type</p>
         <label className="flex items-center">
           <input type="checkbox" checked={filters.all} onChange={() => toggleFilter('all')} className="mr-2" />
-          <span className="text-[#2D1B4E]">All</span>
+          <span className="text-primary">All</span>
         </label>
         <label className="flex items-center">
           <input type="checkbox" checked={filters.added} onChange={() => toggleFilter('added')} className="mr-2" />
-          <span className="text-[#2D1B4E]">Added</span>
+          <span className="text-primary">Added</span>
         </label>
         <label className="flex items-center">
           <input type="checkbox" checked={filters.removed} onChange={() => toggleFilter('removed')} className="mr-2" />
-          <span className="text-[#2D1B4E]">Removed</span>
+          <span className="text-primary">Removed</span>
         </label>
         <label className="flex items-center">
           <input type="checkbox" checked={filters.updated} onChange={() => toggleFilter('updated')} className="mr-2" />
-          <span className="text-[#2D1B4E]">Updated</span>
+          <span className="text-primary">Updated</span>
         </label>
         <label className="flex items-center">
           <input type="checkbox" checked={filters.deleted} onChange={() => toggleFilter('deleted')} className="mr-2" />
-          <span className="text-[#2D1B4E]">Deleted</span>
+          <span className="text-primary">Deleted</span>
         </label>
       </div>
 
       {/* Log Book Table */}
-      <div className="bg-white rounded-lg border border-[#E0D5C7] overflow-hidden">
+      <div className="bg-card rounded-lg border border-border overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-[#2D1B4E] text-white">
+              <tr className="bg-primary text-primary-foreground">
                 <th className="px-4 py-3 text-left">Date</th>
                 <th className="px-4 py-3 text-left">Person</th>
                 <th className="px-4 py-3 text-left">Activity</th>
@@ -101,17 +101,17 @@ export default function LogBook({ userRole }: LogBookProps) {
             </thead>
             <tbody>
               {filteredLogs.map((log, index) => (
-                <tr key={index} className="border-b border-[#E0D5C7] hover:bg-[#F5F1E8]">
-                  <td className="px-4 py-3 text-[#2D1B4E]">{log.date}</td>
-                  <td className="px-4 py-3 text-[#2D1B4E]">{log.person}</td>
-                  <td className="px-4 py-3 text-[#2D1B4E]">{log.activity}</td>
-                  <td className="px-4 py-3 text-[#6B5B7F] text-xs">{log.details}</td>
+                <tr key={index} className="border-b border-border hover:bg-background">
+                  <td className="px-4 py-3 text-primary">{log.date}</td>
+                  <td className="px-4 py-3 text-primary">{log.person}</td>
+                  <td className="px-4 py-3 text-primary">{log.activity}</td>
+                  <td className="px-4 py-3 text-muted-foreground text-xs">{log.details}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
       </div>
-    </div>
+    </main>
   )
 }

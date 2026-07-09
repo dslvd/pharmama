@@ -1,11 +1,11 @@
 'use client'
 
 import { useState } from 'react'
-import Navigation from '../../Components/UI/Navigation'
-import LoginPage from '../../Components/UI/Login_Page'
+import Navigation from './Navigation/Page'
+import LoginPage from './Login_page/page'
 import Dashboard from '../../Components/UI/Dashboard'
-import Stocks from '../../Components/UI/Stocks'
-import Transactions from '../../Components/UI/Transactions'
+import Stocks from './Stocks/page'
+import Transactions from './Transactions/Page'
 import LogBook from '../../Components/UI/Logbook'
 
 export default function Page() {
@@ -29,13 +29,14 @@ export default function Page() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F5F1E8]">
+    <div className="min-h-screen bg-background">
       <Navigation
         currentPage={currentPage}
         userRole={userRole}
         onLogout={handleLogout}
         onPageChange={setCurrentPage}
-      />
+      /> //salin moni sa layout.tsx
+      
 
       <main className="max-w-7xl mx-auto px-4 py-8">
         {currentPage === 'dashboard' && <Dashboard userRole={userRole} />}
