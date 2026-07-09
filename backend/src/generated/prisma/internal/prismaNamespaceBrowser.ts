@@ -54,7 +54,7 @@ export const ModelName = {
   Transaction: 'Transaction',
   TransactionItem: 'TransactionItem',
   Product: 'Product',
-  Batch: 'Batch'
+  Stock: 'Stock'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -87,7 +87,7 @@ export const TransactionItemScalarFieldEnum = {
   id: 'id',
   transactionId: 'transactionId',
   productId: 'productId',
-  batchId: 'batchId',
+  stockId: 'stockId',
   quantity: 'quantity',
   unitPrice: 'unitPrice',
   subtotal: 'subtotal'
@@ -109,7 +109,7 @@ export const ProductScalarFieldEnum = {
 export type ProductScalarFieldEnum = (typeof ProductScalarFieldEnum)[keyof typeof ProductScalarFieldEnum]
 
 
-export const BatchScalarFieldEnum = {
+export const StockScalarFieldEnum = {
   id: 'id',
   productId: 'productId',
   batchNumber: 'batchNumber',
@@ -118,7 +118,7 @@ export const BatchScalarFieldEnum = {
   createdAt: 'createdAt'
 } as const
 
-export type BatchScalarFieldEnum = (typeof BatchScalarFieldEnum)[keyof typeof BatchScalarFieldEnum]
+export type StockScalarFieldEnum = (typeof StockScalarFieldEnum)[keyof typeof StockScalarFieldEnum]
 
 
 export const SortOrder = {

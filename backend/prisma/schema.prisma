@@ -59,7 +59,7 @@ model Stock {
 
 enum TransactionStatus {
   PENDING
-  COMPLETTED
+  COMPLETED
   CANCELLED
   REFUNDED
 }

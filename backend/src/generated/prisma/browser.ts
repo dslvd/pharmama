@@ -33,7 +33,7 @@ export type TransactionItem = Prisma.TransactionItemModel
  */
 export type Product = Prisma.ProductModel
 /**
- * Model Batch
+ * Model Stock
  * 
  */
-export type Batch = Prisma.BatchModel
+export type Stock = Prisma.StockModel

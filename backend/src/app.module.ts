@@ -5,20 +5,18 @@ import { TransactionService } from "./transaction/transaction.service";
 import { TransactionModule } from "./transaction/transaction.module";
 import { TransactionItemController } from "./transaction-item/transaction-item.controller";
 import { TransactionItemModule } from "./transaction-item/transaction-item.module";
-import { BatchService } from "./batch/batch.service";
-import { BatchModule } from "./batch/batch.module";
 import { PrismaModule } from "./prisma/prisma.module";
-import { StockModule } from './stock/stock.module';
+import { StockModule } from "./stock/stock.module";
+import { StockService } from "./stock/stock.service";
 
 @Module({
   imports: [
     TransactionModule,
     TransactionItemModule,
-    BatchModule,
-    PrismaModule,
     StockModule,
+    PrismaModule,
   ],
   controllers: [AppController, TransactionItemController],
-  providers: [AppService, TransactionService, BatchService],
+  providers: [AppService, TransactionService, StockService],
 })
 export class AppModule {}
