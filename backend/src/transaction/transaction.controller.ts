@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Post } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseArrayPipe,
+  ParseIntPipe,
+  Post,
+} from "@nestjs/common";
 import { TransactionService } from "./transaction.service";
 import { Transaction } from "src/generated/prisma/client";
 import type { TransactionCreateInput } from "src/interfaces/transaction.interface";
@@ -7,15 +16,18 @@ import type { TransactionCreateInput } from "src/interfaces/transaction.interfac
 export class TransactionController {
   constructor(private transactionService: TransactionService) {}
 
-  @Get("transaction")
-  async getTransaction(): Promise<Transaction[]> {
+  @Get()
+  async getTr(): Promise<Transaction[]> {
     return this.transactionService.getTransaction();
   }
 
-  @Post("transaction")
-  async createTransaction(
-    @Body() trData: TransactionCreateInput,
-  ): Promise<Transaction> {
+  @Delete(":id")
+  async deleteTr(@Param("id", ParseIntPipe) id: number): Promise<Transaction> {
+    return this.transactionService.deleteTransaction(id);
+  }
+
+  @Post()
+  async createTr(@Body() trData: TransactionCreateInput): Promise<Transaction> {
     return this.transactionService.createTransaction(trData);
   }
 }
