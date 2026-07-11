@@ -17,6 +17,7 @@ model Transaction {
   id               Int               @id @default(autoincrement())
   totalAmount      Int
   status           TransactionStatus @default(PENDING)
+  handledBy        String
   createdAt        DateTime          @default(now())
   transactionItems TransactionItem[]
 }

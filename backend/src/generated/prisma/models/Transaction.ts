@@ -40,6 +40,7 @@ export type TransactionMinAggregateOutputType = {
   id: number | null
   totalAmount: number | null
   status: $Enums.TransactionStatus | null
+  handledBy: string | null
   createdAt: Date | null
 }
 
@@ -47,6 +48,7 @@ export type TransactionMaxAggregateOutputType = {
   id: number | null
   totalAmount: number | null
   status: $Enums.TransactionStatus | null
+  handledBy: string | null
   createdAt: Date | null
 }
 
@@ -54,6 +56,7 @@ export type TransactionCountAggregateOutputType = {
   id: number
   totalAmount: number
   status: number
+  handledBy: number
   createdAt: number
   _all: number
 }
@@ -73,6 +76,7 @@ export type TransactionMinAggregateInputType = {
   id?: true
   totalAmount?: true
   status?: true
+  handledBy?: true
   createdAt?: true
 }
 
@@ -80,6 +84,7 @@ export type TransactionMaxAggregateInputType = {
   id?: true
   totalAmount?: true
   status?: true
+  handledBy?: true
   createdAt?: true
 }
 
@@ -87,6 +92,7 @@ export type TransactionCountAggregateInputType = {
   id?: true
   totalAmount?: true
   status?: true
+  handledBy?: true
   createdAt?: true
   _all?: true
 }
@@ -181,6 +187,7 @@ export type TransactionGroupByOutputType = {
   id: number
   totalAmount: number
   status: $Enums.TransactionStatus
+  handledBy: string
   createdAt: Date
   _count: TransactionCountAggregateOutputType | null
   _avg: TransactionAvgAggregateOutputType | null
@@ -211,6 +218,7 @@ export type TransactionWhereInput = {
   id?: Prisma.IntFilter<"Transaction"> | number
   totalAmount?: Prisma.IntFilter<"Transaction"> | number
   status?: Prisma.EnumTransactionStatusFilter<"Transaction"> | $Enums.TransactionStatus
+  handledBy?: Prisma.StringFilter<"Transaction"> | string
   createdAt?: Prisma.DateTimeFilter<"Transaction"> | Date | string
   transactionItems?: Prisma.TransactionItemListRelationFilter
 }
@@ -219,6 +227,7 @@ export type TransactionOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   totalAmount?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  handledBy?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   transactionItems?: Prisma.TransactionItemOrderByRelationAggregateInput
 }
@@ -230,6 +239,7 @@ export type TransactionWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.TransactionWhereInput | Prisma.TransactionWhereInput[]
   totalAmount?: Prisma.IntFilter<"Transaction"> | number
   status?: Prisma.EnumTransactionStatusFilter<"Transaction"> | $Enums.TransactionStatus
+  handledBy?: Prisma.StringFilter<"Transaction"> | string
   createdAt?: Prisma.DateTimeFilter<"Transaction"> | Date | string
   transactionItems?: Prisma.TransactionItemListRelationFilter
 }, "id">
@@ -238,6 +248,7 @@ export type TransactionOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   totalAmount?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  handledBy?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.TransactionCountOrderByAggregateInput
   _avg?: Prisma.TransactionAvgOrderByAggregateInput
@@ -253,12 +264,14 @@ export type TransactionScalarWhereWithAggregatesInput = {
   id?: Prisma.IntWithAggregatesFilter<"Transaction"> | number
   totalAmount?: Prisma.IntWithAggregatesFilter<"Transaction"> | number
   status?: Prisma.EnumTransactionStatusWithAggregatesFilter<"Transaction"> | $Enums.TransactionStatus
+  handledBy?: Prisma.StringWithAggregatesFilter<"Transaction"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Transaction"> | Date | string
 }
 
 export type TransactionCreateInput = {
   totalAmount: number
   status?: $Enums.TransactionStatus
+  handledBy: string
   createdAt?: Date | string
   transactionItems?: Prisma.TransactionItemCreateNestedManyWithoutTransactionInput
 }
@@ -267,6 +280,7 @@ export type TransactionUncheckedCreateInput = {
   id?: number
   totalAmount: number
   status?: $Enums.TransactionStatus
+  handledBy: string
   createdAt?: Date | string
   transactionItems?: Prisma.TransactionItemUncheckedCreateNestedManyWithoutTransactionInput
 }
@@ -274,6 +288,7 @@ export type TransactionUncheckedCreateInput = {
 export type TransactionUpdateInput = {
   totalAmount?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumTransactionStatusFieldUpdateOperationsInput | $Enums.TransactionStatus
+  handledBy?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactionItems?: Prisma.TransactionItemUpdateManyWithoutTransactionNestedInput
 }
@@ -282,6 +297,7 @@ export type TransactionUncheckedUpdateInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   totalAmount?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumTransactionStatusFieldUpdateOperationsInput | $Enums.TransactionStatus
+  handledBy?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactionItems?: Prisma.TransactionItemUncheckedUpdateManyWithoutTransactionNestedInput
 }
@@ -290,12 +306,14 @@ export type TransactionCreateManyInput = {
   id?: number
   totalAmount: number
   status?: $Enums.TransactionStatus
+  handledBy: string
   createdAt?: Date | string
 }
 
 export type TransactionUpdateManyMutationInput = {
   totalAmount?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumTransactionStatusFieldUpdateOperationsInput | $Enums.TransactionStatus
+  handledBy?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -303,6 +321,7 @@ export type TransactionUncheckedUpdateManyInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   totalAmount?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumTransactionStatusFieldUpdateOperationsInput | $Enums.TransactionStatus
+  handledBy?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -310,6 +329,7 @@ export type TransactionCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   totalAmount?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  handledBy?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -322,6 +342,7 @@ export type TransactionMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   totalAmount?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  handledBy?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -329,6 +350,7 @@ export type TransactionMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   totalAmount?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  handledBy?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -354,6 +376,10 @@ export type EnumTransactionStatusFieldUpdateOperationsInput = {
   set?: $Enums.TransactionStatus
 }
 
+export type StringFieldUpdateOperationsInput = {
+  set?: string
+}
+
 export type DateTimeFieldUpdateOperationsInput = {
   set?: Date | string
 }
@@ -375,6 +401,7 @@ export type TransactionUpdateOneRequiredWithoutTransactionItemsNestedInput = {
 export type TransactionCreateWithoutTransactionItemsInput = {
   totalAmount: number
   status?: $Enums.TransactionStatus
+  handledBy: string
   createdAt?: Date | string
 }
 
@@ -382,6 +409,7 @@ export type TransactionUncheckedCreateWithoutTransactionItemsInput = {
   id?: number
   totalAmount: number
   status?: $Enums.TransactionStatus
+  handledBy: string
   createdAt?: Date | string
 }
 
@@ -404,6 +432,7 @@ export type TransactionUpdateToOneWithWhereWithoutTransactionItemsInput = {
 export type TransactionUpdateWithoutTransactionItemsInput = {
   totalAmount?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumTransactionStatusFieldUpdateOperationsInput | $Enums.TransactionStatus
+  handledBy?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -411,6 +440,7 @@ export type TransactionUncheckedUpdateWithoutTransactionItemsInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   totalAmount?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumTransactionStatusFieldUpdateOperationsInput | $Enums.TransactionStatus
+  handledBy?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -449,6 +479,7 @@ export type TransactionSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   id?: boolean
   totalAmount?: boolean
   status?: boolean
+  handledBy?: boolean
   createdAt?: boolean
   transactionItems?: boolean | Prisma.Transaction$transactionItemsArgs<ExtArgs>
   _count?: boolean | Prisma.TransactionCountOutputTypeDefaultArgs<ExtArgs>
@@ -458,6 +489,7 @@ export type TransactionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   id?: boolean
   totalAmount?: boolean
   status?: boolean
+  handledBy?: boolean
   createdAt?: boolean
 }, ExtArgs["result"]["transaction"]>
 
@@ -465,6 +497,7 @@ export type TransactionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   id?: boolean
   totalAmount?: boolean
   status?: boolean
+  handledBy?: boolean
   createdAt?: boolean
 }, ExtArgs["result"]["transaction"]>
 
@@ -472,10 +505,11 @@ export type TransactionSelectScalar = {
   id?: boolean
   totalAmount?: boolean
   status?: boolean
+  handledBy?: boolean
   createdAt?: boolean
 }
 
-export type TransactionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "totalAmount" | "status" | "createdAt", ExtArgs["result"]["transaction"]>
+export type TransactionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "totalAmount" | "status" | "handledBy" | "createdAt", ExtArgs["result"]["transaction"]>
 export type TransactionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   transactionItems?: boolean | Prisma.Transaction$transactionItemsArgs<ExtArgs>
   _count?: boolean | Prisma.TransactionCountOutputTypeDefaultArgs<ExtArgs>
@@ -492,6 +526,7 @@ export type $TransactionPayload<ExtArgs extends runtime.Types.Extensions.Interna
     id: number
     totalAmount: number
     status: $Enums.TransactionStatus
+    handledBy: string
     createdAt: Date
   }, ExtArgs["result"]["transaction"]>
   composites: {}
@@ -920,6 +955,7 @@ export interface TransactionFieldRefs {
   readonly id: Prisma.FieldRef<"Transaction", 'Int'>
   readonly totalAmount: Prisma.FieldRef<"Transaction", 'Int'>
   readonly status: Prisma.FieldRef<"Transaction", 'TransactionStatus'>
+  readonly handledBy: Prisma.FieldRef<"Transaction", 'String'>
   readonly createdAt: Prisma.FieldRef<"Transaction", 'DateTime'>
 }
     

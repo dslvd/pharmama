@@ -1,5 +1,9 @@
 import { Injectable } from "@nestjs/common";
-import { Transaction } from "src/generated/prisma/client";
+import {
+  Prisma,
+  Transaction,
+  TransactionStatus,
+} from "src/generated/prisma/client";
 import { TransactionCreateInput } from "src/interfaces/transaction.interface";
 import { PrismaService } from "src/prisma/prisma.service";
 
@@ -7,8 +11,49 @@ import { PrismaService } from "src/prisma/prisma.service";
 export class TransactionService {
   constructor(private prisma: PrismaService) {}
 
-  async getTransaction(): Promise<Transaction[]> {
-    return this.prisma.transaction.findMany();
+  async getTransaction(filter: {
+    status?: TransactionStatus;
+    handledBy?: string;
+    order?: Prisma.SortOrder;
+  }): Promise<Transaction[]> {
+    return this.prisma.transaction.findMany({
+      where: {
+        ...(filter.status && { status: filter.status }),
+        ...(filter.handledBy && {
+          handledBy: {
+            contains: filter.handledBy.toUpperCase().trim(),
+            mode: "insensitive",
+          },
+        }),
+      },
+      orderBy: { createdAt: filter.order ?? "desc" },
+    });
+  }
+
+  async getTodaySales(): Promise<{ total: number; date: string }> {
+    const now = new Date();
+    const startOfDay = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+    );
+    const endOfDay = new Date(startOfDay);
+    endOfDay.setDate(endOfDay.getDate() + 1);
+
+    const total = await this.prisma.transaction.aggregate({
+      _sum: { totalAmount: true },
+      where: {
+        createdAt: {
+          gte: startOfDay,
+          lt: endOfDay,
+        },
+      },
+    });
+
+    return {
+      total: total._sum.totalAmount ?? 0,
+      date: startOfDay.toISOString().split("T")[0],
+    };
   }
 
   async createTransaction(data: TransactionCreateInput): Promise<Transaction> {
@@ -31,6 +76,7 @@ export class TransactionService {
         data: {
           totalAmount: data.totalAmount,
           status: data.status,
+          handledBy: data.handledBy.toUpperCase().trim(),
           transactionItems: {
             create: data.transactionItems,
           },
