@@ -429,10 +429,6 @@ export type ProductUpdateOneRequiredWithoutTransactionItemsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ProductUpdateToOneWithWhereWithoutTransactionItemsInput, Prisma.ProductUpdateWithoutTransactionItemsInput>, Prisma.ProductUncheckedUpdateWithoutTransactionItemsInput>
 }
 
-export type StringFieldUpdateOperationsInput = {
-  set?: string
-}
-
 export type ProductCreateNestedOneWithoutStocksInput = {
   create?: Prisma.XOR<Prisma.ProductCreateWithoutStocksInput, Prisma.ProductUncheckedCreateWithoutStocksInput>
   connectOrCreate?: Prisma.ProductCreateOrConnectWithoutStocksInput

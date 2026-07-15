@@ -16,7 +16,8 @@ datasource db {
 model Transaction {
   id               Int               @id @default(autoincrement())
   totalAmount      Int
-  status           TransactionStatus @default(PENDING)
+  status           TransactionStatus @default(COMPLETED)
+  handledBy        String
   createdAt        DateTime          @default(now())
   transactionItems TransactionItem[]
 }
@@ -58,7 +59,6 @@ model Stock {
 }
 
 enum TransactionStatus {
-  PENDING
   COMPLETED
   CANCELLED
   REFUNDED

@@ -4,30 +4,59 @@ import {
   Delete,
   Get,
   Param,
-  ParseArrayPipe,
+  ParseEnumPipe,
   ParseIntPipe,
   Post,
+  Query,
 } from "@nestjs/common";
-import { TransactionService } from "./transaction.service";
-import { Transaction } from "src/generated/prisma/client";
-import type { TransactionCreateInput } from "src/interfaces/transaction.interface";
+import {
+  type CreateTransactionInput,
+  TransactionService,
+} from "./transaction.service";
+import {
+  Prisma,
+  Transaction,
+  TransactionStatus,
+} from "src/generated/prisma/client";
 
 @Controller("transaction")
 export class TransactionController {
-  constructor(private transactionService: TransactionService) {}
+  constructor(private trService: TransactionService) {}
+
+  @Get("search")
+  async searchProducts(@Query("query") query: string): Promise<Transaction[]> {
+    return this.trService.searchTransaction(query);
+  }
+
+  @Get(":id")
+  async getTr(
+    @Param("id", ParseIntPipe) id: number,
+  ): Promise<Transaction | null> {
+    return this.trService.getTransaction(id);
+  }
 
   @Get()
-  async getTr(): Promise<Transaction[]> {
-    return this.transactionService.getTransaction();
+  async getTrList(
+    @Query("status", new ParseEnumPipe(TransactionStatus, { optional: true }))
+    status?: TransactionStatus,
+    @Query("handledBy") handledBy?: string,
+    @Query("order") order?: Prisma.SortOrder,
+  ): Promise<Transaction[]> {
+    return this.trService.getTransactionList({ status, handledBy, order });
+  }
+
+  @Get("getTodaySales")
+  async getTodaySales(): Promise<{ total: number; date: string }> {
+    return this.trService.getTodaySales();
   }
 
   @Delete(":id")
   async deleteTr(@Param("id", ParseIntPipe) id: number): Promise<Transaction> {
-    return this.transactionService.deleteTransaction(id);
+    return this.trService.deleteTransaction(id);
   }
 
   @Post()
-  async createTr(@Body() trData: TransactionCreateInput): Promise<Transaction> {
-    return this.transactionService.createTransaction(trData);
+  async createTr(@Body() trData: CreateTransactionInput): Promise<Transaction> {
+    return this.trService.createTransaction(trData);
   }
 }
