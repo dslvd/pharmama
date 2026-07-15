@@ -4,14 +4,19 @@ import {
   Transaction,
   TransactionStatus,
 } from "src/generated/prisma/client";
-import { TransactionCreateInput } from "src/interfaces/transaction.interface";
 import { PrismaService } from "src/prisma/prisma.service";
 
 @Injectable()
 export class TransactionService {
   constructor(private prisma: PrismaService) {}
 
-  async getTransaction(filter: {
+  async getTransaction(id: number): Promise<Transaction | null> {
+    return this.prisma.transaction.findUnique({
+      where: { id },
+    });
+  }
+
+  async getTransactionList(filter: {
     status?: TransactionStatus;
     handledBy?: string;
     order?: Prisma.SortOrder;
@@ -56,7 +61,7 @@ export class TransactionService {
     };
   }
 
-  async createTransaction(data: TransactionCreateInput): Promise<Transaction> {
+  async createTransaction(data: CreateTransactionInput): Promise<Transaction> {
     return this.prisma.$transaction(async (tx) => {
       for (const item of data.transactionItems) {
         const stock = await tx.stock.findUnique({
@@ -78,7 +83,13 @@ export class TransactionService {
           status: data.status,
           handledBy: data.handledBy.toUpperCase().trim(),
           transactionItems: {
-            create: data.transactionItems,
+            create: data.transactionItems.map((item) => ({
+              productId: item.stockId,
+              stockId: item.stockId,
+              quantity: item.quantity,
+              unitPrice: item.unitPrice,
+              subtotal: item.unitPrice * item.quantity,
+            })),
           },
         },
       });
@@ -123,4 +134,34 @@ export class TransactionService {
       return transaction;
     });
   }
+
+  async searchTransaction(query: string): Promise<Transaction[]> {
+    return this.prisma.transaction.findMany({
+      where: query
+        ? {
+            OR: [
+              { handledBy: { contains: query, mode: "insensitive" } },
+              ...(Object.values(TransactionStatus).includes(
+                query.toUpperCase() as TransactionStatus,
+              )
+                ? [{ status: query.toUpperCase() as TransactionStatus }]
+                : []),
+            ],
+          }
+        : {},
+    });
+  }
+}
+
+interface CreateTransactionItemInput {
+  productId: number;
+  stockId: number;
+  quantity: number;
+  unitPrice: number;
+}
+export interface CreateTransactionInput {
+  totalAmount: number;
+  status: TransactionStatus;
+  handledBy: string;
+  transactionItems: CreateTransactionItemInput[];
 }
