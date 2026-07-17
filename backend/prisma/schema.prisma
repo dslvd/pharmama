@@ -58,8 +58,33 @@ model Stock {
   transactionItems TransactionItem[]
 }
 
+model AuditLog {
+  id        Int         @id @default(autoincrement())
+  entity    AuditEntity
+  entityId  Int
+  action    AuditAction
+  changes   Json?
+  createdAt DateTime    @default(now())
+}
+
 enum TransactionStatus {
   COMPLETED
   CANCELLED
   REFUNDED
+}
+
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+  CANCEL
+  STOCK_ADJUSTMENT
+  RESTORE_STOCK
+}
+
+enum AuditEntity {
+  TRANSACTION
+  PRODUCT
+  STOCK
+  TRANSACTIONITEM
 }

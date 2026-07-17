@@ -37,3 +37,8 @@ export type Product = Prisma.ProductModel
  * 
  */
 export type Stock = Prisma.StockModel
+/**
+ * Model AuditLog
+ * 
+ */
+export type AuditLog = Prisma.AuditLogModel

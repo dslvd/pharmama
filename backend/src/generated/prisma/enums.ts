@@ -10,10 +10,31 @@
 */
 
 export const TransactionStatus = {
-  PENDING: 'PENDING',
   COMPLETED: 'COMPLETED',
   CANCELLED: 'CANCELLED',
   REFUNDED: 'REFUNDED'
 } as const
 
 export type TransactionStatus = (typeof TransactionStatus)[keyof typeof TransactionStatus]
+
+
+export const AuditAction = {
+  CREATE: 'CREATE',
+  UPDATE: 'UPDATE',
+  DELETE: 'DELETE',
+  CANCEL: 'CANCEL',
+  STOCK_ADJUSTMENT: 'STOCK_ADJUSTMENT',
+  RESTORE_STOCK: 'RESTORE_STOCK'
+} as const
+
+export type AuditAction = (typeof AuditAction)[keyof typeof AuditAction]
+
+
+export const AuditEntity = {
+  TRANSACTION: 'TRANSACTION',
+  PRODUCT: 'PRODUCT',
+  STOCK: 'STOCK',
+  TRANSACTIONITEM: 'TRANSACTIONITEM'
+} as const
+
+export type AuditEntity = (typeof AuditEntity)[keyof typeof AuditEntity]

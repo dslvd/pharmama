@@ -1,5 +1,10 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
-import { Prisma, Product } from "src/generated/prisma/client";
+import {
+  AuditAction,
+  AuditEntity,
+  Prisma,
+  Product,
+} from "src/generated/prisma/client";
 import { ProductCreateInput } from "src/generated/prisma/models";
 import { PrismaService } from "src/prisma/prisma.service";
 
@@ -26,34 +31,43 @@ export class ProductService {
   }
 
   async createProduct(data: ProductCreateInput): Promise<Product> {
-    return this.prisma.product.create({
-      data: data,
-    });
-  }
+    return this.prisma.$transaction(async (pr) => {
+      const product = await pr.product.create({ data: data });
 
-  async deleteProduct(id: number): Promise<Product> {
-    return this.prisma.product.delete({
-      where: { id },
+      await pr.auditLog.create({
+        data: {
+          entity: AuditEntity.PRODUCT,
+          entityId: product.id,
+          action: AuditAction.CREATE,
+        },
+      });
+
+      return product;
     });
   }
 
   async updateProduct(id: number, body: UpdateProductDto): Promise<Product> {
-    return this.prisma.$transaction(async (tx) => {
-      const pr = await tx.product.findUnique({
+    return this.prisma.$transaction(async (pr) => {
+      const prod = await pr.product.findUnique({
         where: { id },
       });
 
-      if (!pr) {
+      if (!prod) {
         throw new NotFoundException(`Product ${id} not found.`);
       }
 
-      const product = await tx.product.update({
+      const product = await pr.product.update({
         where: { id },
         data: {
-          name: body.name,
-          genericName: body.genericName,
-          category: body.category,
-          price: body.price,
+          ...body,
+        },
+      });
+
+      await pr.auditLog.create({
+        data: {
+          entity: AuditEntity.PRODUCT,
+          entityId: id,
+          action: AuditAction.UPDATE,
         },
       });
 
