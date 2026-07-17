@@ -1,5 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import {
+  AuditAction,
+  AuditEntity,
   Prisma,
   Transaction,
   TransactionStatus,
@@ -77,14 +79,19 @@ export class TransactionService {
         }
       }
 
+      const totalAmount = data.transactionItems.reduce(
+        (sum, item) => sum + item.quantity * item.unitPrice,
+        0,
+      );
+
       const transaction = await tx.transaction.create({
         data: {
-          totalAmount: data.totalAmount,
+          totalAmount: totalAmount,
           status: data.status,
           handledBy: data.handledBy.toUpperCase().trim(),
           transactionItems: {
             create: data.transactionItems.map((item) => ({
-              productId: item.stockId,
+              productId: item.productId,
               stockId: item.stockId,
               quantity: item.quantity,
               unitPrice: item.unitPrice,
@@ -103,11 +110,19 @@ export class TransactionService {
         });
       }
 
+      await tx.auditLog.create({
+        data: {
+          entity: AuditEntity.TRANSACTION,
+          entityId: transaction.id,
+          action: AuditAction.CREATE,
+        },
+      });
+
       return transaction;
     });
   }
 
-  async deleteTransaction(id: number): Promise<Transaction> {
+  async cancelTransaction(id: number): Promise<Transaction> {
     return this.prisma.$transaction(async (tx) => {
       const trItems = await tx.transaction.findUnique({
         where: { id: id },
@@ -127,8 +142,19 @@ export class TransactionService {
         });
       }
 
-      const transaction = await tx.transaction.delete({
+      await tx.auditLog.create({
+        data: {
+          entity: AuditEntity.TRANSACTION,
+          entityId: id,
+          action: AuditAction.CANCEL,
+        },
+      });
+
+      const transaction = await tx.transaction.update({
         where: { id: id },
+        data: {
+          status: TransactionStatus.CANCELLED,
+        },
       });
 
       return transaction;
@@ -160,7 +186,6 @@ interface CreateTransactionItemInput {
   unitPrice: number;
 }
 export interface CreateTransactionInput {
-  totalAmount: number;
   status: TransactionStatus;
   handledBy: string;
   transactionItems: CreateTransactionItemInput[];

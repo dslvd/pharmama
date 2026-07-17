@@ -51,8 +51,8 @@ export class TransactionController {
   }
 
   @Delete(":id")
-  async deleteTr(@Param("id", ParseIntPipe) id: number): Promise<Transaction> {
-    return this.trService.deleteTransaction(id);
+  async cancelTr(@Param("id", ParseIntPipe) id: number): Promise<Transaction> {
+    return this.trService.cancelTransaction(id);
   }
 
   @Post()

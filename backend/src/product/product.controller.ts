@@ -40,11 +40,6 @@ export class ProductController {
     return this.prService.createProduct(data);
   }
 
-  @Delete(":id")
-  async deletePr(@Param("id", ParseIntPipe) id: number): Promise<Product> {
-    return this.prService.deleteProduct(id);
-  }
-
   @Patch(":id")
   async updatePr(
     @Param("id", ParseIntPipe) id: number,
