@@ -12,9 +12,12 @@ import { PrismaService } from "src/prisma/prisma.service";
 export class TransactionService {
   constructor(private prisma: PrismaService) {}
 
-  async getTransaction(id: number): Promise<Transaction | null> {
+  async getTransaction(id: number): Promise<Prisma.TransactionGetPayload<{
+    include: { transactionItems: true };
+  }> | null> {
     return this.prisma.transaction.findUnique({
       where: { id },
+      include: { transactionItems: true },
     });
   }
 

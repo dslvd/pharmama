@@ -1,7 +1,6 @@
 import {
   Body,
   Controller,
-  Delete,
   Get,
   Param,
   ParseIntPipe,
@@ -18,12 +17,12 @@ export class ProductController {
   constructor(private prService: ProductService) {}
 
   @Get("search")
-  async searchProducts(@Query("query") query: string): Promise<Product[]> {
+  async searchPr(@Query("query") query: string): Promise<Product[]> {
     return this.prService.searchProducts(query);
   }
 
   @Get(":id")
-  async getPr(@Param("id", ParseIntPipe) id: number) {
+  async getPr(@Param("id", ParseIntPipe) id: number): Promise<Product | null> {
     return this.prService.getProduct(id);
   }
 
