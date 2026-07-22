@@ -48,11 +48,11 @@ export class ProductService {
 
   async updateProduct(id: number, body: UpdateProductDto): Promise<Product> {
     return this.prisma.$transaction(async (pr) => {
-      const prod = await pr.product.findUnique({
+      const existing = await pr.product.findUnique({
         where: { id },
       });
 
-      if (!prod) {
+      if (!existing) {
         throw new NotFoundException(`Product ${id} not found.`);
       }
 
@@ -63,11 +63,25 @@ export class ProductService {
         },
       });
 
+      const changedKeys = Object.keys(body) as (keyof UpdateProductDto)[];
+
+      const old: Record<string, unknown> = {};
+      const updated: Record<string, unknown> = {};
+
+      for (const key of changedKeys) {
+        old[key] = existing[key];
+        updated[key] = product[key];
+      }
+
       await pr.auditLog.create({
         data: {
           entity: AuditEntity.PRODUCT,
           entityId: id,
           action: AuditAction.UPDATE,
+          changes: {
+            old,
+            new: updated,
+          } as Prisma.InputJsonValue,
         },
       });
 
