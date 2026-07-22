@@ -37,7 +37,12 @@ export class StockService {
 
   async createStock(data: StockCreateInput): Promise<Stock> {
     return this.prisma.$transaction(async (st) => {
-      const stock = await st.stock.create({ data: data });
+      const stock = await st.stock.create({
+        data: {
+          ...data,
+          expiryDate: new Date(data.expiryDate),
+        },
+      });
 
       await st.auditLog.create({
         data: {
