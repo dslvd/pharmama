@@ -124,16 +124,19 @@ export class TransactionService {
 
   async cancelTransaction(id: number): Promise<Transaction> {
     return this.prisma.$transaction(async (tx) => {
-      const trItems = await tx.transaction.findUnique({
-        where: { id: id },
-        select: { transactionItems: true },
+      const existing = await tx.transaction.findUnique({
+        where: { id },
+        select: {
+          status: true,
+          transactionItems: true,
+        },
       });
 
-      if (!trItems) {
+      if (!existing) {
         throw new Error(`Transaction ${id} not found`);
       }
 
-      for (const item of trItems.transactionItems) {
+      for (const item of existing.transactionItems) {
         await tx.stock.update({
           where: { id: item.stockId },
           data: {
@@ -142,18 +145,22 @@ export class TransactionService {
         });
       }
 
+      const transaction = await tx.transaction.update({
+        where: { id },
+        data: {
+          status: TransactionStatus.CANCELLED,
+        },
+      });
+
       await tx.auditLog.create({
         data: {
           entity: AuditEntity.TRANSACTION,
           entityId: id,
           action: AuditAction.CANCEL,
-        },
-      });
-
-      const transaction = await tx.transaction.update({
-        where: { id: id },
-        data: {
-          status: TransactionStatus.CANCELLED,
+          changes: {
+            old: { status: existing.status },
+            new: { status: transaction.status },
+          } as Prisma.InputJsonValue,
         },
       });
 
