@@ -9,7 +9,7 @@ import {
 } from "@nestjs/common";
 import { StockService } from "./stock.service";
 import { Prisma, Stock } from "src/generated/prisma/client";
-import type { StockCreateInput } from "src/generated/prisma/models";
+import { CreateStockDto } from "./validation";
 
 @Controller("stock")
 export class StockController {
@@ -23,21 +23,20 @@ export class StockController {
   @Get(":id")
   async getSt(
     @Param("id", ParseIntPipe) id: number,
-  ): Promise<Prisma.StockGetPayload<{ include: { product: true } }> | null> {
+  ): Promise<Prisma.StockGetPayload<{ include: { product: true } }>> {
     return this.stService.getStock(id);
   }
 
   @Get()
   async getStList(
-    @Query("quantiy") quantity?: Prisma.SortOrder,
-    @Query("expiryDate") expiryDate?: Prisma.SortOrder,
+    @Query("sortBy") sortBy?: "quantity" | "expiryDate" | "createdAt",
     @Query("order") order?: Prisma.SortOrder,
   ): Promise<Stock[]> {
-    return this.stService.getStockList({ quantity, expiryDate, order });
+    return this.stService.getStockList({ sortBy, order });
   }
 
   @Post()
-  async createSt(@Body() data: StockCreateInput): Promise<Stock> {
+  async createSt(@Body() data: CreateStockDto): Promise<Stock> {
     return this.stService.createStock(data);
   }
 }

@@ -1,4 +1,8 @@
-import { Injectable } from "@nestjs/common";
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from "@nestjs/common";
 import {
   AuditAction,
   AuditEntity,
@@ -7,17 +11,33 @@ import {
   TransactionStatus,
 } from "src/generated/prisma/client";
 import { PrismaService } from "src/prisma/prisma.service";
+import {
+  CreateTransactionDto,
+  validateStock,
+  validateTransactionExists,
+} from "./validation";
 
 @Injectable()
 export class TransactionService {
   constructor(private prisma: PrismaService) {}
 
-  async getTransaction(id: number): Promise<Prisma.TransactionGetPayload<{
-    include: { transactionItems: true };
-  }> | null> {
-    return this.prisma.transaction.findUnique({
-      where: { id },
-      include: { transactionItems: true },
+  async getTransaction(id: number): Promise<
+    Prisma.TransactionGetPayload<{
+      include: { transactionItems: true };
+    }>
+  > {
+    return this.prisma.$transaction(async (tr) => {
+      const found = await tr.transaction.findUnique({
+        where: { id },
+        include: { transactionItems: true },
+      });
+
+      const result = validateTransactionExists(found);
+      if (!result.ok) {
+        throw new NotFoundException(result.error);
+      }
+
+      return result.value;
     });
   }
 
@@ -66,21 +86,37 @@ export class TransactionService {
     };
   }
 
-  async createTransaction(data: CreateTransactionInput): Promise<Transaction> {
+  async createTransaction(data: CreateTransactionDto): Promise<Transaction> {
     return this.prisma.$transaction(async (tx) => {
-      for (const item of data.transactionItems) {
-        const stock = await tx.stock.findUnique({
-          where: { id: item.stockId },
-        });
+      await Promise.all(
+        data.transactionItems.map(async (item) => {
+          const stock = await tx.stock.findUnique({
+            where: { id: item.stockId },
+            select: { quantity: true },
+          });
 
-        if (!stock) {
-          throw new Error(`Stock ${item.stockId} not found`);
-        } else if (stock.quantity < item.quantity) {
-          throw new Error(
-            `Insufficient stock for item ${item.stockId}: have ${stock.quantity}, need ${item.quantity}`,
-          );
-        }
-      }
+          const stockResult = validateStock(stock, item.quantity);
+          if (!stockResult.ok) {
+            throw new BadRequestException(stockResult.error);
+          }
+
+          const updated = await tx.stock.updateMany({
+            where: {
+              id: item.stockId,
+              quantity: { gte: item.quantity },
+            },
+            data: {
+              quantity: { decrement: item.quantity },
+            },
+          });
+
+          if (updated.count !== 1) {
+            throw new BadRequestException(
+              `Could not reserve stock ${item.stockId}`,
+            );
+          }
+        }),
+      );
 
       const totalAmount = data.transactionItems.reduce(
         (sum, item) => sum + item.quantity * item.unitPrice,
@@ -89,7 +125,7 @@ export class TransactionService {
 
       const transaction = await tx.transaction.create({
         data: {
-          totalAmount: totalAmount,
+          totalAmount,
           status: data.status,
           handledBy: data.handledBy.toUpperCase().trim(),
           transactionItems: {
@@ -103,15 +139,6 @@ export class TransactionService {
           },
         },
       });
-
-      for (const item of data.transactionItems) {
-        await tx.stock.update({
-          where: { id: item.stockId },
-          data: {
-            quantity: { decrement: item.quantity },
-          },
-        });
-      }
 
       await tx.auditLog.create({
         data: {
@@ -130,25 +157,32 @@ export class TransactionService {
       const existing = await tx.transaction.findUnique({
         where: { id },
         select: {
+          id: true,
           status: true,
           transactionItems: true,
         },
       });
 
-      if (!existing) {
-        throw new Error(`Transaction ${id} not found`);
+      const result = validateTransactionExists(existing);
+
+      if (!result.ok) {
+        throw new NotFoundException(result.error);
       }
 
-      for (const item of existing.transactionItems) {
-        await tx.stock.update({
-          where: { id: item.stockId },
-          data: {
-            quantity: { increment: item.quantity },
-          },
-        });
-      }
+      const transaction = result.value;
 
-      const transaction = await tx.transaction.update({
+      await Promise.all(
+        transaction.transactionItems.map((item) =>
+          tx.stock.update({
+            where: { id: item.stockId },
+            data: {
+              quantity: { increment: item.quantity },
+            },
+          }),
+        ),
+      );
+
+      const updated = await tx.transaction.update({
         where: { id },
         data: {
           status: TransactionStatus.CANCELLED,
@@ -161,13 +195,13 @@ export class TransactionService {
           entityId: id,
           action: AuditAction.CANCEL,
           changes: {
-            old: { status: existing.status },
-            new: { status: transaction.status },
+            old: { status: transaction.status },
+            new: { status: updated.status },
           } as Prisma.InputJsonValue,
         },
       });
 
-      return transaction;
+      return updated;
     });
   }
 
@@ -187,16 +221,4 @@ export class TransactionService {
         : {},
     });
   }
-}
-
-interface CreateTransactionItemInput {
-  productId: number;
-  stockId: number;
-  quantity: number;
-  unitPrice: number;
-}
-export interface CreateTransactionInput {
-  status: TransactionStatus;
-  handledBy: string;
-  transactionItems: CreateTransactionItemInput[];
 }

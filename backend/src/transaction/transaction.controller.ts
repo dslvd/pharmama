@@ -9,29 +9,25 @@ import {
   Post,
   Query,
 } from "@nestjs/common";
-import {
-  type CreateTransactionInput,
-  TransactionService,
-} from "./transaction.service";
+import { TransactionService } from "./transaction.service";
 import {
   Prisma,
   Transaction,
   TransactionStatus,
 } from "src/generated/prisma/client";
+import { CreateTransactionDto } from "./validation";
 
 @Controller("transaction")
 export class TransactionController {
   constructor(private trService: TransactionService) {}
 
   @Get("search")
-  async searchProducts(@Query("query") query: string): Promise<Transaction[]> {
+  async searchTr(@Query("query") query: string): Promise<Transaction[]> {
     return this.trService.searchTransaction(query);
   }
 
   @Get(":id")
-  async getTr(
-    @Param("id", ParseIntPipe) id: number,
-  ): Promise<Transaction | null> {
+  async getTr(@Param("id", ParseIntPipe) id: number): Promise<Transaction> {
     return this.trService.getTransaction(id);
   }
 
@@ -56,7 +52,7 @@ export class TransactionController {
   }
 
   @Post()
-  async createTr(@Body() trData: CreateTransactionInput): Promise<Transaction> {
+  async createTr(@Body() trData: CreateTransactionDto): Promise<Transaction> {
     return this.trService.createTransaction(trData);
   }
 }

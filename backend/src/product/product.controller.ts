@@ -8,9 +8,9 @@ import {
   Post,
   Query,
 } from "@nestjs/common";
-import { ProductService, UpdateProductDto } from "./product.service";
+import { ProductService } from "./product.service";
 import { Prisma, Product } from "src/generated/prisma/client";
-import type { ProductCreateInput } from "src/generated/prisma/models";
+import { CreateProductDto, UpdateProductDto } from "./validation";
 
 @Controller("product")
 export class ProductController {
@@ -22,7 +22,7 @@ export class ProductController {
   }
 
   @Get(":id")
-  async getPr(@Param("id", ParseIntPipe) id: number): Promise<Product | null> {
+  async getPr(@Param("id", ParseIntPipe) id: number): Promise<Product> {
     return this.prService.getProduct(id);
   }
 
@@ -35,7 +35,7 @@ export class ProductController {
   }
 
   @Post()
-  async createPr(@Body() data: ProductCreateInput): Promise<Product> {
+  async createPr(@Body() data: CreateProductDto): Promise<Product> {
     return this.prService.createProduct(data);
   }
 
