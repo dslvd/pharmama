@@ -5,16 +5,29 @@ import {
   Prisma,
   Product,
 } from "src/generated/prisma/client";
-import { ProductCreateInput } from "src/generated/prisma/models";
 import { PrismaService } from "src/prisma/prisma.service";
+import {
+  CreateProductDto,
+  UpdateProductDto,
+  validateProductExists,
+} from "./validation";
 
 @Injectable()
 export class ProductService {
   constructor(private prisma: PrismaService) {}
 
-  async getProduct(id: number): Promise<Product | null> {
-    return this.prisma.product.findUnique({
-      where: { id },
+  async getProduct(id: number): Promise<Product> {
+    return this.prisma.$transaction(async (pr) => {
+      const found = await pr.product.findUnique({
+        where: { id },
+      });
+
+      const result = validateProductExists(found);
+      if (!result.ok) {
+        throw new NotFoundException(result.error);
+      }
+
+      return result.value;
     });
   }
 
@@ -30,9 +43,9 @@ export class ProductService {
     });
   }
 
-  async createProduct(data: ProductCreateInput): Promise<Product> {
+  async createProduct(data: CreateProductDto): Promise<Product> {
     return this.prisma.$transaction(async (pr) => {
-      const product = await pr.product.create({ data: data });
+      const product = await pr.product.create({ data });
 
       await pr.auditLog.create({
         data: {
@@ -52,8 +65,9 @@ export class ProductService {
         where: { id },
       });
 
-      if (!existing) {
-        throw new NotFoundException(`Product ${id} not found.`);
+      const result = validateProductExists(existing);
+      if (!result.ok) {
+        throw new NotFoundException(result.error);
       }
 
       const product = await pr.product.update({
@@ -65,13 +79,12 @@ export class ProductService {
 
       const changedKeys = Object.keys(body) as (keyof UpdateProductDto)[];
 
-      const old: Record<string, unknown> = {};
-      const updated: Record<string, unknown> = {};
-
-      for (const key of changedKeys) {
-        old[key] = existing[key];
-        updated[key] = product[key];
-      }
+      const old = Object.fromEntries(
+        changedKeys.map((key) => [key, existing?.[key]]),
+      );
+      const updated = Object.fromEntries(
+        changedKeys.map((key) => [key, product[key]]),
+      );
 
       await pr.auditLog.create({
         data: {
@@ -102,11 +115,4 @@ export class ProductService {
         : {},
     });
   }
-}
-
-export class UpdateProductDto {
-  name?: string;
-  genericName?: string;
-  category?: string;
-  price?: number;
 }
