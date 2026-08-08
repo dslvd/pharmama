@@ -8,14 +8,18 @@ import {
   AuditEntity,
   Prisma,
   Transaction,
+  TransactionItem,
   TransactionStatus,
 } from "src/generated/prisma/client";
 import { PrismaService } from "src/prisma/prisma.service";
 import {
   CreateTransactionDto,
+  TransactionItemDto,
+  validateCancellable,
   validateStock,
   validateTransactionExists,
 } from "./validation";
+import { createAuditLog } from "src/audit-log/audit-log.util";
 
 @Injectable()
 export class TransactionService {
@@ -26,19 +30,17 @@ export class TransactionService {
       include: { transactionItems: true };
     }>
   > {
-    return this.prisma.$transaction(async (tr) => {
-      const found = await tr.transaction.findUnique({
-        where: { id },
-        include: { transactionItems: true },
-      });
-
-      const result = validateTransactionExists(found);
-      if (!result.ok) {
-        throw new NotFoundException(result.error);
-      }
-
-      return result.value;
+    const found = await this.prisma.transaction.findUnique({
+      where: { id },
+      include: { transactionItems: true },
     });
+
+    const result = validateTransactionExists(found);
+    if (!result.ok) {
+      throw new NotFoundException(result.error);
+    }
+
+    return result.value;
   }
 
   async getTransactionList(filter: {
@@ -118,11 +120,7 @@ export class TransactionService {
         }),
       );
 
-      const totalAmount = data.transactionItems.reduce(
-        (sum, item) => sum + item.quantity * item.unitPrice,
-        0,
-      );
-
+      const totalAmount = getTotalAmount(data.transactionItems);
       const transaction = await tx.transaction.create({
         data: {
           totalAmount,
@@ -140,12 +138,10 @@ export class TransactionService {
         },
       });
 
-      await tx.auditLog.create({
-        data: {
-          entity: AuditEntity.TRANSACTION,
-          entityId: transaction.id,
-          action: AuditAction.CREATE,
-        },
+      await createAuditLog(tx, {
+        entity: AuditEntity.TRANSACTION,
+        entityId: transaction.id,
+        action: AuditAction.CREATE,
       });
 
       return transaction;
@@ -164,40 +160,38 @@ export class TransactionService {
       });
 
       const result = validateTransactionExists(existing);
-
       if (!result.ok) {
         throw new NotFoundException(result.error);
       }
 
       const transaction = result.value;
 
+      const check = validateCancellable(transaction);
+      if (!check.ok) {
+        throw new BadRequestException(check.error);
+      }
+
       await Promise.all(
         transaction.transactionItems.map((item) =>
           tx.stock.update({
             where: { id: item.stockId },
-            data: {
-              quantity: { increment: item.quantity },
-            },
+            data: { quantity: { increment: item.quantity } },
           }),
         ),
       );
 
       const updated = await tx.transaction.update({
         where: { id },
-        data: {
-          status: TransactionStatus.CANCELLED,
-        },
+        data: { status: TransactionStatus.CANCELLED },
       });
 
-      await tx.auditLog.create({
-        data: {
-          entity: AuditEntity.TRANSACTION,
-          entityId: id,
-          action: AuditAction.CANCEL,
-          changes: {
-            old: { status: transaction.status },
-            new: { status: updated.status },
-          } as Prisma.InputJsonValue,
+      await createAuditLog(tx, {
+        entity: AuditEntity.TRANSACTION,
+        entityId: id,
+        action: AuditAction.CANCEL,
+        changes: {
+          old: { status: transaction.status },
+          new: { status: updated.status },
         },
       });
 
@@ -221,4 +215,8 @@ export class TransactionService {
         : {},
     });
   }
+}
+
+function getTotalAmount(items: TransactionItemDto[]) {
+  return items.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0);
 }
