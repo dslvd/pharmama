@@ -11,24 +11,21 @@ import {
   UpdateProductDto,
   validateProductExists,
 } from "./validation";
+import { createAuditLog } from "src/audit-log/audit-log.util";
 
 @Injectable()
 export class ProductService {
   constructor(private prisma: PrismaService) {}
 
   async getProduct(id: number): Promise<Product> {
-    return this.prisma.$transaction(async (pr) => {
-      const found = await pr.product.findUnique({
-        where: { id },
-      });
+    const found = await this.prisma.product.findUnique({ where: { id } });
 
-      const result = validateProductExists(found);
-      if (!result.ok) {
-        throw new NotFoundException(result.error);
-      }
+    const result = validateProductExists(found);
+    if (!result.ok) {
+      throw new NotFoundException(result.error);
+    }
 
-      return result.value;
-    });
+    return result.value;
   }
 
   async getProductList(filter: {
@@ -47,12 +44,10 @@ export class ProductService {
     return this.prisma.$transaction(async (pr) => {
       const product = await pr.product.create({ data });
 
-      await pr.auditLog.create({
-        data: {
-          entity: AuditEntity.PRODUCT,
-          entityId: product.id,
-          action: AuditAction.CREATE,
-        },
+      await createAuditLog(pr, {
+        entity: AuditEntity.PRODUCT,
+        entityId: product.id,
+        action: AuditAction.CREATE,
       });
 
       return product;
@@ -78,24 +73,13 @@ export class ProductService {
       });
 
       const changedKeys = Object.keys(body) as (keyof UpdateProductDto)[];
+      const changes = getChangedFields(result.value, product, changedKeys);
 
-      const old = Object.fromEntries(
-        changedKeys.map((key) => [key, existing?.[key]]),
-      );
-      const updated = Object.fromEntries(
-        changedKeys.map((key) => [key, product[key]]),
-      );
-
-      await pr.auditLog.create({
-        data: {
-          entity: AuditEntity.PRODUCT,
-          entityId: id,
-          action: AuditAction.UPDATE,
-          changes: {
-            old,
-            new: updated,
-          } as Prisma.InputJsonValue,
-        },
+      await createAuditLog(pr, {
+        entity: AuditEntity.PRODUCT,
+        entityId: id,
+        action: AuditAction.UPDATE,
+        changes: changes,
       });
 
       return product;
@@ -115,4 +99,15 @@ export class ProductService {
         : {},
     });
   }
+}
+
+function getChangedFields(
+  existing: Product,
+  updated: Product,
+  changedKeys: (keyof UpdateProductDto)[],
+): { old: Record<string, unknown>; new: Record<string, unknown> } {
+  return {
+    old: Object.fromEntries(changedKeys.map((key) => [key, existing[key]])),
+    new: Object.fromEntries(changedKeys.map((key) => [key, updated[key]])),
+  };
 }

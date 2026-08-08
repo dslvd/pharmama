@@ -30,6 +30,14 @@ export const validateTransactionExists = <T>(tr: T | null): Result<T> => {
   return tr ? ok(tr) : err("Transaction not found");
 };
 
+export function validateCancellable(transaction: {
+  status: TransactionStatus;
+}): Result<true, string> {
+  if (transaction.status === TransactionStatus.CANCELLED) {
+    return { ok: false, error: "Transaction is already cancelled" };
+  }
+  return { ok: true, value: true };
+}
 export class TransactionItemDto {
   @IsInt() @IsPositive() productId!: number;
   @IsInt() @IsPositive() stockId!: number;
