@@ -37,7 +37,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="scroll-smooth">
-      <body className="antialiased bg-cream text-gray-900">
+      <body className="antialiased bg-background text-foreground">
+        <Navigation currentPage="dashboard" userRole="superuser" onLogout={() => {}} />
         {children}
       </body>
     </html>

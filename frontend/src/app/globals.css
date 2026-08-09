@@ -43,6 +43,26 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
+@theme {
+  --color-primary: #2D1B4E;
+  --color-primary-foreground: #FFFFFF;
+  --color-secondary: #E8DCC8;
+  --color-secondary-foreground: #2D1B4E;
+  --color-destructive: #DC2626;
+  --color-destructive-foreground: #FFFFFF;
+  --color-accent: #C84B8A;
+  --color-accent-foreground: #FFFFFF;
+  --color-background: #F5F1E8;
+  --color-foreground: #2D1B4E;
+  --color-card: #FFFFFF;
+  --color-card-foreground: #2D1B4E;
+  --color-muted: #D4C8B8;
+  --color-muted-foreground: #6B5B7F;
+  --color-border: #E0D5C7;
+  --color-ring: #2D1B4E;
+  --color-input: #FFFFFF;
+}
+
 :root {
   color-scheme: light;
   --background: #F5F1E8;
@@ -162,14 +182,14 @@
 
 @layer components {
   .cream {
-    @apply bg-[#F5F1E8];
+    @apply bg-background;
   }
   
   .purple-dark {
-    @apply bg-[#2D1B4E] text-[#F5F1E8];
+    @apply bg-primary text-primary-foreground;
   }
   
   .card-base {
-    @apply bg-white rounded-lg border border-[#E0D5C7] shadow-sm;
+    @apply bg-card rounded-lg border border-border shadow-sm;
   }
 }

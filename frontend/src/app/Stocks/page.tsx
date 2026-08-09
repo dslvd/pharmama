@@ -47,7 +47,7 @@ export default function Stocks({ userRole }: StocksProps) {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-3xl font-bold text-[#2D1B4E]">Stocks</h2>
+      <h2 className="text-3xl font-bold text-primary">Stocks</h2>
 
       {/* Search and Filter Button */}
       <div className="flex flex-col md:flex-row gap-4">
@@ -56,42 +56,42 @@ export default function Stocks({ userRole }: StocksProps) {
           placeholder="Search products..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="flex-1 px-4 py-2 border border-[#D4C8B8] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2D1B4E]"
+          className="flex-1 px-4 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
         />
-        <button className="px-4 py-2 bg-[#2D1B4E] text-white rounded-lg hover:bg-[#1a0f2e]">Filter Button</button>
+        <button className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90">Filter Button</button>
       </div>
 
       {/* Filter Checkboxes */}
-      <div className="bg-white rounded-lg border border-[#E0D5C7] p-4 space-y-2">
-        <p className="font-semibold text-[#2D1B4E] mb-3">Stock Status</p>
+      <div className="bg-card rounded-lg border border-border p-4 space-y-2">
+        <p className="font-semibold text-primary mb-3">Stock Status</p>
         <label className="flex items-center">
           <input type="checkbox" checked={filters.inStock} onChange={() => toggleFilter('inStock')} className="mr-2" />
-          <span className="text-[#2D1B4E]">In Stock</span>
+          <span className="text-primary">In Stock</span>
         </label>
         <label className="flex items-center">
           <input type="checkbox" checked={filters.lowStock} onChange={() => toggleFilter('lowStock')} className="mr-2" />
-          <span className="text-[#2D1B4E]">Low Stock</span>
+          <span className="text-primary">Low Stock</span>
         </label>
         <label className="flex items-center">
           <input type="checkbox" checked={filters.expiringSoon} onChange={() => toggleFilter('expiringSoon')} className="mr-2" />
-          <span className="text-[#2D1B4E]">Expiring Soon</span>
+          <span className="text-primary">Expiring Soon</span>
         </label>
         <label className="flex items-center">
           <input type="checkbox" checked={filters.expired} onChange={() => toggleFilter('expired')} className="mr-2" />
-          <span className="text-[#2D1B4E]">Expired</span>
+          <span className="text-primary">Expired</span>
         </label>
         <label className="flex items-center">
           <input type="checkbox" checked={filters.outOfStock} onChange={() => toggleFilter('outOfStock')} className="mr-2" />
-          <span className="text-[#2D1B4E]">Out of Stock</span>
+          <span className="text-primary">Out of Stock</span>
         </label>
       </div>
 
       {/* Stocks Table */}
-      <div className="bg-white rounded-lg border border-[#E0D5C7] overflow-hidden">
+      <div className="bg-card rounded-lg border border-border overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-[#2D1B4E] text-white">
+              <tr className="bg-primary text-primary-foreground">
                 <th className="px-4 py-3 text-left">ID</th>
                 <th className="px-4 py-3 text-left">Product Name</th>
                 <th className="px-4 py-3 text-left">Category</th>
@@ -102,12 +102,12 @@ export default function Stocks({ userRole }: StocksProps) {
             </thead>
             <tbody>
               {filteredStocks.map((stock, index) => (
-                <tr key={index} className="border-b border-[#E0D5C7] hover:bg-[#F5F1E8]">
-                  <td className="px-4 py-3 text-[#2D1B4E]">{stock.id}</td>
-                  <td className="px-4 py-3 text-[#2D1B4E]">{stock.productName}</td>
-                  <td className="px-4 py-3 text-[#2D1B4E]">{stock.category}</td>
-                  <td className="px-4 py-3 text-[#2D1B4E]">{stock.brand}</td>
-                  <td className="px-4 py-3 text-[#2D1B4E]">{stock.quantity}</td>
+                <tr key={index} className="border-b border-border hover:bg-background">
+                  <td className="px-4 py-3 text-primary">{stock.id}</td>
+                  <td className="px-4 py-3 text-primary">{stock.productName}</td>
+                  <td className="px-4 py-3 text-primary">{stock.category}</td>
+                  <td className="px-4 py-3 text-primary">{stock.brand}</td>
+                  <td className="px-4 py-3 text-primary">{stock.quantity}</td>
                   <td className="px-4 py-3">
                     <span className={`px-2 py-1 rounded text-xs font-semibold ${
                       stock.status === 'In Stock' ? 'bg-green-100 text-green-700' :
@@ -126,7 +126,7 @@ export default function Stocks({ userRole }: StocksProps) {
         </div>
       </div>
 
-      <p className="text-[#6B5B7F] text-center py-4">ADD FUNCTION WHERE WE CAN ADD STOCKS</p>
+      <p className="text-muted-foreground text-center py-4">ADD FUNCTION WHERE WE CAN ADD STOCKS</p>
     </div>
   )
 }

@@ -20,12 +20,12 @@ export default function Navigation({ currentPage, userRole, onLogout, onPageChan
   ]
 
   return (
-    <nav className="bg-[#2D1B4E] text-[#F5F1E8] shadow-md">
+    <nav className="bg-primary text-primary-foreground shadow-md">
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-[#C84B8A] rounded-lg flex items-center justify-center font-bold text-sm">
+            <div className="w-8 h-8 bg-accent rounded-lg flex items-center justify-center font-bold text-sm">
               Rx
             </div>
             <h1 className="text-lg font-bold hidden sm:block">PharmaMa</h1>
@@ -41,8 +41,8 @@ export default function Navigation({ currentPage, userRole, onLogout, onPageChan
                   onClick={() => onPageChange?.(item.page)}
                   className={`px-4 py-2 rounded transition-colors ${
                     isActive
-                      ? 'bg-[#C84B8A] text-white'
-                      : 'hover:bg-[#4A3A6B] text-[#D4C8B8]'
+                      ? 'bg-accent text-primary-foreground'
+                      : 'hover:bg-primary/80 text-secondary'
                   }`}
                 >
                   {item.label}
@@ -55,12 +55,12 @@ export default function Navigation({ currentPage, userRole, onLogout, onPageChan
           <div className="flex items-center space-x-4">
             {/* User Info */}
             <div className="hidden sm:flex items-center space-x-2 text-sm">
-              <div className="w-8 h-8 bg-[#C84B8A] rounded-full flex items-center justify-center">
+              <div className="w-8 h-8 bg-accent rounded-full flex items-center justify-center">
                 <span>N</span>
               </div>
               <div>
                 <p className="font-semibold">User</p>
-                <p className="text-xs text-[#D4C8B8]">Admin</p>
+                <p className="text-xs text-secondary">Admin</p>
               </div>
             </div>
 
@@ -96,8 +96,8 @@ export default function Navigation({ currentPage, userRole, onLogout, onPageChan
                   }}
                   className={`w-full flex items-center px-4 py-2 rounded transition-colors ${
                     isActive
-                      ? 'bg-[#C84B8A] text-white'
-                      : 'hover:bg-[#4A3A6B] text-[#D4C8B8]'
+                      ? 'bg-accent text-primary-foreground'
+                      : 'hover:bg-primary/80 text-secondary'
                   }`}
                 >
                   {item.label}

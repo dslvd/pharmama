@@ -18,45 +18,45 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
   }
 
   return (
-    <div className="min-h-screen bg-[#F5F1E8] flex items-center justify-center p-4">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        <div className="bg-white rounded-lg p-8 border border-[#E0D5C7]">
+        <div className="bg-card rounded-lg p-8 border border-border">
           <div className="flex items-center justify-center mb-8">
-            <div className="w-12 h-12 bg-[#2D1B4E] rounded-full flex items-center justify-center">
-              <span className="text-white text-xl font-bold">Rx</span>
+            <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center">
+              <span className="text-primary-foreground text-xl font-bold">Rx</span>
             </div>
-            <h1 className="ml-3 text-2xl font-bold text-[#2D1B4E]">PharmaMa</h1>
+            <h1 className="ml-3 text-2xl font-bold text-primary">PharmaMa</h1>
           </div>
 
-          <h2 className="text-center text-lg font-semibold text-[#2D1B4E] mb-6">Login</h2>
+          <h2 className="text-center text-lg font-semibold text-primary mb-6">Login</h2>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-[#2D1B4E] mb-1">Username</label>
+              <label className="block text-sm font-medium text-primary mb-1">Username</label>
               <input
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="Enter your username"
-                className="w-full px-4 py-2 border border-[#D4C8B8] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2D1B4E]"
+                className="w-full px-4 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-[#2D1B4E] mb-1">Password</label>
+              <label className="block text-sm font-medium text-primary mb-1">Password</label>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter your password"
-                className="w-full px-4 py-2 border border-[#D4C8B8] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2D1B4E]"
+                className="w-full px-4 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
               />
             </div>
 
             <button
               type="submit"
               disabled={!username || !password}
-              className="w-full bg-[#2D1B4E] text-white py-2 rounded-lg font-semibold hover:bg-[#1a0f2e] transition-colors disabled:opacity-50"
+              className="w-full bg-primary text-primary-foreground py-2 rounded-lg font-semibold hover:bg-primary/90 transition-colors disabled:opacity-50"
             >
               Login
             </button>
