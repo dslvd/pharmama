@@ -1,23 +1,30 @@
 'use client'
 
+import { on } from 'events'
+import { usePathname, useRouter } from 'next/navigation'
 import { useState } from 'react'
 
 interface NavigationProps {
-  currentPage: string
-  userRole: 'superuser' | 'clinic'
-  onLogout: () => void
   onPageChange?: (page: string) => void
 }
 
-export default function Navigation({ currentPage, userRole, onLogout, onPageChange }: NavigationProps) {
+export default function Navigation({  onPageChange }: NavigationProps) {
+  const router = useRouter()
+  const pathname = usePathname()
   const [isOpen, setIsOpen] = useState(false)
 
   const navItems = [
-    { label: 'Dashboard', page: 'dashboard' },
-    { label: 'Transactions', page: 'transactions' },
-    { label: 'Stocks', page: 'stocks' },
-    { label: 'Log Book', page: 'logbook' },
+    { label: 'Dashboard', page: '/dashboard' },
+    { label: 'Transactions', page: '/transactions' },
+    { label: 'Stocks', page: '/stocks' },
+    { label: 'Log Book', page: '/logbook' },
   ]
+
+  const handlePageChange = (page: string) => {
+      if (pathname === page) {return}
+      router.push(page)
+      onPageChange?.(page)
+  }
 
   return (
     <nav className="bg-primary text-primary-foreground shadow-md">
@@ -34,15 +41,15 @@ export default function Navigation({ currentPage, userRole, onLogout, onPageChan
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-1">
             {navItems.map((item) => {
-              const isActive = currentPage === item.page
+              const isActive = pathname === item.page
               return (
                 <button
                   key={item.page}
-                  onClick={() => onPageChange?.(item.page)}
+                  onClick={() => handlePageChange(item.page)}
                   className={`px-4 py-2 rounded transition-colors ${
                     isActive
                       ? 'bg-accent text-primary-foreground'
-                      : 'hover:bg-primary/80 text-secondary'
+                      : 'hover:bg-primary/80 text-secondary cursor-pointer'
                   }`}
                 >
                   {item.label}
@@ -66,7 +73,6 @@ export default function Navigation({ currentPage, userRole, onLogout, onPageChan
 
             {/* Logout Button */}
             <button
-              onClick={onLogout}
               className="px-3 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors text-sm"
             >
               Logout
@@ -86,7 +92,7 @@ export default function Navigation({ currentPage, userRole, onLogout, onPageChan
         {isOpen && (
           <div className="md:hidden pb-4 space-y-2">
             {navItems.map((item) => {
-              const isActive = currentPage === item.page
+              const isActive = pathname === item.page
               return (
                 <button
                   key={item.page}

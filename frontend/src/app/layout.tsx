@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
+import Navigation from '../components/Navigation'
 
 export const metadata: Metadata = {
   title: 'Pharmacy Database',
@@ -38,7 +39,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <body className="antialiased bg-background text-foreground">
-        <Navigation currentPage="dashboard" userRole="superuser" onLogout={() => {}} />
+        <Navigation   />
         {children}
       </body>
     </html>
