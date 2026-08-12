@@ -79,6 +79,7 @@ export const TransactionScalarFieldEnum = {
   totalAmount: 'totalAmount',
   status: 'status',
   handledBy: 'handledBy',
+  updatedAt: 'updatedAt',
   createdAt: 'createdAt'
 } as const
 
@@ -117,6 +118,7 @@ export const StockScalarFieldEnum = {
   batchNumber: 'batchNumber',
   quantity: 'quantity',
   expiryDate: 'expiryDate',
+  updatedAt: 'updatedAt',
   createdAt: 'createdAt'
 } as const
 

@@ -44,6 +44,7 @@ export type StockMinAggregateOutputType = {
   batchNumber: string | null
   quantity: number | null
   expiryDate: Date | null
+  updatedAt: Date | null
   createdAt: Date | null
 }
 
@@ -53,6 +54,7 @@ export type StockMaxAggregateOutputType = {
   batchNumber: string | null
   quantity: number | null
   expiryDate: Date | null
+  updatedAt: Date | null
   createdAt: Date | null
 }
 
@@ -62,6 +64,7 @@ export type StockCountAggregateOutputType = {
   batchNumber: number
   quantity: number
   expiryDate: number
+  updatedAt: number
   createdAt: number
   _all: number
 }
@@ -85,6 +88,7 @@ export type StockMinAggregateInputType = {
   batchNumber?: true
   quantity?: true
   expiryDate?: true
+  updatedAt?: true
   createdAt?: true
 }
 
@@ -94,6 +98,7 @@ export type StockMaxAggregateInputType = {
   batchNumber?: true
   quantity?: true
   expiryDate?: true
+  updatedAt?: true
   createdAt?: true
 }
 
@@ -103,6 +108,7 @@ export type StockCountAggregateInputType = {
   batchNumber?: true
   quantity?: true
   expiryDate?: true
+  updatedAt?: true
   createdAt?: true
   _all?: true
 }
@@ -199,6 +205,7 @@ export type StockGroupByOutputType = {
   batchNumber: string
   quantity: number
   expiryDate: Date
+  updatedAt: Date
   createdAt: Date
   _count: StockCountAggregateOutputType | null
   _avg: StockAvgAggregateOutputType | null
@@ -231,6 +238,7 @@ export type StockWhereInput = {
   batchNumber?: Prisma.StringFilter<"Stock"> | string
   quantity?: Prisma.IntFilter<"Stock"> | number
   expiryDate?: Prisma.DateTimeFilter<"Stock"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"Stock"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"Stock"> | Date | string
   product?: Prisma.XOR<Prisma.ProductScalarRelationFilter, Prisma.ProductWhereInput>
   transactionItems?: Prisma.TransactionItemListRelationFilter
@@ -242,6 +250,7 @@ export type StockOrderByWithRelationInput = {
   batchNumber?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
   expiryDate?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   product?: Prisma.ProductOrderByWithRelationInput
   transactionItems?: Prisma.TransactionItemOrderByRelationAggregateInput
@@ -256,6 +265,7 @@ export type StockWhereUniqueInput = Prisma.AtLeast<{
   batchNumber?: Prisma.StringFilter<"Stock"> | string
   quantity?: Prisma.IntFilter<"Stock"> | number
   expiryDate?: Prisma.DateTimeFilter<"Stock"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"Stock"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"Stock"> | Date | string
   product?: Prisma.XOR<Prisma.ProductScalarRelationFilter, Prisma.ProductWhereInput>
   transactionItems?: Prisma.TransactionItemListRelationFilter
@@ -267,6 +277,7 @@ export type StockOrderByWithAggregationInput = {
   batchNumber?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
   expiryDate?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.StockCountOrderByAggregateInput
   _avg?: Prisma.StockAvgOrderByAggregateInput
@@ -284,6 +295,7 @@ export type StockScalarWhereWithAggregatesInput = {
   batchNumber?: Prisma.StringWithAggregatesFilter<"Stock"> | string
   quantity?: Prisma.IntWithAggregatesFilter<"Stock"> | number
   expiryDate?: Prisma.DateTimeWithAggregatesFilter<"Stock"> | Date | string
+  updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Stock"> | Date | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Stock"> | Date | string
 }
 
@@ -291,6 +303,7 @@ export type StockCreateInput = {
   batchNumber: string
   quantity: number
   expiryDate: Date | string
+  updatedAt?: Date | string
   createdAt?: Date | string
   product: Prisma.ProductCreateNestedOneWithoutStocksInput
   transactionItems?: Prisma.TransactionItemCreateNestedManyWithoutStockInput
@@ -302,6 +315,7 @@ export type StockUncheckedCreateInput = {
   batchNumber: string
   quantity: number
   expiryDate: Date | string
+  updatedAt?: Date | string
   createdAt?: Date | string
   transactionItems?: Prisma.TransactionItemUncheckedCreateNestedManyWithoutStockInput
 }
@@ -310,6 +324,7 @@ export type StockUpdateInput = {
   batchNumber?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   expiryDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   product?: Prisma.ProductUpdateOneRequiredWithoutStocksNestedInput
   transactionItems?: Prisma.TransactionItemUpdateManyWithoutStockNestedInput
@@ -321,6 +336,7 @@ export type StockUncheckedUpdateInput = {
   batchNumber?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   expiryDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactionItems?: Prisma.TransactionItemUncheckedUpdateManyWithoutStockNestedInput
 }
@@ -331,6 +347,7 @@ export type StockCreateManyInput = {
   batchNumber: string
   quantity: number
   expiryDate: Date | string
+  updatedAt?: Date | string
   createdAt?: Date | string
 }
 
@@ -338,6 +355,7 @@ export type StockUpdateManyMutationInput = {
   batchNumber?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   expiryDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -347,6 +365,7 @@ export type StockUncheckedUpdateManyInput = {
   batchNumber?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   expiryDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -371,6 +390,7 @@ export type StockCountOrderByAggregateInput = {
   batchNumber?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
   expiryDate?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -386,6 +406,7 @@ export type StockMaxOrderByAggregateInput = {
   batchNumber?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
   expiryDate?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -395,6 +416,7 @@ export type StockMinOrderByAggregateInput = {
   batchNumber?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
   expiryDate?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -464,6 +486,7 @@ export type StockCreateWithoutTransactionItemsInput = {
   batchNumber: string
   quantity: number
   expiryDate: Date | string
+  updatedAt?: Date | string
   createdAt?: Date | string
   product: Prisma.ProductCreateNestedOneWithoutStocksInput
 }
@@ -474,6 +497,7 @@ export type StockUncheckedCreateWithoutTransactionItemsInput = {
   batchNumber: string
   quantity: number
   expiryDate: Date | string
+  updatedAt?: Date | string
   createdAt?: Date | string
 }
 
@@ -497,6 +521,7 @@ export type StockUpdateWithoutTransactionItemsInput = {
   batchNumber?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   expiryDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   product?: Prisma.ProductUpdateOneRequiredWithoutStocksNestedInput
 }
@@ -507,6 +532,7 @@ export type StockUncheckedUpdateWithoutTransactionItemsInput = {
   batchNumber?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   expiryDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -514,6 +540,7 @@ export type StockCreateWithoutProductInput = {
   batchNumber: string
   quantity: number
   expiryDate: Date | string
+  updatedAt?: Date | string
   createdAt?: Date | string
   transactionItems?: Prisma.TransactionItemCreateNestedManyWithoutStockInput
 }
@@ -523,6 +550,7 @@ export type StockUncheckedCreateWithoutProductInput = {
   batchNumber: string
   quantity: number
   expiryDate: Date | string
+  updatedAt?: Date | string
   createdAt?: Date | string
   transactionItems?: Prisma.TransactionItemUncheckedCreateNestedManyWithoutStockInput
 }
@@ -562,6 +590,7 @@ export type StockScalarWhereInput = {
   batchNumber?: Prisma.StringFilter<"Stock"> | string
   quantity?: Prisma.IntFilter<"Stock"> | number
   expiryDate?: Prisma.DateTimeFilter<"Stock"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"Stock"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"Stock"> | Date | string
 }
 
@@ -570,6 +599,7 @@ export type StockCreateManyProductInput = {
   batchNumber: string
   quantity: number
   expiryDate: Date | string
+  updatedAt?: Date | string
   createdAt?: Date | string
 }
 
@@ -577,6 +607,7 @@ export type StockUpdateWithoutProductInput = {
   batchNumber?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   expiryDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactionItems?: Prisma.TransactionItemUpdateManyWithoutStockNestedInput
 }
@@ -586,6 +617,7 @@ export type StockUncheckedUpdateWithoutProductInput = {
   batchNumber?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   expiryDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   transactionItems?: Prisma.TransactionItemUncheckedUpdateManyWithoutStockNestedInput
 }
@@ -595,6 +627,7 @@ export type StockUncheckedUpdateManyWithoutProductInput = {
   batchNumber?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   expiryDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -635,6 +668,7 @@ export type StockSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   batchNumber?: boolean
   quantity?: boolean
   expiryDate?: boolean
+  updatedAt?: boolean
   createdAt?: boolean
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
   transactionItems?: boolean | Prisma.Stock$transactionItemsArgs<ExtArgs>
@@ -647,6 +681,7 @@ export type StockSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   batchNumber?: boolean
   quantity?: boolean
   expiryDate?: boolean
+  updatedAt?: boolean
   createdAt?: boolean
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["stock"]>
@@ -657,6 +692,7 @@ export type StockSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   batchNumber?: boolean
   quantity?: boolean
   expiryDate?: boolean
+  updatedAt?: boolean
   createdAt?: boolean
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["stock"]>
@@ -667,10 +703,11 @@ export type StockSelectScalar = {
   batchNumber?: boolean
   quantity?: boolean
   expiryDate?: boolean
+  updatedAt?: boolean
   createdAt?: boolean
 }
 
-export type StockOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "productId" | "batchNumber" | "quantity" | "expiryDate" | "createdAt", ExtArgs["result"]["stock"]>
+export type StockOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "productId" | "batchNumber" | "quantity" | "expiryDate" | "updatedAt" | "createdAt", ExtArgs["result"]["stock"]>
 export type StockInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
   transactionItems?: boolean | Prisma.Stock$transactionItemsArgs<ExtArgs>
@@ -695,6 +732,7 @@ export type $StockPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     batchNumber: string
     quantity: number
     expiryDate: Date
+    updatedAt: Date
     createdAt: Date
   }, ExtArgs["result"]["stock"]>
   composites: {}
@@ -1126,6 +1164,7 @@ export interface StockFieldRefs {
   readonly batchNumber: Prisma.FieldRef<"Stock", 'String'>
   readonly quantity: Prisma.FieldRef<"Stock", 'Int'>
   readonly expiryDate: Prisma.FieldRef<"Stock", 'DateTime'>
+  readonly updatedAt: Prisma.FieldRef<"Stock", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"Stock", 'DateTime'>
 }
     
