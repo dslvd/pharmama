@@ -1,38 +1,9 @@
+import {
+  CreateTransactionPayload,
+  GetTrListParams,
+  Transaction,
+} from "../types/transaction";
 import { apiFetch } from "../utils/client";
-import { SortOrder } from "./product";
-
-export interface Transaction {
-  id: number;
-  totalAmount: number;
-  status: TransactionStatus;
-  handledBy: string;
-  createdAt: Date;
-}
-
-export type TransactionStatus = "REFUNDED" | "COMPLETED" | "CANCELLED";
-
-export interface TransactionItem {
-  id: number;
-  transactionId: number;
-  productId: number;
-  stockId: number;
-  quantity: number;
-  unitPrice: number;
-  subtotal: number;
-}
-
-type CreateTransactionItemPayload = {
-  productId: number;
-  stockId: number;
-  quantity: number;
-  unitPrice: number;
-};
-
-type CreateTransactionPayload = {
-  status: TransactionStatus;
-  handledBy: string;
-  transactionItem: CreateTransactionItemPayload;
-};
 
 export const searchtransaction = (query: string) =>
   apiFetch<Transaction[]>(
@@ -69,9 +40,3 @@ export const createTransaction = (data: CreateTransactionPayload) =>
     method: "POST",
     body: JSON.stringify(data),
   });
-
-interface GetTrListParams {
-  status?: TransactionStatus;
-  handledBy?: string;
-  order?: SortOrder;
-}
