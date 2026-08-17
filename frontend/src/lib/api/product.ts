@@ -1,23 +1,10 @@
+import {
+  CreateProductPayload,
+  GetPrListParams,
+  Product,
+  UpdateProductPayload,
+} from "../types/product";
 import { apiFetch } from "../utils/client";
-
-interface Product {
-  id: number;
-  name: string;
-  genericName: string;
-  price: number;
-  category: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface CreateProductPayload {
-  name: string;
-  genericName: string;
-  price: number;
-  category: string;
-}
-
-type UpdateProductPayload = Partial<CreateProductPayload>;
 
 export const searchProduct = (query: string) =>
   apiFetch<Product[]>(`/product/search?query=${encodeURIComponent(query)}`);
@@ -44,10 +31,3 @@ export const updateProduct = (id: number, data: UpdateProductPayload) =>
     method: "PATCH",
     body: JSON.stringify(data),
   });
-
-export type SortOrder = "asc" | "desc";
-
-interface GetPrListParams {
-  category?: string;
-  order?: SortOrder;
-}
