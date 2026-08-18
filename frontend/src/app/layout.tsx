@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
-import Navigation from '../components/Navigation'
+import Drawer from '../components/SideDrawer/Drawer'
 
 export const metadata: Metadata = {
   title: 'Pharmacy Database',
@@ -39,8 +39,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <body className="antialiased bg-background text-foreground">
-        <Navigation   />
-        {children}
+        <Drawer>{children}</Drawer>
       </body>
     </html>
   )
