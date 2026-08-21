@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { getTransactionList } from '@/lib/api/transaction'
 import { Transaction } from '@/lib/types/transaction'
+import TransactionModal from '@/app/dashboard/components/TransactionModal'
 
 interface TransactionsProps {
   userRole: 'superuser' | 'clinic'
@@ -11,6 +12,7 @@ interface TransactionsProps {
 export default function Transactions({ userRole }: TransactionsProps) {
   const [searchTerm, setSearchTerm] = useState('')
   const [transactions, setTransactions] = useState<Transaction[]>([])
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
   useEffect(() => {
     async function loadTransactions() {
@@ -25,6 +27,17 @@ export default function Transactions({ userRole }: TransactionsProps) {
     loadTransactions()
   }, [])
 
+  const handleAddItem = (newItem: {
+    id: number;
+    name: string;
+    brand: string;
+    quantity: number;
+    priceIncluded: boolean;
+    noOfItems: number;
+  }) => {
+    console.log("New Item Added from Modal:", newItem)
+  }
+
   const filteredTransactions = transactions.filter(t =>
     t.handledBy.toLowerCase().includes(searchTerm.toLowerCase()) ||
     t.status.toLowerCase().includes(searchTerm.toLowerCase())
@@ -36,7 +49,6 @@ export default function Transactions({ userRole }: TransactionsProps) {
     <div className="space-y-6">
       <h2 className="text-3xl font-bold text-primary">Transaction</h2>
 
-      {/* Top Section */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="bg-card rounded-lg border border-border p-6">
           <p className="text-muted-foreground text-sm">Total Amount</p>
@@ -56,9 +68,11 @@ export default function Transactions({ userRole }: TransactionsProps) {
         </div>
       </div>
 
-      {/* Action Buttons */}
       <div className="flex gap-2">
-        <button className="px-4 py-2 bg-primary text-primary-foreground rounded hover:bg-primary/90">
+        <button 
+          onClick={() => setIsModalOpen(true)}
+          className="px-4 py-2 bg-primary text-primary-foreground rounded hover:bg-primary/90"
+        >
           Add
         </button>
         <button className="px-4 py-2 bg-primary text-primary-foreground rounded hover:bg-primary/90">
@@ -69,7 +83,6 @@ export default function Transactions({ userRole }: TransactionsProps) {
         </button>
       </div>
 
-      {/* Transactions Table */}
       <div className="bg-card rounded-lg border border-border overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
@@ -98,6 +111,13 @@ export default function Transactions({ userRole }: TransactionsProps) {
           </table>
         </div>
       </div>
+
+      <TransactionModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onAddItem={handleAddItem}
+        autoId={transactions.length + 1}
+      />
     </div>
   )
 }
