@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import { useState, useEffect } from 'react'
 import { getTransactionList } from '@/lib/api/transaction'
@@ -58,9 +58,15 @@ export default function Transactions({ userRole }: TransactionsProps) {
 
       {/* Action Buttons */}
       <div className="flex gap-2">
-        <button className="px-4 py-2 bg-primary text-primary-foreground rounded hover:bg-primary/90">Add</button>
-        <button className="px-4 py-2 bg-primary text-primary-foreground rounded hover:bg-primary/90">Minus</button>
-        <button className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">Delete</button>
+        <button className="px-4 py-2 bg-primary text-primary-foreground rounded hover:bg-primary/90">
+          Add
+        </button>
+        <button className="px-4 py-2 bg-primary text-primary-foreground rounded hover:bg-primary/90">
+          Minus
+        </button>
+        <button className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">
+          Delete
+        </button>
       </div>
 
       {/* Transactions Table */}

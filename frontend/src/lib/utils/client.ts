@@ -1,10 +1,10 @@
 import { err, ok, Result } from "./errorHandling";
 
-const BASE_URL = process.env.BACKEND_URL;
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export async function apiFetch<T>(
   endpoint: string,
-  options: RequestInit = {}
+  options: RequestInit = {},
 ): Promise<Result<T>> {
   try {
     const res = await fetch(`${BASE_URL}${endpoint}`, {
