@@ -10,7 +10,6 @@ export interface AuditLog {
 }
 
 export type AuditAction =
-  | "ALL"
   | "CREATE"
   | "UPDATE"
   | "DELETE"
@@ -19,7 +18,6 @@ export type AuditAction =
   | "RESTORE_STOCK";
 
 export type AuditEntity =
-  | "ALL"
   | "TRANSACTION"
   | "PRODUCT"
   | "STOCK"
