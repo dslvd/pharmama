@@ -69,9 +69,35 @@ export default function LogbookPage() {
         />
       )}
 
-      {audit.map((item) => {
-        return <AuditRow key={item.id} audit={item} />;
-      })}
+      <table className="w-full border-collapse border border-slate-300">
+        <thead>
+          <tr className="bg-slate-100">
+            <th className="border border-slate-300 px-3 py-2 text-sm font-semibold">
+              ID
+            </th>
+            <th className="border border-slate-300 px-3 py-2 text-sm font-semibold">
+              Date
+            </th>
+            <th className="border border-slate-300 px-3 py-2 text-sm font-semibold">
+              Time
+            </th>
+            <th className="border border-slate-300 px-3 py-2 text-sm font-semibold">
+              Action
+            </th>
+            <th className="border border-slate-300 px-3 py-2 text-sm font-semibold">
+              Entity
+            </th>
+            <th className="border border-slate-300 px-3 py-2 text-sm font-semibold">
+              Change
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {audit.map((item) => (
+            <AuditRow key={item.id} audit={item} />
+          ))}
+        </tbody>
+      </table>
     </main>
   );
 }

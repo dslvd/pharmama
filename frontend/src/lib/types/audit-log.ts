@@ -1,11 +1,16 @@
 import { SortOrder } from "./product";
 
+export interface AuditChange {
+  old: string | number | null;
+  new: string | number | null;
+}
+
 export interface AuditLog {
   id: number;
   action: AuditAction;
   entity: AuditEntity;
   entityId: number;
-  changes: JSON;
+  changes?: AuditChange;
   createdAt: Date;
 }
 
