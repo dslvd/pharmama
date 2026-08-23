@@ -1,5 +1,6 @@
 'use client'
 
+// import { ErrorStack } from "@/components/ErrorCard"
 import CurrentStocks from "./components/CurrentStocks"
 import { IncomingStocks } from "./components/IncomingStocks"
 import SalesCard from "./components/SalesCard"
@@ -22,9 +23,19 @@ export default function Dashboard({ userRole }: DashboardProps) {
         <IncomingStocks />
       </section>
 
+      {/* HARDCODED FOR ERROR HANDLING
+      <ErrorStack
+        errors={[
+        { id: '1', message: 'Network connection lost.' },
+        { id: '2', message: 'Database query timed out.' },
+        ]}
+        /> 
+        */}
+
       <div className="bg-card rounded-lg border border-border p-6">
         <p className="text-muted-foreground">Spaceeeee ano di butang ta</p>
       </div>
     </main>
   )
 }
+
