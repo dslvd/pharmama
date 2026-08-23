@@ -20,11 +20,17 @@ export function IncomingStocks() {
   }, []);
 
   return (
-    <article className="bg-card rounded-lg border border-border p-6">
-      <p className="text-muted-foreground text-sm">Incoming Stocks</p>
-      <div className="mt-2">
-        <p className="text-2xl font-bold text-primary">{stocks?.total}</p>
-        <p className="text-2xl font-bold text-primary">{stocks?.pending}</p>
+    <article className="rounded-xl border border-border bg-card p-5">
+      <p className="text-sm text-muted-foreground">Incoming Stocks</p>
+      <div className="mt-3 space-y-1.5">
+        <div className="flex items-baseline gap-2">
+          <span className="text-lg font-bold text-foreground">{stocks?.total ?? "—"}</span>
+          <span className="flex-1 border-b border-dotted border-muted-foreground/40" />
+        </div>
+        <div className="flex items-baseline gap-2">
+          <span className="text-lg font-bold text-foreground">{stocks?.pending ?? "—"}</span>
+          <span className="flex-1 border-b border-dotted border-muted-foreground/40" />
+        </div>
       </div>
     </article>
   );

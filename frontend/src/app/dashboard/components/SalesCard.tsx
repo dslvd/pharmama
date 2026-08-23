@@ -20,12 +20,15 @@ export default function SalesCard() {
   }, []);
 
   return (
-    <article className="bg-card rounded-lg border border-border p-6">
-      <p className="text-muted-foreground text-sm">Today&apos;s Sales</p>
-      <p className="text-4xl font-bold text-primary mt-2">
-        {sales?.total.toLocaleString()}
+    <article className="rounded-xl border border-border bg-card p-5">
+      <div className="flex items-start justify-between">
+        <p className="text-sm text-muted-foreground">Today&apos;s Sales</p>
+        <p className="text-xs text-muted-foreground">{sales?.date ?? "—"}</p>
+      </div>
+      <p className="mt-3 flex items-center gap-2 text-3xl font-bold text-foreground">
+        <span className="text-2xl">₱</span>
+        {sales ? sales.total.toLocaleString() : "—"}
       </p>
-      <p className="text-xs text-muted-foreground mt-1">{sales?.date}</p>
     </article>
   );
 }
