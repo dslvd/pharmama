@@ -1,7 +1,0 @@
-export default function StocksLayout({
-	children,
-}: Readonly<{
-	children: React.ReactNode
-}>) {
-	return children
-}

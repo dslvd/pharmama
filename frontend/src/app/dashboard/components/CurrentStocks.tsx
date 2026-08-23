@@ -1,13 +1,8 @@
-import { Package } from "lucide-react";
-import StatCard from "../StatCard";
-
 export default function CurrentStocks() {
-  return (
-    <StatCard
-      icon={<Package className="h-5 w-5 text-blue-600" />}
-      iconClassName="bg-blue-100"
-      label="Current Stocks"
-      value="—"
-    />
-  );
+    return (
+        <article className="bg-card rounded-lg border border-border p-6">
+          <p className="text-muted-foreground text-sm">Current Stocks</p>
+          <p className="text-4xl font-bold text-primary mt-2">—</p>
+        </article>
+    )
 }
