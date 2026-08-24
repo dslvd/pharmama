@@ -32,7 +32,7 @@ export const getTodaySales = () =>
 
 export const cancelTransaction = (id: number) =>
   apiFetch<Transaction>(`/transaction/${id}`, {
-    method: "DELETE",
+    method: "PATCH",
   });
 
 export const createTransaction = (data: CreateTransactionPayload) =>

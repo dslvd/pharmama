@@ -10,6 +10,8 @@ export interface Stock {
   updatedAt: Date;
 }
 
+export type UpdateStockPayload = Partial<CreateStockPayload>;
+
 export interface CreateStockPayload {
   productId: number;
   batchNumber: string;
@@ -17,12 +19,9 @@ export interface CreateStockPayload {
   expiryDate: Date;
 }
 
+export type SortBy = "quantity" | "expiryDate" | "createdAt";
+
 export interface GetStListParams {
-  category?: string;
+  sortBy?: SortBy;
   order?: SortOrder;
 }
-
-// export interface GetStListParams {
-//   sortBy?: "quantity" | "expiryDate" | "createdAt";
-//   order?: SortOrder;
-// }

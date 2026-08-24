@@ -1,40 +1,38 @@
-// components/Stock/AddStockModal.tsx
 "use client";
 
 import { X } from "lucide-react";
 import { useState } from "react";
-import { createStock, updateStock } from "@/lib/api/stocks";
+import { createProduct, updateProduct } from "@/lib/api/product";
 import {
-  CreateStockPayload,
-  Stock,
-  UpdateStockPayload,
-} from "@/lib/types/stock";
+  Category,
+  CreateProductPayload,
+  Product,
+  UpdateProductPayload,
+} from "@/lib/types/product";
 
-interface AddStockModalProps {
-  stock?: Stock;
+interface AddProductModalProps {
+  product?: Product;
   onClose: () => void;
   onSuccess?: () => void;
 }
 
 const inputClasses =
   "mt-1 w-full rounded-md border border-border bg-white px-3 py-2 text-sm text-foreground focus:border-violet-400 focus:outline-none focus:ring-2 focus:ring-violet-100";
+
 const labelClasses = "block text-sm font-medium text-foreground";
 
-export default function AddStockModal({
-  stock,
+export default function AddProductModal({
+  product,
   onClose,
   onSuccess,
-}: AddStockModalProps) {
-  const isEditing = !!stock;
+}: AddProductModalProps) {
+  const isEditing = !!product;
 
-  const [productId, setProductId] = useState(
-    stock ? String(stock.productId) : "",
-  );
-  const [batchNumber, setBatchNumber] = useState(stock?.batchNumber ?? "");
-  const [quantity, setQuantity] = useState(stock ? String(stock.quantity) : "");
-  const [expiryDate, setExpiryDate] = useState(
-    stock ? new Date(stock.expiryDate).toISOString().slice(0, 10) : "",
-  );
+  const [name, setName] = useState(product?.name ?? "");
+  const [genericName, setGenericName] = useState(product?.genericName ?? "");
+  const [category, setCategory] = useState<Category>(product?.category ?? "OTHERS");
+  const [price, setPrice] = useState(product ? String(product.price) : "");
+
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -43,16 +41,21 @@ export default function AddStockModal({
     setSubmitting(true);
     setError(null);
 
-    const payload: UpdateStockPayload = {
-      productId: Number(productId),
-      batchNumber,
-      quantity: Number(quantity),
-      expiryDate: new Date(expiryDate),
+    const payload: UpdateProductPayload = {
+      name,
+      genericName,
+      category,
+      price: Number(price),
     };
 
     const result = isEditing
-      ? await updateStock(stock.id, payload)
-      : await createStock(payload as CreateStockPayload);
+      ? await updateProduct(product.id, payload)
+      : await createProduct({
+          name,
+          genericName,
+          category,
+          price: Number(price),
+        } satisfies CreateProductPayload);
 
     setSubmitting(false);
 
@@ -69,8 +72,9 @@ export default function AddStockModal({
       <div className="flex max-h-[85vh] w-full max-w-lg flex-col overflow-y-auto rounded-2xl border border-border bg-[#fdf6ec] p-6 shadow-xl">
         <div className="flex items-center justify-between gap-3 pb-4">
           <h2 className="text-2xl font-bold text-foreground">
-            {isEditing ? "Edit Stock" : "Add Stock"}
+            {isEditing ? "Edit Product" : "Add Product"}
           </h2>
+
           <button
             type="button"
             onClick={onClose}
@@ -83,44 +87,60 @@ export default function AddStockModal({
 
         <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
           <label className={labelClasses}>
-            Product
-            {/* TODO: populate options from the products API */}
-            <select
-              value={productId}
-              onChange={(e) => setProductId(e.target.value)}
-              required
-              className={inputClasses}
-            ></select>
-          </label>
-
-          <label className={labelClasses}>
-            Batch Number
+            Product Name
             <input
               type="text"
-              value={batchNumber}
-              onChange={(e) => setBatchNumber(e.target.value)}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
               required
               className={inputClasses}
             />
           </label>
 
           <label className={labelClasses}>
-            Quantity
+            Generic Name
+            <input
+              type="text"
+              value={genericName}
+              onChange={(e) => setGenericName(e.target.value)}
+              required
+              className={inputClasses}
+            />
+          </label>
+
+          <label className={labelClasses}>
+            Category
+            <select
+              value={category}
+              onChange={(e) => setCategory(e.target.value as Category)}
+              required
+              className={inputClasses}
+            >
+              {[
+                "ANALGESICS",
+                "ANTIBIOTICS",
+                "ANTIHISTAMINES",
+                "VITAMINS",
+                "SUPPLEMENTS",
+                "ANTACIDS",
+                "HYGIENNE",
+                "OTHERS",
+              ].map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label className={labelClasses}>
+            Price
             <input
               type="number"
-              value={quantity}
-              onChange={(e) => setQuantity(e.target.value)}
-              required
-              className={inputClasses}
-            />
-          </label>
-
-          <label className={labelClasses}>
-            Expiry Date
-            <input
-              type="date"
-              value={expiryDate}
-              onChange={(e) => setExpiryDate(e.target.value)}
+              min="0"
+              step="0.01"
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
               required
               className={inputClasses}
             />
@@ -136,10 +156,11 @@ export default function AddStockModal({
             >
               Cancel
             </button>
+
             <button
               type="submit"
               disabled={submitting}
-              className="rounded-md bg-violet-700 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-violet-800 disabled:opacity-60"
+              className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary disabled:opacity-60"
             >
               {submitting ? "Saving..." : isEditing ? "Save Changes" : "Create"}
             </button>

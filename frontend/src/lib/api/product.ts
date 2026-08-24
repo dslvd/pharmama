@@ -11,9 +11,10 @@ export const searchProduct = (query: string) =>
 
 export const getProduct = (id: string) => apiFetch<Product>(`/product/${id}`);
 
-export const getProductList = ({ category, order }: GetPrListParams = {}) => {
+export const getProductList = ({ category, sortBy, order }: GetPrListParams = {}) => {
   const params = new URLSearchParams();
   if (category) params.set("category", category);
+  if (sortBy) params.set("sortBy", sortBy);
   if (order) params.set("order", order);
 
   const query = params.toString();
@@ -30,4 +31,9 @@ export const updateProduct = (id: number, data: UpdateProductPayload) =>
   apiFetch<Product>(`/product/${id}`, {
     method: "PATCH",
     body: JSON.stringify(data),
+  });
+
+export const deleteProduct = (id: number) =>
+  apiFetch<Product>(`/product/${id}`, {
+    method: "DELETE",
   });

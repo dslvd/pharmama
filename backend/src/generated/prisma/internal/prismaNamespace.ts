@@ -997,6 +997,20 @@ export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaM
 
 
 /**
+ * Reference to a field of type 'Category'
+ */
+export type EnumCategoryFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Category'>
+    
+
+
+/**
+ * Reference to a field of type 'Category[]'
+ */
+export type ListEnumCategoryFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Category[]'>
+    
+
+
+/**
  * Reference to a field of type 'AuditEntity'
  */
 export type EnumAuditEntityFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AuditEntity'>

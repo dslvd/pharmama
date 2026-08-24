@@ -1,40 +1,37 @@
-// app/stocks/page.tsx
 "use client";
 
-import { useState, useEffect } from "react";
-import { getStockList, searchStock } from "@/lib/api/stocks";
-import { Stock, SortBy } from "@/lib/types/stock";
-import { SortOrder } from "@/lib/types/product";
+import { useEffect, useState } from "react";
+import { getProductList, searchProduct } from "@/lib/api/product";
+import { Product, SortBy, SortOrder } from "@/lib/types/product";
 import FilterBar, { FilterProps } from "@/components/FilterBar";
-import StockRow from "@/app/stocks/components/StockRow";
-import AddStockModal from "@/app/stocks/components/AddStockModal";
+import ProductRow from "@/app/products/components/ProductRow";
+import AddProductModal from "@/app/products/components/AddProductModal";
 import { Funnel, Search, Plus } from "lucide-react";
 
-export default function StockPage() {
-  const [stock, setStock] = useState<Stock[]>([]);
+export default function ProductPage() {
+  const [products, setProducts] = useState<Product[]>([]);
   const [order, setOrder] = useState<SortOrder | undefined>(undefined);
   const [sortBy, setSortBy] = useState<SortBy | undefined>(undefined);
   const [searchTerm, setSearchTerm] = useState("");
   const [filter, setFilter] = useState(false);
-  const [showAddStockModal, setShowAddStockModal] = useState(false);
-  const [editingStock, setEditingStock] = useState<Stock | undefined>(
-    undefined,
-  );
+  const [showAddProductModal, setShowAddProductModal] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<Product | undefined>(undefined);
   const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
-    async function loadStock() {
+    async function loadProducts() {
       const result = searchTerm.trim()
-        ? await searchStock(searchTerm)
-        : await getStockList({ order, sortBy });
+        ? await searchProduct(searchTerm)
+        : await getProductList({ order, sortBy });
 
       if (result.ok) {
-        setStock(result.value);
+        setProducts(result.value);
       } else {
         console.log(result.error);
       }
     }
-    loadStock();
+
+    loadProducts();
   }, [order, sortBy, searchTerm, refreshKey]);
 
   const handleFilterChange = (title: string, sub: string, checked: boolean) => {
@@ -46,32 +43,37 @@ export default function StockPage() {
   };
 
   const FilterOptions: FilterProps[] = [
-    { title: "SORTBY", sub: ["quantity", "expiryDate", "createdAt"] },
+    { title: "SORTBY", sub: ["name", "genericName", "category", "price"] },
     { title: "ORDER", sub: ["asc", "desc"] },
   ];
 
-  function openEditModal(stock: Stock) {
-    setEditingStock(stock);
-    setShowAddStockModal(true);
+  function openAddModal() {
+    setEditingProduct(undefined);
+    setShowAddProductModal(true);
+  }
+
+  function openEditModal(product: Product) {
+    setEditingProduct(product);
+    setShowAddProductModal(true);
   }
 
   function closeModal() {
-    setEditingStock(undefined);
-    setShowAddStockModal(false);
+    setEditingProduct(undefined);
+    setShowAddProductModal(false);
   }
 
   return (
     <main className="space-y-6 p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-4xl font-bold text-foreground">Stocks</h2>
+        <h2 className="text-4xl font-bold text-foreground">Products</h2>
 
         <div className="flex items-center gap-3">
           <button
-            onClick={() => setShowAddStockModal(true)}
+            onClick={openAddModal}
             className="flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary"
           >
             <Plus className="h-4 w-4" />
-            Add Stock
+            Add Product
           </button>
 
           <div className="relative w-56">
@@ -79,6 +81,7 @@ export default function StockPage() {
               size={16}
               className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
             />
+
             <input
               type="text"
               value={searchTerm}
@@ -104,10 +107,7 @@ export default function StockPage() {
 
             {filter && (
               <div className="absolute right-0 z-10 mt-2 w-64 rounded-xl border border-border bg-card p-4 shadow-lg">
-                <FilterBar
-                  filters={FilterOptions}
-                  onFilterChange={handleFilterChange}
-                />
+                <FilterBar filters={FilterOptions} onFilterChange={handleFilterChange} />
               </div>
             )}
           </div>
@@ -118,44 +118,26 @@ export default function StockPage() {
         <table className="w-full text-left text-sm">
           <thead>
             <tr className="border-b border-border bg-muted/60">
-              <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                ID
-              </th>
-              <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                Product ID
-              </th>
-              <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                Batch Number
-              </th>
-              <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                Quantity
-              </th>
-              <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                Expiry Date
-              </th>
-              <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                Created At
-              </th>
-              <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                Actions
-              </th>
+              <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Name</th>
+              <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Generic Name</th>
+              <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Category</th>
+              <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Price</th>
+              <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Actions</th>
             </tr>
           </thead>
+
           <tbody>
-            {stock.length === 0 ? (
+            {products.length === 0 ? (
               <tr>
-                <td
-                  colSpan={7}
-                  className="px-4 py-8 text-center text-sm text-muted-foreground"
-                >
-                  No stock records found.
+                <td colSpan={5} className="px-4 py-8 text-center text-sm text-muted-foreground">
+                  No product records found.
                 </td>
               </tr>
             ) : (
-              stock.map((item) => (
-                <StockRow
+              products.map((item) => (
+                <ProductRow
                   key={item.id}
-                  stock={item}
+                  product={item}
                   onDeleted={() => setRefreshKey((k) => k + 1)}
                   onEdit={openEditModal}
                 />
@@ -165,9 +147,9 @@ export default function StockPage() {
         </table>
       </div>
 
-      {showAddStockModal && (
-        <AddStockModal
-          stock={editingStock}
+      {showAddProductModal && (
+        <AddProductModal
+          product={editingProduct}
           onClose={closeModal}
           onSuccess={() => setRefreshKey((k) => k + 1)}
         />

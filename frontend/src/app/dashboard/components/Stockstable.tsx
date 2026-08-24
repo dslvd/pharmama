@@ -106,7 +106,7 @@ export default function StocksTable() {
                 </tr>
               ))
             ) : (
-              <p>No stock yet</p>
+              <div>No stock yet</div>
             )}
             {/* empty row to match the wireframe's blank second row */}
             <tr>

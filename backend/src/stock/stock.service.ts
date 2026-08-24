@@ -110,6 +110,26 @@ export class StockService {
     });
   }
 
+  async deleteStock(id: number): Promise<Stock> {
+    return this.prisma.$transaction(async (st) => {
+      const found = await st.stock.findUnique({ where: { id } });
+      const result = validateStockExist(found);
+      if (!result.ok) {
+        throw new NotFoundException(result.error);
+      }
+
+      await createAuditLog(st, {
+        entity: AuditEntity.STOCK,
+        entityId: id,
+        action: AuditAction.DELETE,
+      });
+
+      return st.stock.delete({
+        where: { id },
+      });
+    });
+  }
+
   async searchStock(query: string): Promise<Stock[]> {
     return this.prisma.stock.findMany({
       where: query

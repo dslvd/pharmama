@@ -1,11 +1,11 @@
 import {
   Body,
   Controller,
-  Delete,
   Get,
   Param,
   ParseEnumPipe,
   ParseIntPipe,
+  Patch,
   Post,
   Query,
 } from "@nestjs/common";
@@ -46,7 +46,7 @@ export class TransactionController {
     return this.trService.getTodaySales();
   }
 
-  @Delete(":id")
+  @Patch(":id")
   async cancelTr(@Param("id", ParseIntPipe) id: number): Promise<Transaction> {
     return this.trService.cancelTransaction(id);
   }

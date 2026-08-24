@@ -1,11 +1,9 @@
 'use client'
 
-// import { ErrorStack } from "@/components/ErrorCard"
 import CurrentStocks from "./components/CurrentStocks"
-import { IncomingStocks } from "./components/IncomingStocks"
+import LowStocks from "./components/LowStocks"
 import SalesCard from "./components/SalesCard"
-import StocksTable from "./components/Stockstable"
-import TransactionPanel from "./components/Transactionpanel"
+import SalesOverview from "./components/SalesOverview"
 
 interface DashboardProps {
   userRole: 'superuser' | 'clinic'
@@ -20,12 +18,10 @@ export default function Dashboard({ userRole }: DashboardProps) {
       <section className="grid grid-cols-1 gap-4 md:grid-cols-3">
         <SalesCard />
         <CurrentStocks />
-        <IncomingStocks />
+        <LowStocks />
       </section>
 
-      <StocksTable />
-
-      <TransactionPanel />
+      <SalesOverview />
     </main>
   )
 }

@@ -40,7 +40,7 @@ export type ProductMinAggregateOutputType = {
   id: number | null
   name: string | null
   genericName: string | null
-  category: string | null
+  category: $Enums.Category | null
   price: number | null
   updatedAt: Date | null
   createdAt: Date | null
@@ -50,7 +50,7 @@ export type ProductMaxAggregateOutputType = {
   id: number | null
   name: string | null
   genericName: string | null
-  category: string | null
+  category: $Enums.Category | null
   price: number | null
   updatedAt: Date | null
   createdAt: Date | null
@@ -199,7 +199,7 @@ export type ProductGroupByOutputType = {
   id: number
   name: string
   genericName: string
-  category: string
+  category: $Enums.Category
   price: number
   updatedAt: Date
   createdAt: Date
@@ -232,7 +232,7 @@ export type ProductWhereInput = {
   id?: Prisma.IntFilter<"Product"> | number
   name?: Prisma.StringFilter<"Product"> | string
   genericName?: Prisma.StringFilter<"Product"> | string
-  category?: Prisma.StringFilter<"Product"> | string
+  category?: Prisma.EnumCategoryFilter<"Product"> | $Enums.Category
   price?: Prisma.IntFilter<"Product"> | number
   updatedAt?: Prisma.DateTimeFilter<"Product"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"Product"> | Date | string
@@ -259,7 +259,7 @@ export type ProductWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.ProductWhereInput | Prisma.ProductWhereInput[]
   name?: Prisma.StringFilter<"Product"> | string
   genericName?: Prisma.StringFilter<"Product"> | string
-  category?: Prisma.StringFilter<"Product"> | string
+  category?: Prisma.EnumCategoryFilter<"Product"> | $Enums.Category
   price?: Prisma.IntFilter<"Product"> | number
   updatedAt?: Prisma.DateTimeFilter<"Product"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"Product"> | Date | string
@@ -289,7 +289,7 @@ export type ProductScalarWhereWithAggregatesInput = {
   id?: Prisma.IntWithAggregatesFilter<"Product"> | number
   name?: Prisma.StringWithAggregatesFilter<"Product"> | string
   genericName?: Prisma.StringWithAggregatesFilter<"Product"> | string
-  category?: Prisma.StringWithAggregatesFilter<"Product"> | string
+  category?: Prisma.EnumCategoryWithAggregatesFilter<"Product"> | $Enums.Category
   price?: Prisma.IntWithAggregatesFilter<"Product"> | number
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Product"> | Date | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Product"> | Date | string
@@ -298,7 +298,7 @@ export type ProductScalarWhereWithAggregatesInput = {
 export type ProductCreateInput = {
   name: string
   genericName: string
-  category: string
+  category: $Enums.Category
   price: number
   updatedAt?: Date | string
   createdAt?: Date | string
@@ -310,7 +310,7 @@ export type ProductUncheckedCreateInput = {
   id?: number
   name: string
   genericName: string
-  category: string
+  category: $Enums.Category
   price: number
   updatedAt?: Date | string
   createdAt?: Date | string
@@ -321,7 +321,7 @@ export type ProductUncheckedCreateInput = {
 export type ProductUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   genericName?: Prisma.StringFieldUpdateOperationsInput | string
-  category?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.EnumCategoryFieldUpdateOperationsInput | $Enums.Category
   price?: Prisma.IntFieldUpdateOperationsInput | number
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -333,7 +333,7 @@ export type ProductUncheckedUpdateInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
   genericName?: Prisma.StringFieldUpdateOperationsInput | string
-  category?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.EnumCategoryFieldUpdateOperationsInput | $Enums.Category
   price?: Prisma.IntFieldUpdateOperationsInput | number
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -345,7 +345,7 @@ export type ProductCreateManyInput = {
   id?: number
   name: string
   genericName: string
-  category: string
+  category: $Enums.Category
   price: number
   updatedAt?: Date | string
   createdAt?: Date | string
@@ -354,7 +354,7 @@ export type ProductCreateManyInput = {
 export type ProductUpdateManyMutationInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   genericName?: Prisma.StringFieldUpdateOperationsInput | string
-  category?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.EnumCategoryFieldUpdateOperationsInput | $Enums.Category
   price?: Prisma.IntFieldUpdateOperationsInput | number
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -364,7 +364,7 @@ export type ProductUncheckedUpdateManyInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
   genericName?: Prisma.StringFieldUpdateOperationsInput | string
-  category?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.EnumCategoryFieldUpdateOperationsInput | $Enums.Category
   price?: Prisma.IntFieldUpdateOperationsInput | number
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -429,6 +429,10 @@ export type ProductUpdateOneRequiredWithoutTransactionItemsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ProductUpdateToOneWithWhereWithoutTransactionItemsInput, Prisma.ProductUpdateWithoutTransactionItemsInput>, Prisma.ProductUncheckedUpdateWithoutTransactionItemsInput>
 }
 
+export type EnumCategoryFieldUpdateOperationsInput = {
+  set?: $Enums.Category
+}
+
 export type ProductCreateNestedOneWithoutStocksInput = {
   create?: Prisma.XOR<Prisma.ProductCreateWithoutStocksInput, Prisma.ProductUncheckedCreateWithoutStocksInput>
   connectOrCreate?: Prisma.ProductCreateOrConnectWithoutStocksInput
@@ -446,7 +450,7 @@ export type ProductUpdateOneRequiredWithoutStocksNestedInput = {
 export type ProductCreateWithoutTransactionItemsInput = {
   name: string
   genericName: string
-  category: string
+  category: $Enums.Category
   price: number
   updatedAt?: Date | string
   createdAt?: Date | string
@@ -457,7 +461,7 @@ export type ProductUncheckedCreateWithoutTransactionItemsInput = {
   id?: number
   name: string
   genericName: string
-  category: string
+  category: $Enums.Category
   price: number
   updatedAt?: Date | string
   createdAt?: Date | string
@@ -483,7 +487,7 @@ export type ProductUpdateToOneWithWhereWithoutTransactionItemsInput = {
 export type ProductUpdateWithoutTransactionItemsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   genericName?: Prisma.StringFieldUpdateOperationsInput | string
-  category?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.EnumCategoryFieldUpdateOperationsInput | $Enums.Category
   price?: Prisma.IntFieldUpdateOperationsInput | number
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -494,7 +498,7 @@ export type ProductUncheckedUpdateWithoutTransactionItemsInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
   genericName?: Prisma.StringFieldUpdateOperationsInput | string
-  category?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.EnumCategoryFieldUpdateOperationsInput | $Enums.Category
   price?: Prisma.IntFieldUpdateOperationsInput | number
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -504,7 +508,7 @@ export type ProductUncheckedUpdateWithoutTransactionItemsInput = {
 export type ProductCreateWithoutStocksInput = {
   name: string
   genericName: string
-  category: string
+  category: $Enums.Category
   price: number
   updatedAt?: Date | string
   createdAt?: Date | string
@@ -515,7 +519,7 @@ export type ProductUncheckedCreateWithoutStocksInput = {
   id?: number
   name: string
   genericName: string
-  category: string
+  category: $Enums.Category
   price: number
   updatedAt?: Date | string
   createdAt?: Date | string
@@ -541,7 +545,7 @@ export type ProductUpdateToOneWithWhereWithoutStocksInput = {
 export type ProductUpdateWithoutStocksInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   genericName?: Prisma.StringFieldUpdateOperationsInput | string
-  category?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.EnumCategoryFieldUpdateOperationsInput | $Enums.Category
   price?: Prisma.IntFieldUpdateOperationsInput | number
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -552,7 +556,7 @@ export type ProductUncheckedUpdateWithoutStocksInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
   genericName?: Prisma.StringFieldUpdateOperationsInput | string
-  category?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.EnumCategoryFieldUpdateOperationsInput | $Enums.Category
   price?: Prisma.IntFieldUpdateOperationsInput | number
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -661,7 +665,7 @@ export type $ProductPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     id: number
     name: string
     genericName: string
-    category: string
+    category: $Enums.Category
     price: number
     updatedAt: Date
     createdAt: Date
@@ -1093,7 +1097,7 @@ export interface ProductFieldRefs {
   readonly id: Prisma.FieldRef<"Product", 'Int'>
   readonly name: Prisma.FieldRef<"Product", 'String'>
   readonly genericName: Prisma.FieldRef<"Product", 'String'>
-  readonly category: Prisma.FieldRef<"Product", 'String'>
+  readonly category: Prisma.FieldRef<"Product", 'Category'>
   readonly price: Prisma.FieldRef<"Product", 'Int'>
   readonly updatedAt: Prisma.FieldRef<"Product", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"Product", 'DateTime'>
