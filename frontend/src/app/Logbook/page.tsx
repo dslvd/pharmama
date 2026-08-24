@@ -3,6 +3,7 @@ import { getAuditList } from "@/lib/api/logbook";
 import { AuditAction, AuditEntity, AuditLog } from "@/lib/types/audit-log";
 import { SortOrder } from "@/lib/types/product";
 import { useEffect, useState } from "react";
+import { SlidersHorizontal } from "lucide-react";
 import AuditRow from "./components/AuditRow";
 import FilterBar, { FilterProps } from "@/components/FilterBar";
 
@@ -59,45 +60,71 @@ export default function LogbookPage() {
   ];
 
   return (
-    <main className="space-y-6 p-5">
-      <h2 className="text-5xl font-bold text-primary">Logbook</h2>
-      <button onClick={() => setFilter(!filter)}>Filter</button>
+    <main className="space-y-6 p-6">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h2 className="text-4xl font-bold text-foreground">Logbook</h2>
+
+        <button
+          onClick={() => setFilter(!filter)}
+          aria-pressed={filter}
+          className={`flex items-center gap-2 rounded-md border px-3 py-1.5 text-sm font-medium transition-colors ${
+            filter
+              ? "border-violet-700 bg-violet-700 text-white"
+              : "border-border bg-card text-foreground hover:bg-muted"
+          }`}
+        >
+          <SlidersHorizontal className="h-4 w-4" />
+          Filter
+        </button>
+      </div>
+
       {filter && (
-        <FilterBar
-          filters={FilterOptions}
-          onFilterChange={handleFilterChange}
-        />
+        <div className="rounded-xl border border-border bg-card p-4">
+          <FilterBar
+            filters={FilterOptions}
+            onFilterChange={handleFilterChange}
+          />
+        </div>
       )}
 
-      <table className="w-full border-collapse border border-slate-300">
-        <thead>
-          <tr className="bg-slate-100">
-            <th className="border border-slate-300 px-3 py-2 text-sm font-semibold">
-              ID
-            </th>
-            <th className="border border-slate-300 px-3 py-2 text-sm font-semibold">
-              Date
-            </th>
-            <th className="border border-slate-300 px-3 py-2 text-sm font-semibold">
-              Time
-            </th>
-            <th className="border border-slate-300 px-3 py-2 text-sm font-semibold">
-              Action
-            </th>
-            <th className="border border-slate-300 px-3 py-2 text-sm font-semibold">
-              Entity
-            </th>
-            <th className="border border-slate-300 px-3 py-2 text-sm font-semibold">
-              Change
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {audit.map((item) => (
-            <AuditRow key={item.id} audit={item} />
-          ))}
-        </tbody>
-      </table>
+      <div className="overflow-x-auto rounded-xl border border-border bg-card">
+        <table className="w-full text-left text-sm">
+          <thead>
+            <tr className="border-b border-border">
+              <th className="px-4 py-2.5 text-center text-xs font-bold text-foreground">
+                ID
+              </th>
+              <th className="px-4 py-2.5 text-center text-xs font-bold text-foreground">
+                Date
+              </th>
+              <th className="px-4 py-2.5 text-center text-xs font-bold text-foreground">
+                Time
+              </th>
+              <th className="px-4 py-2.5 text-center text-xs font-bold text-foreground">
+                Action
+              </th>
+              <th className="px-4 py-2.5 text-xs font-bold text-foreground">
+                Entity
+              </th>
+              <th className="px-4 py-2.5 text-center text-xs font-bold text-foreground">
+                Change
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {audit.map((item) => (
+              <AuditRow key={item.id} audit={item} />
+            ))}
+            {audit.length === 0 && (
+              <tr>
+                <td className="px-4 py-6 text-center text-muted-foreground" colSpan={6}>
+                  No audit records found.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
     </main>
   );
 }

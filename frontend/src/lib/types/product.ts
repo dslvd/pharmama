@@ -12,7 +12,7 @@ export interface CreateProductPayload {
   name: string;
   genericName: string;
   price: number;
-  category: string;
+  category: Category;
 }
 
 export type UpdateProductPayload = Partial<CreateProductPayload>;
@@ -23,3 +23,13 @@ export interface GetPrListParams {
   category?: string;
   order?: SortOrder;
 }
+
+export type Category =
+  | "ANALGESICS"
+  | "ANTIBIOTICS"
+  | "ANTIHISTAMINES"
+  | "VITAMINS"
+  | "SUPPLEMENTS"
+  | "ANTACIDS"
+  | "HYGIENNE"
+  | "OTHERS";

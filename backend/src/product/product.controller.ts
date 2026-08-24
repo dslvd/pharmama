@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseIntPipe,
@@ -9,7 +10,7 @@ import {
   Query,
 } from "@nestjs/common";
 import { ProductService } from "./product.service";
-import { Prisma, Product } from "src/generated/prisma/client";
+import { Category, Prisma, Product } from "src/generated/prisma/client";
 import { CreateProductDto, UpdateProductDto } from "./validation";
 
 @Controller("product")
@@ -28,7 +29,7 @@ export class ProductController {
 
   @Get()
   async getPrList(
-    @Query("category") category?: string,
+    @Query("category") category?: Category,
     @Query("order") order?: Prisma.SortOrder,
   ): Promise<Product[]> {
     return this.prService.getProductList({ category, order });
@@ -45,5 +46,10 @@ export class ProductController {
     @Body() body: UpdateProductDto,
   ): Promise<Product> {
     return this.prService.updateProduct(id, body);
+  }
+
+  @Delete(":id")
+  async deletePr(@Param("id", ParseIntPipe) id: number): Promise<Product> {
+    return this.prService.deleteProduct(id);
   }
 }
