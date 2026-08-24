@@ -26,8 +26,9 @@ export default function SalesCard() {
         <p className="text-xs text-muted-foreground">{sales?.date ?? "—"}</p>
       </div>
       <p className="mt-3 flex items-center gap-2 text-3xl font-bold text-foreground">
-        <span className="text-2xl">₱</span>
-        {sales ? sales.total.toLocaleString() : "—"}
+        <span className="text-2xl">
+          {sales ? " " + sales.total.toLocaleString() : "—"}
+        </span>
       </p>
     </article>
   );
