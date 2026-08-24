@@ -1,81 +1,147 @@
+// app/stocks/page.tsx
 'use client'
 
-import { useState, useEffect } from 'react'
-import { getStockList } from '@/lib/api/stocks'
+import { useState, useEffect, useCallback } from 'react'
+import { getStockList, searchStock } from '@/lib/api/stocks'
+import { getProductList } from '@/lib/api/product'
 import { Stock } from '@/lib/types/stock'
+import { Product, SortOrder } from '@/lib/types/product'
+import FilterBar, { FilterProps } from '@/components/FilterBar'
+import StockRow from '@/app/stocks/components/StockRow'
+import AddStockButton from '@/app/stocks/components/AddStockBtn'
+import AddStockModal from '@/app/stocks/components/AddStockModal'
+import AddItemButton from '@/components/AddItemModal/AddButton'
+import { Funnel, Search } from 'lucide-react'
 
-interface StocksProps {
-  userRole: 'superuser' | 'clinic'
-}
-
-export default function Stocks({ userRole }: StocksProps) {
-  const [searchTerm, setSearchTerm] = useState('')
-  const [stocks, setStocks] = useState<Stock[]>([])
+export default function StockPage() {
+  const [stock, setStock] = useState<Stock[]>([]);
+  const [order, setOrder] = useState<SortOrder | undefined>(undefined);
+  const [category, setCategory] = useState<string | undefined>(undefined);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filter, setFilter] = useState(false);
+  const [showAddStockModal, setShowAddStockModal] = useState(false);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
-    async function loadStocks() {
-      const result = await getStockList()
+    async function loadStock() {
+      const result = searchTerm.trim()
+        ? await searchStock(searchTerm)
+        : await getStockList({ order, category });
 
       if (result.ok) {
-        setStocks(result.value)
+        setStock(result.value);
       } else {
-        console.log(result.error)
+        console.log(result.error);
       }
     }
-    loadStocks()
-  }, [])
+    loadStock();
+  }, [order, category, searchTerm, refreshKey]);
 
-  const filteredStocks = stocks.filter(s =>
-    s.batchNumber.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+  // Keep products loaded in the background so the category filter
+  // has real options even before the +Stock modal is opened.
+  useEffect(() => {
+    async function loadProducts() {
+      const result = await getProductList();
+      if (result.ok) {
+        setProducts(result.value);
+      } else {
+        console.log(result.error);
+      }
+    }
+    loadProducts();
+  }, [refreshKey]);
+
+  const handleFilterChange = (title: string, sub: string, checked: boolean) => {
+    if (title === "CATEGORY") {
+      setCategory(checked ? sub : undefined);
+    } else if (title === "ORDER") {
+      setOrder(checked ? (sub as SortOrder) : undefined);
+    }
+  };
+
+  const FilterOptions: FilterProps[] = [
+    { title: "CATEGORY", sub: [...new Set(products.map((p) => p.category))] },
+    { title: "ORDER", sub: ["asc", "desc"] },
+  ];
+
+  const openAddStockModal = useCallback(() => {
+    setShowAddStockModal(true);
+  }, []);
 
   return (
-    <div className="space-y-6">
-      <h2 className="text-3xl font-bold text-primary">Stocks</h2>
+    <main className="space-y-6 p-5">
+      <div className="flex items-center justify-between">
+        <h2 className="text-5xl font-bold text-primary">Stocks</h2>
 
-      {/* Search and Filter Button */}
-      <div className="flex flex-col md:flex-row gap-4">
-        <input
-          type="text"
-          placeholder="Search by batch number..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="flex-1 px-4 py-2 border border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-        />
-        <button className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90">Filter Button</button>
-      </div>
+        <div className="flex items-center gap-3">
+          <AddItemButton onSaved={() => setRefreshKey((k) => k + 1)} />
 
-      {/* Stocks Table */}
-      <div className="bg-card rounded-lg border border-border overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="bg-primary text-primary-foreground">
-                <th className="px-4 py-3 text-left">ID</th>
-                <th className="px-4 py-3 text-left">Product ID</th>
-                <th className="px-4 py-3 text-left">Batch Number</th>
-                <th className="px-4 py-3 text-left">Quantity</th>
-                <th className="px-4 py-3 text-left">Expiry Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredStocks.map((stock) => (
-                <tr key={stock.id} className="border-b border-border hover:bg-background">
-                  <td className="px-4 py-3 text-primary">{stock.id}</td>
-                  <td className="px-4 py-3 text-primary">{stock.productId}</td>
-                  <td className="px-4 py-3 text-primary">{stock.batchNumber}</td>
-                  <td className="px-4 py-3 text-primary">{stock.quantity}</td>
-                  <td className="px-4 py-3 text-primary">
-                    {new Date(stock.expiryDate).toLocaleDateString()}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <div className="relative w-64">
+            <Search
+              size={16}
+              className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+            />
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Search"
+              className="w-full rounded-full border border-slate-200 bg-white py-2 pl-9 pr-3 text-sm text-slate-700 shadow-sm focus:border-violet-300 focus:outline-none focus:ring-2 focus:ring-violet-100"
+            />
+          </div>
+
+          <button
+            onClick={() => setFilter(!filter)}
+            aria-label="Toggle filters"
+            className={`rounded-full p-2 transition-colors ${
+              filter ? "bg-violet-100 text-primary" : "text-slate-500 hover:bg-slate-100"
+            }`}
+          >
+            <Funnel size={20} />
+          </button>
         </div>
       </div>
 
-      <p className="text-muted-foreground text-center py-4">ADD FUNCTION WHERE WE CAN ADD STOCKS</p>
-    </div>
+      {filter && (
+        <FilterBar filters={FilterOptions} onFilterChange={handleFilterChange} />
+      )}
+
+      <table className="w-full border-collapse border border-slate-300">
+        <thead>
+          <tr className="bg-slate-100">
+            <th className="border border-slate-300 px-3 py-2 text-sm font-semibold">ID</th>
+            <th className="border border-slate-300 px-3 py-2 text-sm font-semibold">Product ID</th>
+            <th className="border border-slate-300 px-3 py-2 text-sm font-semibold">Batch Number</th>
+            <th className="border border-slate-300 px-3 py-2 text-sm font-semibold">Quantity</th>
+            <th className="border border-slate-300 px-3 py-2 text-sm font-semibold">Expiry Date</th>
+            <th className="border border-slate-300 px-3 py-2 text-sm font-semibold">Created At</th>
+            <th className="border border-slate-300 px-3 py-2 text-sm font-semibold">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {stock.length === 0 ? (
+            <tr>
+              <td colSpan={7} className="border border-slate-300 px-3 py-6 text-center text-sm text-slate-400">
+                No stock records found.
+              </td>
+            </tr>
+          ) : (
+            stock.map((item) => (
+              <StockRow key={item.id} stock={item} />
+            ))
+          )}
+        </tbody>
+      </table>
+
+      <AddStockButton onClick={openAddStockModal} />
+      {showAddStockModal && (
+        <AddStockModal
+          products={products}
+          onClose={() => setShowAddStockModal(false)}
+          onSaved={() => setRefreshKey((k) => k + 1)}
+        />
+      )}
+    </main>
   )
 }

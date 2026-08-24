@@ -1,5 +1,6 @@
 'use client'
 
+// import { ErrorStack } from "@/components/ErrorCard"
 import CurrentStocks from "./components/CurrentStocks"
 import { IncomingStocks } from "./components/IncomingStocks"
 import SalesCard from "./components/SalesCard"

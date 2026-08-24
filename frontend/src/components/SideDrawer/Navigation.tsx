@@ -23,7 +23,7 @@ export default function Navigation ({ isOpen, onClose }: NavigationProps) {
   return (
     <>
 <aside
-        className={`sticky top-16 z-50 h-[calc(100vh-4rem)] bg-white transition-all duration-200 overflow-hidden flex flex-col justify-between
+        className={`sticky top-0 z-50 h-[calc(100vh-4rem)] bg-white transition-all duration-200 overflow-hidden flex flex-col justify-between
           ${isOpen ? 'w-64' : 'w-0'}`}
         aria-label="Main Navigation"
       >

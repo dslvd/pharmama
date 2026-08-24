@@ -11,6 +11,7 @@
   --color-sidebar-primary: var(--sidebar-primary);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar: var(--sidebar);
+  --color-error: var(--error);
   --color-chart-5: var(--chart-5);
   --color-chart-4: var(--chart-4);
   --color-chart-3: var(--chart-3);
@@ -68,6 +69,7 @@
   --background: #F5F1E8;
   --foreground: #2D1B4E;
   --card: #FFFFFF;
+  --error: #9C2007;
   --card-foreground: #2D1B4E;
   --popover: #FFFFFF;
   --popover-foreground: #2D1B4E;
