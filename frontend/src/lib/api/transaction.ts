@@ -27,9 +27,6 @@ export const getTransactionList = ({
   return apiFetch<Transaction[]>(`/transaction${query ? `?${query}` : ""}`);
 };
 
-export const getTodaySales = () =>
-  apiFetch<{ total: number; date: string }>("/transaction/getTodaySales");
-
 export const cancelTransaction = (id: number) =>
   apiFetch<Transaction>(`/transaction/${id}`, {
     method: "PATCH",
