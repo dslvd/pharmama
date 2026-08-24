@@ -123,7 +123,7 @@ export default function AddProductModal({
                 "VITAMINS",
                 "SUPPLEMENTS",
                 "ANTACIDS",
-                "HYGIENNE",
+                "HYGIENE",
                 "OTHERS",
               ].map((option) => (
                 <option key={option} value={option}>

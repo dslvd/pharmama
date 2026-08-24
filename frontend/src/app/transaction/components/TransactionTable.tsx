@@ -53,18 +53,18 @@ export default function TransactionTable({
       <div className="rounded-xl border border-border bg-card">
         <div className="max-h-[350px] overflow-y-auto">
           <table className="w-full border-collapse text-left text-sm">
-            <thead className="sticky top-0 z-10 border-b border-border bg-card">
+            <thead className="sticky top-0 z-10 border-b border-border bg-muted/60">
               <tr>
-                <th className="px-4 py-2.5 text-xs font-bold text-foreground">Product Name</th>
-                <th className="px-4 py-2.5 text-center text-xs font-bold text-foreground">Quantity</th>
-                <th className="px-4 py-2.5 text-center text-xs font-bold text-foreground">Unit Price</th>
-                <th className="px-4 py-2.5 text-center text-xs font-bold text-foreground">SubTotal</th>
-                <th className="px-4 py-2.5 text-right text-xs font-bold text-foreground">
+                <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Product Name</th>
+                <th className="px-4 py-2.5 text-center text-xs font-semibold uppercase tracking-wide text-muted-foreground">Quantity</th>
+                <th className="px-4 py-2.5 text-center text-xs font-semibold uppercase tracking-wide text-muted-foreground">Unit Price</th>
+                <th className="px-4 py-2.5 text-center text-xs font-semibold uppercase tracking-wide text-muted-foreground">SubTotal</th>
+                <th className="px-4 py-2.5 text-right text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                   <button
                     disabled={activeItems.length === 0}
-                    className="rounded-lg bg-emerald-200 px-4 py-1 text-xs font-bold text-emerald-900 transition-colors hover:bg-emerald-300 disabled:opacity-50"
+                    className="rounded-md bg-emerald-800 px-4 py-1.5 text-xs font-medium text-white transition-colors hover:bg-emerald-800 disabled:opacity-60"
                   >
-                    confirm
+                    Confirm
                   </button>
                 </th>
               </tr>
@@ -72,7 +72,7 @@ export default function TransactionTable({
             <tbody>
               {items.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-4 py-6 text-center text-xs text-muted-foreground">
+                  <td colSpan={5} className="px-4 py-8 text-center text-sm text-muted-foreground">
                     No items added yet. Click '+' below to add items.
                   </td>
                 </tr>
@@ -83,18 +83,18 @@ export default function TransactionTable({
                   return (
                     <tr
                       key={item.id}
-                      className={`border-b border-border ${
-                        isCancelled ? "bg-stone-100 opacity-60" : "bg-violet-50/60"
+                      className={`border-t border-border ${
+                        isCancelled ? "bg-muted/40 opacity-60" : "odd:bg-card even:bg-muted/40 hover:bg-violet-50/60"
                       }`}
                     >
-                      <td className={`px-4 py-3 font-medium ${isCancelled ? "line-through text-stone-500" : "text-foreground"}`}>
+                      <td className={`px-4 py-3 font-medium ${isCancelled ? "line-through text-muted-foreground" : "text-foreground"}`}>
                         {item.productName}
                       </td>
                       <td className="px-4 py-3 text-center">
                         <div className="flex items-center justify-center gap-1.5">
-                          <span className="w-4 text-xs font-semibold">{item.quantity}</span>
+                          <span className="w-4 text-xs font-medium text-foreground">{item.quantity}</span>
                           {!isCancelled && (
-                            <div className="flex flex-col">
+                            <div className="flex flex-col text-muted-foreground">
                               <button onClick={() => updateQuantity(item.id, 1)} className="hover:text-foreground">
                                 <ChevronUp size={12} />
                               </button>
@@ -111,15 +111,15 @@ export default function TransactionTable({
                       </td>
                       <td className="px-4 py-3 text-right">
                         {isCancelled ? (
-                          <span className="rounded bg-rose-100 px-2.5 py-1 text-[11px] font-bold text-rose-700">
+                          <span className="rounded-full bg-rose-100 px-2.5 py-1 text-xs font-medium text-rose-700">
                             CANCELLED
                           </span>
                         ) : (
                           <button
                             onClick={() => cancelItem(item.id)}
-                            className="rounded bg-rose-200 px-3 py-1 text-xs font-bold text-rose-900 transition-colors hover:bg-rose-300"
+                            className="rounded-md border border-border bg-white px-3 py-1 text-xs font-medium text-rose-600 transition-colors hover:bg-rose-50"
                           >
-                            cancel
+                            Cancel
                           </button>
                         )}
                       </td>
@@ -134,7 +134,7 @@ export default function TransactionTable({
         <div className="flex items-center justify-between border-t border-border bg-card px-4 py-3">
           <button
             onClick={onOpenModal}
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-violet-900 text-white transition-transform hover:bg-violet-800 active:scale-95"
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-violet-900 text-white transition-colors hover:bg-violet-950 shadow-sm"
             aria-label="Add More Items"
           >
             <Plus size={16} />

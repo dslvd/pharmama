@@ -16,6 +16,9 @@ interface AddTransactionModalProps {
   onClose: () => void
 }
 
+const inputClasses =
+  "rounded-full border border-border bg-white py-1.5 text-sm text-foreground focus:border-violet-400 focus:outline-none focus:ring-2 focus:ring-violet-100";
+
 export default function AddTransactionModal({
   products = [],
   categories = [],
@@ -57,16 +60,16 @@ export default function AddTransactionModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-      <div className="flex max-h-[85vh] w-full max-w-4xl flex-col rounded-2xl bg-[#fdf6ec] p-6 shadow-xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+      <div className="flex max-h-[85vh] w-full max-w-4xl flex-col rounded-2xl border border-border bg-[#fdf6ec] p-6 shadow-xl">
         <div className="flex items-center justify-between gap-3 pb-4">
-          <h2 className="text-3xl font-bold text-foreground">Items</h2>
+          <h2 className="text-2xl font-bold text-foreground">Items</h2>
 
           <div className="flex items-center gap-2">
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              className="rounded-full border border-slate-300 bg-white px-3 py-1.5 text-sm"
+              className={`${inputClasses} px-3`}
             >
               <option value="">All Categories</option>
               {categories.map((cat) => (
@@ -77,37 +80,41 @@ export default function AddTransactionModal({
             </select>
 
             <div className="relative">
-              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+              <Search size={16} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
               <input
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search"
-                className="rounded-full border border-slate-300 bg-white py-1.5 pl-8 pr-3 text-sm"
+                className={`${inputClasses} pl-9 pr-3`}
               />
             </div>
 
-            <button onClick={onClose} aria-label="Close" className="rounded-full p-1.5 hover:bg-slate-200">
-              <X size={18} />
+            <button
+              onClick={onClose}
+              aria-label="Close"
+              className="rounded-full p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+            >
+              <X size={20} />
             </button>
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto rounded-lg border border-slate-300 bg-white">
-          <table className="w-full border-collapse">
-            <thead className="sticky top-0 bg-white shadow-sm">
+        <div className="flex-1 overflow-y-auto rounded-xl border border-border bg-card">
+          <table className="w-full border-collapse text-left text-sm">
+            <thead className="sticky top-0 z-10 border-b border-border bg-muted/60">
               <tr>
-                <th className="border border-slate-300 px-3 py-2 text-sm font-bold">ID</th>
-                <th className="border border-slate-300 px-3 py-2 text-sm font-bold">Product Name</th>
-                <th className="border border-slate-300 px-3 py-2 text-sm font-bold">Category</th>
-                <th className="border border-slate-300 px-3 py-2 text-sm font-bold">Quantity</th>
-                <th className="border border-slate-300 px-3 py-2 text-sm font-bold">Price</th>
-                <th className="border border-slate-300 px-3 py-2 text-sm font-bold">Action</th>
+                <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">ID</th>
+                <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Product Name</th>
+                <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Category</th>
+                <th className="px-4 py-2.5 text-center text-xs font-semibold uppercase tracking-wide text-muted-foreground">Quantity</th>
+                <th className="px-4 py-2.5 text-center text-xs font-semibold uppercase tracking-wide text-muted-foreground">Price</th>
+                <th className="px-4 py-2.5 text-center text-xs font-semibold uppercase tracking-wide text-muted-foreground">Action</th>
               </tr>
             </thead>
             <tbody>
               {filteredProducts.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="py-6 text-center text-xs text-slate-400">
+                  <td colSpan={6} className="px-4 py-8 text-center text-sm text-muted-foreground">
                     No products available.
                   </td>
                 </tr>
@@ -117,25 +124,25 @@ export default function AddTransactionModal({
                   const isAdded = !!sel
 
                   return (
-                    <tr key={product.id} className="odd:bg-white even:bg-violet-50">
-                      <td className="border border-slate-300 px-3 py-2 text-center text-sm">{product.id}</td>
-                      <td className="border border-slate-300 px-3 py-2 text-sm font-medium">{product.name}</td>
-                      <td className="border border-slate-300 px-3 py-2 text-sm text-slate-600">{product.category}</td>
-                      <td className="border border-slate-300 px-3 py-2 text-center text-sm">
+                    <tr key={product.id} className="border-t border-border odd:bg-card even:bg-muted/40 hover:bg-violet-50/60">
+                      <td className="px-4 py-3 font-mono text-xs text-muted-foreground">#{product.id}</td>
+                      <td className="px-4 py-3 text-sm font-medium text-foreground">{product.name}</td>
+                      <td className="px-4 py-3 text-sm text-muted-foreground">{product.category}</td>
+                      <td className="px-4 py-3 text-center text-sm">
                         {isAdded ? (
                           <div className="flex items-center justify-center gap-2">
                             <button
                               onClick={() => updateQuantity(product.id, -1)}
                               aria-label="Decrease quantity"
-                              className="rounded p-0.5 hover:bg-slate-200"
+                              className="rounded p-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                             >
                               <Minus size={14} />
                             </button>
-                            <span className="w-4 text-center font-semibold">{sel.quantity}</span>
+                            <span className="w-4 text-center font-semibold text-foreground">{sel.quantity}</span>
                             <button
                               onClick={() => updateQuantity(product.id, 1)}
                               aria-label="Increase quantity"
-                              className="rounded p-0.5 hover:bg-slate-200"
+                              className="rounded p-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                             >
                               <Plus size={14} />
                             </button>
@@ -144,15 +151,17 @@ export default function AddTransactionModal({
                           "—"
                         )}
                       </td>
-                      <td className="border border-slate-300 px-3 py-2 text-center text-sm">${product.price}</td>
-                      <td className="border border-slate-300 px-3 py-2 text-center">
+                      <td className="px-4 py-3 text-center text-sm text-foreground">${product.price}</td>
+                      <td className="px-4 py-3 text-center">
                         <button
                           onClick={() => toggleAdd(product.id, isAdded)}
-                          className={`rounded-full px-3 py-1 text-xs font-semibold text-white transition-colors ${
-                            isAdded ? "bg-red-500 hover:bg-red-600" : "bg-green-500 hover:bg-green-600"
+                          className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
+                            isAdded
+                              ? "bg-rose-600 text-white hover:bg-rose-700"
+                              : "bg-violet-700 text-white hover:bg-violet-800"
                           }`}
                         >
-                          {isAdded ? "Added" : "Add"}
+                          {isAdded ? "Remove" : "Add"}
                         </button>
                       </td>
                     </tr>
@@ -167,9 +176,9 @@ export default function AddTransactionModal({
           <button
             onClick={onClose}
             disabled={Object.keys(selections).length === 0}
-            className="flex h-12 w-12 items-center justify-center rounded-full bg-violet-900 text-white shadow-lg transition-transform hover:bg-violet-800 active:scale-95 disabled:opacity-50"
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-violet-900 text-white shadow-md transition-colors hover:bg-violet-950"
           >
-            <Plus size={24} />
+            <Plus size={20} />
           </button>
         </div>
       </div>

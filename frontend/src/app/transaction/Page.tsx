@@ -19,18 +19,18 @@ export default function TransactionsPage() {
   };
 
   return (
-    <div className="space-y-6 p-6">
+    <main className="space-y-6 p-6">
       <div className="flex items-center gap-3">
         {showTable && (
           <button
             onClick={() => setShowTable(false)}
             aria-label="Go Back"
-            className="rounded-full p-2 text-foreground transition-colors hover:bg-black/5"
+            className="rounded-full p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
           >
             <ArrowLeft size={24} />
           </button>
         )}
-        <h1 className="text-3xl font-black text-foreground">Transaction</h1>
+        <h2 className="text-4xl font-bold text-foreground">Transaction</h2>
       </div>
 
       {!showTable ? (
@@ -52,6 +52,6 @@ export default function TransactionsPage() {
       {isViewModalOpen && (
         <ViewTransactionModal onClose={() => setIsViewModalOpen(false)} />
       )}
-    </div>
+    </main>
   );
 }
