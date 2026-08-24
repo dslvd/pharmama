@@ -42,7 +42,7 @@ export class StockController {
     return this.stService.createStock(data);
   }
 
-  @Patch()
+  @Patch(":id")
   async updateSt(
     @Param("id", ParseIntPipe) id: number,
     @Body() body: UpdateStockDto,
@@ -50,7 +50,7 @@ export class StockController {
     return this.stService.updateStock(id, body);
   }
 
-  @Delete()
+  @Delete(":id")
   async deleteSt(@Param("id", ParseIntPipe) id: number): Promise<Stock> {
     return this.stService.deleteStock(id);
   }
