@@ -1,76 +1,146 @@
 "use client";
 
-import { ChevronUp, ChevronDown, Trash2 } from "lucide-react";
-import { Transaction } from "@/lib/types/transaction";
+import { useState } from "react";
+import { ChevronUp, ChevronDown, Plus } from "lucide-react";
 
-interface TransactionTableProps {
-  transactions: Transaction[];
+export interface PendingTransactionItem {
+  id: string;
+  productName: string;
+  brand: string;
+  date: string;
+  time: string;
+  quantity: number;
+  price: number;
+  status?: "ACTIVE" | "CANCELLED";
 }
 
-export default function TransactionTable({ transactions }: TransactionTableProps) {
+interface TransactionTableProps {
+  initialItems?: PendingTransactionItem[];
+  onOpenModal?: () => void;
+}
+
+export default function TransactionTable({
+  initialItems = [],
+  onOpenModal,
+}: TransactionTableProps) {
+  const [items, setItems] = useState<PendingTransactionItem[]>(initialItems);
+
+  const updateQuantity = (id: string, delta: number) => {
+    setItems((prev) =>
+      prev.map((item) => {
+        if (item.id === id && item.status !== "CANCELLED") {
+          return { ...item, quantity: Math.max(1, item.quantity + delta) };
+        }
+        return item;
+      })
+    );
+  };
+
+  const cancelItem = (id: string) => {
+    setItems((prev) => {
+      const updated = prev.map((item) =>
+        item.id === id ? { ...item, status: "CANCELLED" as const } : item
+      );
+      return updated.sort((a, b) => (a.status === "CANCELLED" ? 1 : 0) - (b.status === "CANCELLED" ? 1 : 0));
+    });
+  };
+
+  const activeItems = items.filter((i) => i.status !== "CANCELLED");
+  const grandTotal = activeItems.reduce((acc, curr) => acc + curr.price * curr.quantity, 0);
+
   return (
-    <section>
-      <div className="overflow-x-auto rounded-xl border border-border bg-card">
-        <table className="w-full text-left text-sm">
-          <thead>
-            <tr className="border-b border-border">
-              <th className="px-4 py-2.5 text-xs font-bold text-foreground">ID</th>
-              <th className="px-4 py-2.5 text-xs font-bold text-foreground">Product Name</th>
-              <th className="px-4 py-2.5 text-xs font-bold text-foreground">Brand</th>
-              <th className="px-4 py-2.5 text-xs font-bold text-foreground">Date</th>
-              <th className="px-4 py-2.5 text-xs font-bold text-foreground">Time</th>
-              <th className="px-4 py-2.5 text-xs font-bold text-foreground">Quantity</th>
-              <th className="px-4 py-2.5 text-xs font-bold text-foreground">Price</th>
-              <th className="px-4 py-2.5 text-xs font-bold text-foreground text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {transactions.map((tx) => (
-              <tr key={tx.id} className="border-b border-border bg-violet-50/60 last:border-0">
-                <td className="px-4 py-3 text-muted-foreground">{tx.id}</td>
-                <td className="px-4 py-3 text-foreground">Laxative</td>
-                <td className="px-4 py-3 text-muted-foreground">--</td>
-                <td className="px-4 py-3 text-muted-foreground">
-                  {new Date(tx.createdAt).toLocaleDateString("en-GB")}
-                </td>
-                <td className="px-4 py-3 text-muted-foreground">
-                  {new Date(tx.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                </td>
-                <td className="px-4 py-3 text-muted-foreground">
-                  <div className="flex items-center gap-1.5">
-                    <span>1</span>
-                    <div className="flex flex-col">
-                      <button aria-label="Increase quantity" className="hover:text-foreground">
-                        <ChevronUp className="h-3 w-3" />
-                      </button>
-                      <button aria-label="Decrease quantity" className="hover:text-foreground">
-                        <ChevronDown className="h-3 w-3" />
-                      </button>
-                    </div>
-                  </div>
-                </td>
-                <td className="px-4 py-3 text-muted-foreground">${tx.totalAmount}</td>
-                <td className="px-4 py-3 text-right">
-                  <div className="flex items-center justify-end gap-2 text-muted-foreground">
-                    <button
-                      aria-label="Confirm item"
-                      className="rounded bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700 hover:bg-emerald-200"
-                    >
-                      confirm
-                    </button>
-                    <button aria-label="Delete item" className="hover:text-rose-600">
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </button>
-                  </div>
-                </td>
+    <section className="space-y-3">
+      <div className="rounded-xl border border-border bg-card">
+        <div className="max-h-[350px] overflow-y-auto">
+          <table className="w-full border-collapse text-left text-sm">
+            <thead className="sticky top-0 z-10 border-b border-border bg-card">
+              <tr>
+                <th className="px-4 py-2.5 text-xs font-bold text-foreground">Product Name</th>
+                <th className="px-4 py-2.5 text-center text-xs font-bold text-foreground">Quantity</th>
+                <th className="px-4 py-2.5 text-center text-xs font-bold text-foreground">Unit Price</th>
+                <th className="px-4 py-2.5 text-center text-xs font-bold text-foreground">SubTotal</th>
+                <th className="px-4 py-2.5 text-right text-xs font-bold text-foreground">
+                  <button
+                    disabled={activeItems.length === 0}
+                    className="rounded-lg bg-emerald-200 px-4 py-1 text-xs font-bold text-emerald-900 transition-colors hover:bg-emerald-300 disabled:opacity-50"
+                  >
+                    confirm
+                  </button>
+                </th>
               </tr>
-            ))}
-            {/* Blank row matching wireframe styling */}
-            <tr>
-              <td className="px-4 py-4" colSpan={8}>&nbsp;</td>
-            </tr>
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {items.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="px-4 py-6 text-center text-xs text-muted-foreground">
+                    No items added yet. Click '+' below to add items.
+                  </td>
+                </tr>
+              ) : (
+                items.map((item) => {
+                  const isCancelled = item.status === "CANCELLED";
+
+                  return (
+                    <tr
+                      key={item.id}
+                      className={`border-b border-border ${
+                        isCancelled ? "bg-stone-100 opacity-60" : "bg-violet-50/60"
+                      }`}
+                    >
+                      <td className={`px-4 py-3 font-medium ${isCancelled ? "line-through text-stone-500" : "text-foreground"}`}>
+                        {item.productName}
+                      </td>
+                      <td className="px-4 py-3 text-center">
+                        <div className="flex items-center justify-center gap-1.5">
+                          <span className="w-4 text-xs font-semibold">{item.quantity}</span>
+                          {!isCancelled && (
+                            <div className="flex flex-col">
+                              <button onClick={() => updateQuantity(item.id, 1)} className="hover:text-foreground">
+                                <ChevronUp size={12} />
+                              </button>
+                              <button onClick={() => updateQuantity(item.id, -1)} className="hover:text-foreground">
+                                <ChevronDown size={12} />
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 text-center text-muted-foreground">${item.price}</td>
+                      <td className="px-4 py-3 text-center font-semibold text-foreground">
+                        ${item.price * item.quantity}
+                      </td>
+                      <td className="px-4 py-3 text-right">
+                        {isCancelled ? (
+                          <span className="rounded bg-rose-100 px-2.5 py-1 text-[11px] font-bold text-rose-700">
+                            CANCELLED
+                          </span>
+                        ) : (
+                          <button
+                            onClick={() => cancelItem(item.id)}
+                            className="rounded bg-rose-200 px-3 py-1 text-xs font-bold text-rose-900 transition-colors hover:bg-rose-300"
+                          >
+                            cancel
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        <div className="flex items-center justify-between border-t border-border bg-card px-4 py-3">
+          <button
+            onClick={onOpenModal}
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-violet-900 text-white transition-transform hover:bg-violet-800 active:scale-95"
+            aria-label="Add More Items"
+          >
+            <Plus size={16} />
+          </button>
+          <span className="text-sm font-bold text-foreground">Total: ${grandTotal}</span>
+        </div>
       </div>
     </section>
   );
