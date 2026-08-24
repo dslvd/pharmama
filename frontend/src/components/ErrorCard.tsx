@@ -1,12 +1,19 @@
-'use client'
+"use client";
 
-import { Ban, X } from 'lucide-react'
+import { useState } from "react";
+import { Ban, X } from "lucide-react";
 
 // card
-export function ErrorCard({ err, depth = 0, onClose }: { err: string; depth?: number; onClose?: () => void
+export function ErrorCard({
+  err,
+  depth = 0,
+  onClose,
+}: {
+  err: string;
+  depth?: number;
+  onClose?: () => void;
 }) {
-  //transparency of older  errors
-  const opacity = depth === 0 ? 1 : Math.max(0.2, 0.8 - depth * 0.2)
+  const opacity = depth === 0 ? 1 : Math.max(0.2, 0.8 - depth * 0.2);
 
   return (
     <div
@@ -24,32 +31,38 @@ export function ErrorCard({ err, depth = 0, onClose }: { err: string; depth?: nu
         />
       </div>
     </div>
-  )
+  );
 }
 
 // stack
 export function ErrorStack({
   errors = [],
-  onDismiss,
 }: {
-  errors: { id: string; message: string }[]
-  onDismiss?: (id: string) => void
+  errors: { id: string; message: string }[];
 }) {
-  if (errors.length === 0) return null
+  const [dismissedIds, setDismissedIds] = useState<Set<string>>(new Set());
+
+  const visibleErrors = errors.filter((e) => !dismissedIds.has(e.id));
+
+  if (visibleErrors.length === 0) return null;
+
+  const handleDismiss = (id: string) => {
+    setDismissedIds((prev) => new Set(prev).add(id));
+  };
 
   return (
     <div className="fixed bottom-6 right-6 w-full max-w-sm flex flex-col-reverse gap-2 max-h-[80vh] overflow-y-auto pointer-events-none z-50">
-      {errors.map((e, i) => {
-        const depth = errors.length - 1 - i
+      {visibleErrors.map((e, i) => {
+        const depth = visibleErrors.length - 1 - i;
         return (
           <ErrorCard
             key={e.id}
             err={e.message}
             depth={depth}
-            onClose={() => onDismiss?.(e.id)}
+            onClose={() => handleDismiss(e.id)}
           />
-        )
+        );
       })}
     </div>
-  )
+  );
 }
