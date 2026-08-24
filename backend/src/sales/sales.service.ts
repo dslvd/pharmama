@@ -22,13 +22,13 @@ export class SalesService {
 
   private async getToday(): Promise<SalesPoint[]> {
     const rows = await this.prisma.$queryRaw<{ hour: Date; total: number }[]>`
-            SELECT DATE_TRUNC('hour', "createdAt") AS hour, SUM(total) AS total
-            FROM "Transaction"
-            WHERE "createdAt" >= CURRENT_DATE
-              AND status = 'COMPLETED'
-            GROUP BY hour
-            ORDER BY hour
-        `;
+        SELECT DATE_TRUNC('hour', "createdAt") AS hour, SUM("totalAmount") AS total
+        FROM "Transaction"
+        WHERE "createdAt" >= CURRENT_DATE
+          AND status = 'COMPLETED'
+        GROUP BY hour
+        ORDER BY hour
+    `;
     return rows.map((r) => ({
       label: new Date(r.hour).toLocaleTimeString("en-US", { hour: "numeric" }),
       value: Number(r.total),
@@ -37,7 +37,7 @@ export class SalesService {
 
   private async getWeek(): Promise<SalesPoint[]> {
     const rows = await this.prisma.$queryRaw<{ day: Date; total: number }[]>`
-            SELECT DATE_TRUNC('day', "createdAt") AS day, SUM(totalAmount) AS total
+            SELECT DATE_TRUNC('day', "createdAt") AS day, SUM("totalAmount") AS total
             FROM "Transaction"
             WHERE "createdAt" >= CURRENT_DATE - INTERVAL '6 days'
               AND status = 'COMPLETED'
@@ -52,7 +52,7 @@ export class SalesService {
 
   private async getMonth(): Promise<SalesPoint[]> {
     const rows = await this.prisma.$queryRaw<{ week: Date; total: number }[]>`
-            SELECT DATE_TRUNC('week', "createdAt") AS week, SUM(totalAmount) AS total
+            SELECT DATE_TRUNC('week', "createdAt") AS week, SUM("totalAmount") AS total
             FROM "Transaction"
             WHERE "createdAt" >= DATE_TRUNC('month', CURRENT_DATE)
               AND status = 'COMPLETED'
@@ -67,7 +67,7 @@ export class SalesService {
 
   private async getYear(): Promise<SalesPoint[]> {
     const rows = await this.prisma.$queryRaw<{ month: Date; total: number }[]>`
-            SELECT DATE_TRUNC('month', "createdAt") AS month, SUM(totalAmount) AS total
+            SELECT DATE_TRUNC('month', "createdAt") AS month, SUM("totalAmount") AS total
             FROM "Transaction"
             WHERE "createdAt" >= CURRENT_DATE - INTERVAL '6 months'
               AND status = 'COMPLETED'
