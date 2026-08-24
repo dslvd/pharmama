@@ -48,18 +48,24 @@ export class TransactionService {
     handledBy?: string;
     order?: Prisma.SortOrder;
   }): Promise<Transaction[]> {
-    return this.prisma.transaction.findMany({
-      where: {
-        ...(filter.status && { status: filter.status }),
-        ...(filter.handledBy && {
-          handledBy: {
-            contains: filter.handledBy.toUpperCase().trim(),
-            mode: "insensitive",
-          },
-        }),
-      },
-      orderBy: { createdAt: filter.order ?? "desc" },
+    const list = await this.prisma.transaction.findMany();
+
+    const filtered = list.filter((tx) => {
+      const statusMatch = !filter.status || tx.status === filter.status;
+      const handledByMatch =
+        !filter.handledBy ||
+        tx.handledBy
+          .toLowerCase()
+          .includes(filter.handledBy.toLowerCase().trim());
+
+      return statusMatch && handledByMatch;
     });
+
+    return [...filtered].sort((a, b) =>
+      (filter.order ?? "desc") === "asc"
+        ? a.createdAt.getTime() - b.createdAt.getTime()
+        : b.createdAt.getTime() - a.createdAt.getTime(),
+    );
   }
 
   async getTodaySales(): Promise<{ total: number; date: string }> {
@@ -200,20 +206,24 @@ export class TransactionService {
   }
 
   async searchTransaction(query: string): Promise<Transaction[]> {
-    return this.prisma.transaction.findMany({
-      where: query
-        ? {
-            OR: [
-              { handledBy: { contains: query, mode: "insensitive" } },
-              ...(Object.values(TransactionStatus).includes(
-                query.toUpperCase() as TransactionStatus,
-              )
-                ? [{ status: query.toUpperCase() as TransactionStatus }]
-                : []),
-            ],
-          }
-        : {},
-    });
+    const list = await this.prisma.transaction.findMany();
+
+    if (!query) {
+      return list;
+    }
+
+    const q = query.toLowerCase();
+    const statusMatch = Object.values(TransactionStatus).includes(
+      query.toUpperCase() as TransactionStatus,
+    )
+      ? (query.toUpperCase() as TransactionStatus)
+      : undefined;
+
+    return list.filter(
+      (tx) =>
+        tx.handledBy.toLowerCase().includes(q) ||
+        (statusMatch ? tx.status === statusMatch : false),
+    );
   }
 }
 

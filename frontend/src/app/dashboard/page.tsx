@@ -1,15 +1,11 @@
-'use client'
+"use client";
 
-import CurrentStocks from "./components/CurrentStocks"
-import LowStocks from "./components/LowStocks"
-import SalesCard from "./components/SalesCard"
-import SalesOverview from "./components/SalesOverview"
+import CurrentStocks from "./components/CurrentStocks";
+import LowStocks from "./components/LowStocks";
+import SalesCard from "./components/SalesCard";
+import SalesOverview from "./components/SalesOverview";
 
-interface DashboardProps {
-  userRole: 'superuser' | 'clinic'
-}
-
-export default function Dashboard({ userRole }: DashboardProps) {
+export default function Dashboard() {
   return (
     <main className="space-y-6 p-6">
       <h2 className="text-4xl font-bold text-foreground">Dashboard</h2>
@@ -23,5 +19,5 @@ export default function Dashboard({ userRole }: DashboardProps) {
 
       <SalesOverview />
     </main>
-  )
+  );
 }

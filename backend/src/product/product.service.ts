@@ -33,11 +33,22 @@ export class ProductService {
     category?: Category;
     order?: Prisma.SortOrder;
   }): Promise<Product[]> {
-    return this.prisma.product.findMany({
-      where: {
-        ...(filter.category && { category: filter.category }),
-      },
-      orderBy: { createdAt: filter.order ?? "desc" },
+    return this.prisma.$transaction(async (pr) => {
+      const list = await pr.product.findMany();
+
+      const filtered = filter.category
+        ? list.filter((product) => product.category === filter.category)
+        : list;
+
+      if (!filter.order) {
+        return filtered;
+      }
+
+      return [...filtered].sort((a, b) =>
+        filter.order === "asc"
+          ? a.createdAt.getTime() - b.createdAt.getTime()
+          : b.createdAt.getTime() - a.createdAt.getTime(),
+      );
     });
   }
 
@@ -106,21 +117,23 @@ export class ProductService {
   }
 
   async searchProducts(query: string): Promise<Product[]> {
+    const list = await this.prisma.product.findMany();
+
+    if (!query) {
+      return list;
+    }
+
+    const q = query.toLowerCase();
     const categoryMatch = Object.values(Category).includes(query as Category)
       ? (query as Category)
       : undefined;
 
-    return this.prisma.product.findMany({
-      where: query
-        ? {
-            OR: [
-              { name: { contains: query, mode: "insensitive" } },
-              { genericName: { contains: query, mode: "insensitive" } },
-              ...(categoryMatch ? [{ category: categoryMatch }] : []),
-            ],
-          }
-        : {},
-    });
+    return list.filter(
+      (product) =>
+        product.name.toLowerCase().includes(q) ||
+        product.genericName?.toLowerCase().includes(q) ||
+        (categoryMatch ? product.category === categoryMatch : false),
+    );
   }
 }
 
