@@ -31,3 +31,8 @@ export const updateProduct = (id: number, data: UpdateProductPayload) =>
     method: "PATCH",
     body: JSON.stringify(data),
   });
+
+export const deleteProduct = (id: number) =>
+  apiFetch<Product>(`/product/${id}`, {
+    method: "DELETE",
+  });
