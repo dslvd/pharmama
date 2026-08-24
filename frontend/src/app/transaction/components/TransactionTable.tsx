@@ -147,7 +147,7 @@ export default function TransactionTable({
         <div className="flex items-center justify-between border-t border-border bg-card px-4 py-3">
           <button
             onClick={onOpenModal}
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-violet-900 text-white transition-colors hover:bg-violet-950 shadow-sm"
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-violet-950 text-white transition-colors hover:bg-violet-900 shadow-sm"
             aria-label="Add More Items"
           >
             <Plus size={16} />
