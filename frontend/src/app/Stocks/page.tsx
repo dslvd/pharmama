@@ -8,8 +8,7 @@ import { SortOrder } from "@/lib/types/product";
 import FilterBar, { FilterProps } from "@/components/FilterBar";
 import StockRow from "@/app/stocks/components/StockRow";
 import AddStockModal from "@/app/stocks/components/AddStockModal";
-import AddItemButton from "@/components/AddItemModal/AddButton";
-import { Funnel, Search } from "lucide-react";
+import { Funnel, Search, Plus } from "lucide-react";
 
 export default function StockPage() {
   const [stock, setStock] = useState<Stock[]>([]);
@@ -62,98 +61,110 @@ export default function StockPage() {
   }
 
   return (
-    <main className="space-y-6 p-5">
-      <div className="flex items-center justify-between">
-        <h2 className="text-5xl font-bold text-primary">Stocks</h2>
+    <main className="space-y-6 p-6">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h2 className="text-4xl font-bold text-foreground">Stocks</h2>
 
         <div className="flex items-center gap-3">
-          <AddItemButton onSaved={() => setRefreshKey((k) => k + 1)} />
+          <button
+            onClick={() => setShowAddStockModal(true)}
+            className="flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary"
+          >
+            <Plus className="h-4 w-4" />
+            Add Stock
+          </button>
 
-          <div className="relative w-64">
+          <div className="relative w-56">
             <Search
               size={16}
-              className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+              className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
             />
             <input
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Search"
-              className="w-full rounded-full border border-slate-200 bg-white py-2 pl-9 pr-3 text-sm text-slate-700 shadow-sm focus:border-violet-300 focus:outline-none focus:ring-2 focus:ring-violet-100"
+              className="w-full rounded-full border border-border bg-card py-2 pl-9 pr-3 text-sm text-foreground shadow-sm focus:border-violet-300 focus:outline-none focus:ring-2 focus:ring-violet-100"
             />
           </div>
 
-          <button
-            onClick={() => setFilter(!filter)}
-            aria-label="Toggle filters"
-            className={`rounded-full p-2 transition-colors ${
-              filter
-                ? "bg-violet-100 text-primary"
-                : "text-slate-500 hover:bg-slate-100"
-            }`}
-          >
-            <Funnel size={20} />
-          </button>
+          <div className="relative">
+            <button
+              onClick={() => setFilter(!filter)}
+              aria-label="Toggle filters"
+              aria-pressed={filter}
+              className={`rounded-full border p-2.5 transition-colors ${
+                filter
+                  ? "border-primary bg-violet-100 text-violet-700"
+                  : "border-border bg-card text-muted-foreground hover:bg-muted"
+              }`}
+            >
+              <Funnel size={18} />
+            </button>
+
+            {filter && (
+              <div className="absolute right-0 z-10 mt-2 w-64 rounded-xl border border-border bg-card p-4 shadow-lg">
+                <FilterBar
+                  filters={FilterOptions}
+                  onFilterChange={handleFilterChange}
+                />
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
-      {filter && (
-        <FilterBar
-          filters={FilterOptions}
-          onFilterChange={handleFilterChange}
-        />
-      )}
-
-      <table className="w-full border-collapse border border-slate-300">
-        <thead>
-          <tr className="bg-slate-100">
-            <th className="border border-slate-300 px-3 py-2 text-sm font-semibold">
-              ID
-            </th>
-            <th className="border border-slate-300 px-3 py-2 text-sm font-semibold">
-              Product ID
-            </th>
-            <th className="border border-slate-300 px-3 py-2 text-sm font-semibold">
-              Batch Number
-            </th>
-            <th className="border border-slate-300 px-3 py-2 text-sm font-semibold">
-              Quantity
-            </th>
-            <th className="border border-slate-300 px-3 py-2 text-sm font-semibold">
-              Expiry Date
-            </th>
-            <th className="border border-slate-300 px-3 py-2 text-sm font-semibold">
-              Created At
-            </th>
-            <th className="border border-slate-300 px-3 py-2 text-sm font-semibold">
-              Actions
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {stock.length === 0 ? (
-            <tr>
-              <td
-                colSpan={7}
-                className="border border-slate-300 px-3 py-6 text-center text-sm text-slate-400"
-              >
-                No stock records found.
-              </td>
+      <div className="overflow-x-auto rounded-xl border border-border bg-card">
+        <table className="w-full text-left text-sm">
+          <thead>
+            <tr className="border-b border-border bg-muted/60">
+              <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                ID
+              </th>
+              <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Product ID
+              </th>
+              <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Batch Number
+              </th>
+              <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Quantity
+              </th>
+              <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Expiry Date
+              </th>
+              <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Created At
+              </th>
+              <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Actions
+              </th>
             </tr>
-          ) : (
-            stock.map((item) => (
-              <StockRow
-                key={item.id}
-                stock={item}
-                onDeleted={() => setRefreshKey((k) => k + 1)}
-                onEdit={openEditModal}
-              />
-            ))
-          )}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {stock.length === 0 ? (
+              <tr>
+                <td
+                  colSpan={7}
+                  className="px-4 py-8 text-center text-sm text-muted-foreground"
+                >
+                  No stock records found.
+                </td>
+              </tr>
+            ) : (
+              stock.map((item) => (
+                <StockRow
+                  key={item.id}
+                  stock={item}
+                  onDeleted={() => setRefreshKey((k) => k + 1)}
+                  onEdit={openEditModal}
+                />
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
 
-      <button onClick={() => setShowAddStockModal(true)}>Add Stock</button>
       {showAddStockModal && (
         <AddStockModal
           stock={editingStock}
