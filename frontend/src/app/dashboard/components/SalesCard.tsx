@@ -2,7 +2,11 @@ import { getTodaySales } from "@/lib/api/transaction";
 import { useEffect, useState } from "react";
 import { Wallet } from "lucide-react";
 
-export default function SalesCard() {
+export default function SalesCard({
+  onError,
+}: {
+  onError?: (message: string) => void;
+}) {
   const [sales, setSales] = useState<{ total: number; date: string } | null>(
     null,
   );
@@ -14,11 +18,11 @@ export default function SalesCard() {
       if (result.ok) {
         setSales(result.value);
       } else {
-        console.log(result.error);
+        onError?.(result.error);
       }
     }
     loadSales();
-  }, []);
+  }, [onError]);
 
   return (
     <article className="rounded-xl border border-border bg-card p-5">
