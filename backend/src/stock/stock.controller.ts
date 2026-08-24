@@ -1,15 +1,17 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
   Query,
 } from "@nestjs/common";
 import { StockService } from "./stock.service";
 import { Prisma, Stock } from "src/generated/prisma/client";
-import { CreateStockDto } from "./validation";
+import { CreateStockDto, UpdateStockDto } from "./validation";
 
 @Controller("stock")
 export class StockController {
@@ -38,5 +40,18 @@ export class StockController {
   @Post()
   async createSt(@Body() data: CreateStockDto): Promise<Stock> {
     return this.stService.createStock(data);
+  }
+
+  @Patch(":id")
+  async updateSt(
+    @Param("id", ParseIntPipe) id: number,
+    @Body() body: UpdateStockDto,
+  ): Promise<Stock> {
+    return this.stService.updateStock(id, body);
+  }
+
+  @Delete(":id")
+  async deleteSt(@Param("id", ParseIntPipe) id: number): Promise<Stock> {
+    return this.stService.deleteStock(id);
   }
 }
