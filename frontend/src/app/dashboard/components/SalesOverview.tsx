@@ -54,7 +54,7 @@ export default function SalesOverview() {
   }, [period]);
 
   return (
-    <section className="flex flex-1 flex-col rounded-xl border border-border bg-card p-5">
+    <section className="rounded-xl border border-border bg-card p-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-violet-100 text-violet-700">
@@ -82,7 +82,7 @@ export default function SalesOverview() {
         </div>
       </div>
 
-      <div className="mt-5 min-h-64 flex-1 w-full">
+      <div className="mt-5 h-64 w-full">
         {loading ? (
           <div className="flex h-full items-center justify-center text-sm">
             loading...

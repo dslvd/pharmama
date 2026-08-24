@@ -21,6 +21,9 @@ export default function AuditRow({ audit }: { audit: AuditLog }) {
   return (
     <tr className="border-b border-border last:border-0 odd:bg-card even:bg-violet-50/60">
       <td className="px-4 py-3 text-center text-muted-foreground">
+        {audit.id}
+      </td>
+      <td className="px-4 py-3 text-center text-muted-foreground">
         {date}
       </td>
       <td className="px-4 py-3 text-center text-muted-foreground">

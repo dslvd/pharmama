@@ -13,7 +13,7 @@ export default function Dashboard() {
   const addError = (message: string) =>
     setErrors((prev) => [...prev, { id: crypto.randomUUID(), message }]);
   return (
-    <main className="flex min-h-screen flex-col space-y-6 p-6">
+    <main className="space-y-6 p-6">
       <h2 className="text-4xl font-bold text-foreground">Dashboard</h2>
 
       {/* Stats Grid */}
