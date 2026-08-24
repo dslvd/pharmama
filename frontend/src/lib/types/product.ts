@@ -40,3 +40,13 @@ export interface GetPrListParams {
   sortBy?: SortBy;
   order?: SortOrder;
 }
+
+export type Category =
+  | "ANALGESICS"
+  | "ANTIBIOTICS"
+  | "ANTIHISTAMINES"
+  | "VITAMINS"
+  | "SUPPLEMENTS"
+  | "ANTACIDS"
+  | "HYGIENE"
+  | "OTHERS";
