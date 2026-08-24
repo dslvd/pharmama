@@ -90,12 +90,26 @@ export default function AddItemModal({ onClose, onSaved }: AddItemModalProps) {
 
           <div>
             <label className="text-sm font-medium">Category</label>
-            <input
-              type="text"
+            <select
               value={category}
-              onChange={(e) => setCategory(e.target.value)}
+              onChange={(e) => setCategory(e.target.value as Category)}
               className={`w-full rounded border px-3 py-2 text-sm ${errors.category ? "border-red-500" : "border-slate-300"}`}
-            />
+            >
+              {[
+                "ANALGESICS",
+                "ANTIBIOTICS",
+                "ANTIHISTAMINES",
+                "VITAMINS",
+                "SUPPLEMENTS",
+                "ANTACIDS",
+                "HYGIENNE",
+                "OTHERS",
+              ].map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
             {errors.category && (
               <span className="text-xs text-red-600">{errors.category}</span>
             )}

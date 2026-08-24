@@ -23,7 +23,7 @@ export default function StockRow({ stock, onDeleted, onEdit }: StockRowProps) {
   );
   const expiryStyle =
     daysUntilExpiry < 0
-      ? "bg-rose-100 text-rose-700"
+      ? "bg-rose-100 text-rose-700" 
       : daysUntilExpiry <= EXPIRY_WARNING_DAYS
         ? "bg-amber-100 text-amber-700"
         : "bg-emerald-100 text-emerald-700";
