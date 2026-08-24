@@ -16,12 +16,42 @@ export class AuditLogService {
     action?: AuditAction;
     order?: Prisma.SortOrder;
   }): Promise<AuditLog[]> {
-    return this.prisma.auditLog.findMany({
-      where: {
-        ...(filter.entity && { entity: filter.entity }),
-        ...(filter.action && { action: filter.action }),
-      },
-      orderBy: { createdAt: filter.order ?? "desc" },
-    });
+    const list = await this.prisma.auditLog.findMany();
+
+    const filtered = list.filter(
+      (log) =>
+        (!filter.entity || log.entity === filter.entity) &&
+        (!filter.action || log.action === filter.action),
+    );
+
+    return [...filtered].sort((a, b) =>
+      (filter.order ?? "desc") === "asc"
+        ? a.createdAt.getTime() - b.createdAt.getTime()
+        : b.createdAt.getTime() - a.createdAt.getTime(),
+    );
+  }
+
+  async searchAuditLogs(query: string): Promise<AuditLog[]> {
+    const list = await this.prisma.auditLog.findMany();
+
+    if (!query) return list;
+
+    const q = query.toLowerCase();
+    const actionMatch = Object.values(AuditAction).includes(
+      query.toUpperCase() as AuditAction,
+    )
+      ? (query.toUpperCase() as AuditAction)
+      : undefined;
+    const entityMatch = Object.values(AuditEntity).includes(
+      query.toUpperCase() as AuditEntity,
+    )
+      ? (query.toUpperCase() as AuditEntity)
+      : undefined;
+
+    return list.filter(
+      (log) =>
+        (actionMatch ? log.action === actionMatch : false) ||
+        (entityMatch ? log.entity === entityMatch : false),
+    );
   }
 }
