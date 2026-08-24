@@ -7,6 +7,7 @@ import { StockModule } from "./stock/stock.module";
 import { ProductModule } from "./product/product.module";
 import { PrismaModule } from "./prisma/prisma.module";
 import { AuditLogModule } from "./audit-log/audit-log.module";
+import { SalesModule } from "./sales/sales.module";
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { AuditLogModule } from "./audit-log/audit-log.module";
     StockModule,
     ProductModule,
     AuditLogModule,
+    SalesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
