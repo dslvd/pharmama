@@ -13,6 +13,7 @@ interface NavigationProps {
 const navItems = [
   { label: 'Dashboard', page: '/dashboard', icon: PanelsTopLeft },
   { label: 'Transaction', page: '/transaction', icon: ArrowLeftRight },
+  { label: 'Products', page: '/products', icon: Package },
   { label: 'Stocks', page: '/stocks', icon: Package },
   { label: 'Log Book', page: '/logbook', icon: FolderBookmark },
  ]
