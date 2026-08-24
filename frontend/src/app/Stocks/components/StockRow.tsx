@@ -10,11 +10,9 @@ interface StockRowProps {
 }
 
 const LOW_QUANTITY_THRESHOLD = 20;
-const EXPIRY_WARNING_DAYS = 30;
 
 export default function StockRow({ stock, onDeleted, onEdit }: StockRowProps) {
   const [deleting, setDeleting] = useState(false);
-  const createdDate = new Date(stock.createdAt).toLocaleDateString();
   const expiry = new Date(stock.expiryDate);
   const expiryDate = expiry.toLocaleDateString();
 
@@ -37,9 +35,6 @@ export default function StockRow({ stock, onDeleted, onEdit }: StockRowProps) {
 
   return (
     <tr className="border-t border-border odd:bg-card even:bg-muted/40 hover:bg-violet-50/60">
-      <td className="px-4 py-3 font-mono text-xs text-muted-foreground">
-        #{stock.id}
-      </td>
       <td className="px-4 py-3 text-foreground">{stock.productId}</td>
       <td className="px-4 py-3 text-muted-foreground">{stock.batchNumber}</td>
       <td className="px-4 py-3">
@@ -52,7 +47,15 @@ export default function StockRow({ stock, onDeleted, onEdit }: StockRowProps) {
           {expiryDate}
         </span>
       </td>
-      <td className="px-4 py-3 text-muted-foreground">{createdDate}</td>
+      <td className="px-4 py-3">
+        <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${
+          stock.quantity <= LOW_QUANTITY_THRESHOLD
+            ? "bg-amber-100 text-amber-700"
+            : "bg-emerald-100 text-emerald-700"
+        }`}>
+          {stock.quantity <= LOW_QUANTITY_THRESHOLD ? "Low stock" : "In stock"}
+        </span>
+      </td>
       <td className="px-4 py-3">
         <div className="flex items-center gap-3 text-muted-foreground">
           <button

@@ -29,17 +29,15 @@ export default function TransactionsPage() {
       </div>
 
       <div className="space-y-6">
-        {/* Swaps the top section dynamically */}
         {!isTransactionStarted ? (
           <TransactionPanel onAddTransaction={handleStartTransaction} />
         ) : (
-          <TransactionTable 
-            onOpenModal={() => setIsAddModalOpen(true)} 
-            onCancelTransaction={handleCancelTransaction} 
+          <TransactionTable
+            onOpenModal={() => setIsAddModalOpen(true)}
+            onCancelTransaction={handleCancelTransaction}
           />
         )}
 
-        {/* Bottom table remains constant */}
         <SalesTable onViewClick={() => setIsViewModalOpen(true)} />
       </div>
 
