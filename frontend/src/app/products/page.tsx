@@ -7,6 +7,7 @@ import FilterBar, { FilterProps } from "@/components/FilterBar";
 import ProductRow from "@/app/products/components/ProductRow";
 import AddProductModal from "@/app/products/components/AddProductModal";
 import { Funnel, Search, Plus } from "lucide-react";
+import { ErrorStack } from "@/components/ErrorCard";
 
 export default function ProductPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -15,8 +16,14 @@ export default function ProductPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filter, setFilter] = useState(false);
   const [showAddProductModal, setShowAddProductModal] = useState(false);
-  const [editingProduct, setEditingProduct] = useState<Product | undefined>(undefined);
+  const [editingProduct, setEditingProduct] = useState<Product | undefined>(
+    undefined,
+  );
   const [refreshKey, setRefreshKey] = useState(0);
+  const [errors, setErrors] = useState<{ id: string; message: string }[]>([]);
+
+  const addError = (message: string) =>
+    setErrors((prev) => [...prev, { id: crypto.randomUUID(), message }]);
 
   useEffect(() => {
     async function loadProducts() {
@@ -27,7 +34,7 @@ export default function ProductPage() {
       if (result.ok) {
         setProducts(result.value);
       } else {
-        console.log(result.error);
+        addError(result.error);
       }
     }
 
@@ -107,7 +114,10 @@ export default function ProductPage() {
 
             {filter && (
               <div className="absolute right-0 z-10 mt-2 w-64 rounded-xl border border-border bg-card p-4 shadow-lg">
-                <FilterBar filters={FilterOptions} onFilterChange={handleFilterChange} />
+                <FilterBar
+                  filters={FilterOptions}
+                  onFilterChange={handleFilterChange}
+                />
               </div>
             )}
           </div>
@@ -118,18 +128,31 @@ export default function ProductPage() {
         <table className="w-full text-left text-sm">
           <thead>
             <tr className="border-b border-border bg-muted/60">
-              <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Name</th>
-              <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Generic Name</th>
-              <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Category</th>
-              <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Price</th>
-              <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Actions</th>
+              <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Name
+              </th>
+              <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Generic Name
+              </th>
+              <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Category
+              </th>
+              <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Price
+              </th>
+              <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Actions
+              </th>
             </tr>
           </thead>
 
           <tbody>
             {products.length === 0 ? (
               <tr>
-                <td colSpan={5} className="px-4 py-8 text-center text-sm text-muted-foreground">
+                <td
+                  colSpan={5}
+                  className="px-4 py-8 text-center text-sm text-muted-foreground"
+                >
                   No product records found.
                 </td>
               </tr>
@@ -140,6 +163,7 @@ export default function ProductPage() {
                   product={item}
                   onDeleted={() => setRefreshKey((k) => k + 1)}
                   onEdit={openEditModal}
+                  onError={addError}
                 />
               ))
             )}
@@ -154,6 +178,7 @@ export default function ProductPage() {
           onSuccess={() => setRefreshKey((k) => k + 1)}
         />
       )}
+      <ErrorStack errors={errors} />
     </main>
   );
 }

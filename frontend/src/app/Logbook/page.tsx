@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { Funnel } from "lucide-react";
 import AuditRow from "./components/AuditRow";
 import FilterBar, { FilterProps } from "@/components/FilterBar";
+import { ErrorStack } from "@/components/ErrorCard";
 
 export default function LogbookPage() {
   const [audit, setAudit] = useState<AuditLog[]>([]);
@@ -14,6 +15,10 @@ export default function LogbookPage() {
   const [action, setAction] = useState<AuditAction | undefined>(undefined);
   const [order, setOrder] = useState<SortOrder | undefined>(undefined);
   const [filter, setFilter] = useState(false);
+  const [errors, setErrors] = useState<{ id: string; message: string }[]>([]);
+
+  const addError = (message: string) =>
+    setErrors((prev) => [...prev, { id: crypto.randomUUID(), message }]);
 
   useEffect(() => {
     async function loadAudit() {
@@ -22,7 +27,7 @@ export default function LogbookPage() {
       if (result.ok) {
         setAudit(result.value);
       } else {
-        console.log(result.error);
+        addError(result.error);
       }
     }
 
@@ -134,6 +139,7 @@ export default function LogbookPage() {
           </tbody>
         </table>
       </div>
+      <ErrorStack errors={errors} />
     </main>
   );
 }
