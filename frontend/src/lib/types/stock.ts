@@ -21,3 +21,8 @@ export interface GetStListParams {
   category?: string;
   order?: SortOrder;
 }
+
+// export interface GetStListParams {
+//   sortBy?: "quantity" | "expiryDate" | "createdAt";
+//   order?: SortOrder;
+// }
