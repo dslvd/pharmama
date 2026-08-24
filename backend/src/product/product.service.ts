@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from "@nestjs/common";
 import {
   AuditAction,
   AuditEntity,
+  Category,
   Prisma,
   Product,
 } from "src/generated/prisma/client";
@@ -29,7 +30,7 @@ export class ProductService {
   }
 
   async getProductList(filter: {
-    category?: string;
+    category?: Category;
     order?: Prisma.SortOrder;
   }): Promise<Product[]> {
     return this.prisma.product.findMany({
@@ -59,7 +60,6 @@ export class ProductService {
       const existing = await pr.product.findUnique({
         where: { id },
       });
-
       const result = validateProductExists(existing);
       if (!result.ok) {
         throw new NotFoundException(result.error);
@@ -86,14 +86,37 @@ export class ProductService {
     });
   }
 
+  async deleteProduct(id: number): Promise<Product> {
+    return this.prisma.$transaction(async (pr) => {
+      const existing = await pr.product.findUnique({
+        where: { id },
+      });
+      const result = validateProductExists(existing);
+      if (!result.ok) {
+        throw new NotFoundException(result.error);
+      }
+
+      await createAuditLog(pr, {
+        entity: AuditEntity.PRODUCT,
+        entityId: id,
+        action: AuditAction.DELETE,
+      });
+      return pr.product.delete({ where: { id } });
+    });
+  }
+
   async searchProducts(query: string): Promise<Product[]> {
+    const categoryMatch = Object.values(Category).includes(query as Category)
+      ? (query as Category)
+      : undefined;
+
     return this.prisma.product.findMany({
       where: query
         ? {
             OR: [
               { name: { contains: query, mode: "insensitive" } },
               { genericName: { contains: query, mode: "insensitive" } },
-              { category: { contains: query, mode: "insensitive" } },
+              ...(categoryMatch ? [{ category: categoryMatch }] : []),
             ],
           }
         : {},

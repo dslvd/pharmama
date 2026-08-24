@@ -38,3 +38,17 @@ export const AuditEntity = {
 } as const
 
 export type AuditEntity = (typeof AuditEntity)[keyof typeof AuditEntity]
+
+
+export const Category = {
+  ANALGESICS: 'ANALGESICS',
+  ANTIBIOTICS: 'ANTIBIOTICS',
+  ANTIHISTAMINES: 'ANTIHISTAMINES',
+  VITAMINS: 'VITAMINS',
+  SUPPLEMENTS: 'SUPPLEMENTS',
+  ANTACIDS: 'ANTACIDS',
+  HYGIENNE: 'HYGIENNE',
+  OTHERS: 'OTHERS'
+} as const
+
+export type Category = (typeof Category)[keyof typeof Category]
