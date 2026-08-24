@@ -1,7 +1,7 @@
 'use client'
 
 import { usePathname } from 'next/navigation'
-import { PanelsTopLeft, ArrowLeftRight, Package, FolderBookmark, X} from 'lucide-react'
+import { PanelsTopLeft, ArrowLeftRight, Package, FolderBookmark, ClipboardList } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 
@@ -12,10 +12,10 @@ interface NavigationProps {
 
 const navItems = [
   { label: 'Dashboard', page: '/dashboard', icon: PanelsTopLeft },
-  { label: 'Transaction', page: '/transaction', icon: ArrowLeftRight },
-  { label: 'Products', page: '/products', icon: Package },
   { label: 'Stocks', page: '/stocks', icon: Package },
-  { label: 'Log Book', page: '/logbook', icon: FolderBookmark },
+  { label: 'Products', page: '/products', icon: ClipboardList },
+  { label: 'Transactions', page: '/transaction', icon: ArrowLeftRight },
+  { label: 'Logbook', page: '/logbook', icon: FolderBookmark },
  ]
 
 export default function Navigation ({ isOpen, onClose }: NavigationProps) {
@@ -23,14 +23,18 @@ export default function Navigation ({ isOpen, onClose }: NavigationProps) {
 
   return (
     <>
-<aside
-        className={`sticky py-4 top-0 z-50 h-[calc(100vh-4rem)] bg-white transition-all duration-200 overflow-hidden flex flex-col justify-between
-          ${isOpen ? 'w-64' : 'w-0'}`}
+      <aside
+        className={`sticky top-0 z-50 flex h-screen shrink-0 flex-col justify-between overflow-hidden bg-primary transition-all duration-200
+          ${isOpen ? 'w-56' : 'w-0'}`}
         aria-label="Main Navigation"
       >
-        <div>
-        <nav className="flex flex-col gap-1 p-3">
-          {navItems.map(({ label, page, icon: Icon }) => {
+        <div className="px-2 pt-6">
+          <Link href="/dashboard" onClick={onClose} className="mb-8 flex items-center px-2">
+            <Image src="/logo/pharlogo.png" alt="PharMaMa" width={160} height={41} className="shrink-0" priority />
+          </Link>
+          <nav className="flex flex-col gap-1">
+          <p className="px-3 pb-2 text-[11px] font-medium uppercase tracking-wider text-violet-300">Overview</p>
+          {navItems.slice(0, 1).map(({ label, page, icon: Icon }) => {
             const isActive = pathname === page || pathname.startsWith(`${page}/`)
 
             return (
@@ -38,10 +42,10 @@ export default function Navigation ({ isOpen, onClose }: NavigationProps) {
                 key={page}
                 href={page}
                 onClick={onClose}
-                className={`flex items-center gap-3 px-4 py-2.5 rounded-md text-left transition-colors ${
+                className={`flex items-center gap-3 rounded-md px-3 py-2.5 text-left text-sm transition-colors ${
                   isActive
-                    ? 'bg-primary text-primary-foreground font-semibold'
-                    : 'text-slate-700 hover:bg-primary/10 hover:text-primary'
+                    ? 'bg-violet-600 font-semibold text-white'
+                    : 'text-violet-100 hover:bg-violet-900'
                 }`}
               >
                 <Icon className="w-4 h-4 shrink-0" />
@@ -49,20 +53,30 @@ export default function Navigation ({ isOpen, onClose }: NavigationProps) {
               </Link>
             )
           })}
+          <p className="px-3 pb-2 pt-6 text-[11px] font-medium uppercase tracking-wider text-violet-300">Inventory</p>
+          {navItems.slice(1, 3).map(({ label, page, icon: Icon }) => {
+            const isActive = pathname === page || pathname.startsWith(`${page}/`)
+            return <Link key={page} href={page} onClick={onClose} className={`flex items-center gap-3 rounded-md px-3 py-2.5 text-left text-sm transition-colors ${isActive ? 'bg-violet-600 font-semibold text-white' : 'text-violet-100 hover:bg-violet-900'}`}><Icon className="h-4 w-4 shrink-0" /><span>{label}</span></Link>
+          })}
+          <p className="px-3 pb-2 pt-6 text-[11px] font-medium uppercase tracking-wider text-violet-300">Records</p>
+          {navItems.slice(3).map(({ label, page, icon: Icon }) => {
+            const isActive = pathname === page || pathname.startsWith(`${page}/`)
+            return <Link key={page} href={page} onClick={onClose} className={`flex items-center gap-3 rounded-md px-3 py-2.5 text-left text-sm transition-colors ${isActive ? 'bg-violet-600 font-semibold text-white' : 'text-violet-100 hover:bg-violet-900'}`}><Icon className="h-4 w-4 shrink-0" /><span>{label}</span></Link>
+          })}
         </nav>
         </div>
 
-        <div className="border-t p-3">
+        <div className="mx-2 border-t border-violet-900 p-3">
           <div className="flex items-center gap-3">
             <Image
               src="/image/jeremy.png"
               alt="Jeremy"
               width={36}
               height={36}
-              className="w-9 h-9 rounded-full object-cover" />
+              className="h-9 w-9 rounded-full object-cover" />
             <div>
-              <p className="font-bold text-sm text-slate-900">Jeremy Giyangan</p>
-              <p className="font-semibold text-xs text-slate-500 italic ">Intruder</p>
+              <p className="text-sm font-bold text-white">Jill Dela Cruz</p>
+              <p className="text-xs font-semibold text-violet-300">Pharmacist · Iloilo Branch</p>
             </div>
           </div>
         </div>
