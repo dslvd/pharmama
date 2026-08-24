@@ -10,7 +10,7 @@ export default function TransactionPanel({ onAddTransaction }: TransactionPanelP
   return (
     <div 
       onClick={onAddTransaction}
-      className="flex min-h-32.5 cursor-pointer items-center justify-center rounded-2xl border border-border bg-card transition-colors hover:bg-muted/50"
+      className="flex min-h-32.5 cursor-pointer items-center justify-center rounded-2xl border border-border bg-card transition-colors hover:bg-violet-50/80"
     >
       <button
         onClick={(e) => {
@@ -18,7 +18,7 @@ export default function TransactionPanel({ onAddTransaction }: TransactionPanelP
           onAddTransaction?.();
         }}
         aria-label="Add transaction"
-        className="flex h-10 w-10 items-center justify-center rounded-full bg-violet-900 text-white transition-colors hover:bg-violet-800"
+        className="flex h-10 w-10 items-center justify-center rounded-full bg-violet-900 text-white transition-colors hover:bg-violet-950 shadow-sm"
       >
         <Plus className="h-5 w-5" />
       </button>

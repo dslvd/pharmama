@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowLeft } from "lucide-react";
 import TransactionPanel from "./components/Transactionpanel";
 import TransactionTable from "./components/TransactionTable";
 import SalesTable from "./components/SalesTable";
@@ -9,41 +8,40 @@ import AddTransactionModal from "./components/TransactionModal";
 import ViewTransactionModal from "./components/ViewTransactionModal";
 
 export default function TransactionsPage() {
-  const [showTable, setShowTable] = useState(false);
+  const [isTransactionStarted, setIsTransactionStarted] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
 
   const handleStartTransaction = () => {
-    setShowTable(true);
+    setIsTransactionStarted(true);
     setIsAddModalOpen(true);
   };
 
+  const handleCancelTransaction = () => {
+    setIsTransactionStarted(false);
+    setIsAddModalOpen(false);
+  };
+
   return (
-    <div className="space-y-6 p-6">
+    <main className="space-y-6 p-6">
       <div className="flex items-center gap-3">
-        {showTable && (
-          <button
-            onClick={() => setShowTable(false)}
-            aria-label="Go Back"
-            className="rounded-full p-2 text-foreground transition-colors hover:bg-black/5"
-          >
-            <ArrowLeft size={24} />
-          </button>
-        )}
-        <h1 className="text-3xl font-black text-foreground">Transaction</h1>
+        <h2 className="text-4xl font-bold text-foreground">Transaction</h2>
       </div>
 
-      {!showTable ? (
-        <div className="space-y-6">
+      <div className="space-y-6">
+        {/* Swaps the top section dynamically */}
+        {!isTransactionStarted ? (
           <TransactionPanel onAddTransaction={handleStartTransaction} />
-          <SalesTable onViewClick={() => setIsViewModalOpen(true)} />
-        </div>
-      ) : (
-        <div className="space-y-6">
-          <TransactionTable onOpenModal={() => setIsAddModalOpen(true)} />
-          <SalesTable onViewClick={() => setIsViewModalOpen(true)} />
-        </div>
-      )}
+        ) : (
+          <TransactionTable 
+            onOpenModal={() => setIsAddModalOpen(true)} 
+            onCancelTransaction={handleCancelTransaction} 
+          />
+        )}
+
+        {/* Bottom table remains constant */}
+        <SalesTable onViewClick={() => setIsViewModalOpen(true)} />
+      </div>
 
       {isAddModalOpen && (
         <AddTransactionModal onClose={() => setIsAddModalOpen(false)} />
@@ -52,6 +50,6 @@ export default function TransactionsPage() {
       {isViewModalOpen && (
         <ViewTransactionModal onClose={() => setIsViewModalOpen(false)} />
       )}
-    </div>
+    </main>
   );
 }
