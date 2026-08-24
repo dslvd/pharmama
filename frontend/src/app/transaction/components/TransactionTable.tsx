@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronUp, ChevronDown, Plus } from "lucide-react";
+import { ChevronUp, ChevronDown, Plus, XCircle } from "lucide-react";
 
 export interface PendingTransactionItem {
   id: string;
@@ -17,11 +17,13 @@ export interface PendingTransactionItem {
 interface TransactionTableProps {
   initialItems?: PendingTransactionItem[];
   onOpenModal?: () => void;
+  onCancelTransaction?: () => void;
 }
 
 export default function TransactionTable({
   initialItems = [],
   onOpenModal,
+  onCancelTransaction,
 }: TransactionTableProps) {
   const [items, setItems] = useState<PendingTransactionItem[]>(initialItems);
 
@@ -60,12 +62,23 @@ export default function TransactionTable({
                 <th className="px-4 py-2.5 text-center text-xs font-semibold uppercase tracking-wide text-muted-foreground">Unit Price</th>
                 <th className="px-4 py-2.5 text-center text-xs font-semibold uppercase tracking-wide text-muted-foreground">SubTotal</th>
                 <th className="px-4 py-2.5 text-right text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                  <button
-                    disabled={activeItems.length === 0}
-                    className="rounded-md bg-emerald-800 px-4 py-1.5 text-xs font-medium text-white transition-colors hover:bg-emerald-800 disabled:opacity-60"
-                  >
-                    Confirm
-                  </button>
+                  <div className="flex items-center justify-end gap-2">
+                    {onCancelTransaction && (
+                      <button
+                        onClick={onCancelTransaction}
+                        className="flex items-center gap-1 rounded-md border border-rose-200 bg-rose-50 px-3 py-1 text-xs font-medium text-rose-700 transition-colors hover:bg-rose-100"
+                      >
+                        <XCircle size={14} />
+                        Cancel Transaction
+                      </button>
+                    )}
+                    <button
+                      disabled={activeItems.length === 0}
+                      className="rounded-md bg-emerald-800 px-4 py-1.5 text-xs font-medium text-white transition-colors hover:bg-emerald-800 disabled:opacity-60"
+                    >
+                      Confirm
+                    </button>
+                  </div>
                 </th>
               </tr>
             </thead>
