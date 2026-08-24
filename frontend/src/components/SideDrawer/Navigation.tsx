@@ -23,21 +23,11 @@ export default function Navigation ({ isOpen, onClose }: NavigationProps) {
   return (
     <>
 <aside
-        className={`sticky top-0 z-50 h-[calc(100vh-4rem)] bg-white transition-all duration-200 overflow-hidden flex flex-col justify-between
+        className={`sticky py-4 top-0 z-50 h-[calc(100vh-4rem)] bg-white transition-all duration-200 overflow-hidden flex flex-col justify-between
           ${isOpen ? 'w-64' : 'w-0'}`}
         aria-label="Main Navigation"
       >
         <div>
-        <div className="flex justify-end p-3">
-          <button 
-            onClick={onClose} 
-            aria-label="Close menu"
-            className="p-1 rounded-md hover:bg-slate-100 transition-colors"
-          >
-            <X className="w-5 h-5 text-slate-600" />
-          </button>
-        </div>
-
         <nav className="flex flex-col gap-1 p-3">
           {navItems.map(({ label, page, icon: Icon }) => {
             const isActive = pathname === page || pathname.startsWith(`${page}/`)
