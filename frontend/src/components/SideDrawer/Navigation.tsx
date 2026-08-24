@@ -111,7 +111,7 @@ export default function Navigation ({ isOpen, onClose }: NavigationProps) {
               height={36}
               className="h-9 w-9 rounded-full object-cover" />
             <div>
-              <p className="text-sm font-bold text-white">Jill Dela Cruz</p>
+              <p className="text-sm font-bold text-white">Jeremy Giyangan</p>
               <p className="text-xs font-semibold text-violet-300">Pharmacist · Iloilo Branch</p>
             </div>
           </div>
