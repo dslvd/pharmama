@@ -31,5 +31,5 @@ export type Category =
   | "VITAMINS"
   | "SUPPLEMENTS"
   | "ANTACIDS"
-  | "HYGIENNE"
+  | "HYGIENE"
   | "OTHERS";
