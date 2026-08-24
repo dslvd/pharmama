@@ -41,11 +41,6 @@ export class TransactionController {
     return this.trService.getTransactionList({ status, handledBy, order });
   }
 
-  @Get("getTodaySales")
-  async getTodaySales(): Promise<{ total: number; date: string }> {
-    return this.trService.getTodaySales();
-  }
-
   @Patch(":id")
   async cancelTr(@Param("id", ParseIntPipe) id: number): Promise<Transaction> {
     return this.trService.cancelTransaction(id);
