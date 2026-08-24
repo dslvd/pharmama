@@ -11,6 +11,11 @@ import {
 export class AuditLogController {
   constructor(private alService: AuditLogService) {}
 
+  @Get("search")
+  async searchPr(@Query("query") query: string): Promise<AuditLog[]> {
+    return this.alService.searchAuditLogs(query);
+  }
+
   @Get()
   async getAuditList(
     @Query("entity") entity?: AuditEntity,

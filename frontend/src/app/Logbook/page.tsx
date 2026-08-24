@@ -129,9 +129,7 @@ export default function LogbookPage() {
                 </td>
               </tr>
             ) : (
-              audit.map((item) => (
-                <AuditRow key={item.id} audit={item} />
-              ))
+              audit.map((item) => <AuditRow key={item.id} audit={item} />)
             )}
           </tbody>
         </table>
