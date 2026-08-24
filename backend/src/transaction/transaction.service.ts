@@ -68,32 +68,6 @@ export class TransactionService {
     );
   }
 
-  async getTodaySales(): Promise<{ total: number; date: string }> {
-    const now = new Date();
-    const startOfDay = new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate(),
-    );
-    const endOfDay = new Date(startOfDay);
-    endOfDay.setDate(endOfDay.getDate() + 1);
-
-    const total = await this.prisma.transaction.aggregate({
-      _sum: { totalAmount: true },
-      where: {
-        createdAt: {
-          gte: startOfDay,
-          lt: endOfDay,
-        },
-      },
-    });
-
-    return {
-      total: total._sum.totalAmount ?? 0,
-      date: startOfDay.toISOString().split("T")[0],
-    };
-  }
-
   async createTransaction(data: CreateTransactionDto): Promise<Transaction> {
     return this.prisma.$transaction(async (tx) => {
       await Promise.all(
