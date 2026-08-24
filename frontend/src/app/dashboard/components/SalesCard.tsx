@@ -1,5 +1,6 @@
 import { getTodaySales } from "@/lib/api/transaction";
 import { useEffect, useState } from "react";
+import { Wallet } from "lucide-react";
 
 export default function SalesCard() {
   const [sales, setSales] = useState<{ total: number; date: string } | null>(
@@ -22,11 +23,14 @@ export default function SalesCard() {
   return (
     <article className="rounded-xl border border-border bg-card p-5">
       <div className="flex items-start justify-between">
-        <p className="text-sm text-muted-foreground">Today&apos;s Sales</p>
+        <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-100 text-emerald-600">
+          <Wallet className="h-5 w-5" />
+        </span>
         <p className="text-xs text-muted-foreground">{sales?.date ?? "—"}</p>
       </div>
-      <p className="mt-3 flex items-center gap-2 text-3xl font-bold text-foreground">
-        <span className="text-2xl">₱</span>
+      <p className="mt-4 text-sm text-muted-foreground">Today&apos;s Sales</p>
+      <p className="mt-1 flex items-baseline gap-1 text-3xl font-bold text-foreground">
+        <span className="text-xl">₱</span>
         {sales ? sales.total.toLocaleString() : "—"}
       </p>
     </article>
