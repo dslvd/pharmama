@@ -72,7 +72,9 @@ export default function ProductPage() {
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <h2 className="text-3xl font-bold text-foreground">Products</h2>
-          <p className="mt-1 text-sm text-muted-foreground">Your catalog of items available to sell or dispense.</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Your catalog of items available to sell or dispense.
+          </p>
         </div>
 
         <div className="flex w-full flex-wrap items-center justify-end gap-3 md:w-auto">
@@ -125,7 +127,7 @@ export default function ProductPage() {
         </div>
       </div>
 
-      <div className="min-h-[32rem] flex-1 overflow-x-auto rounded-xl border border-border bg-card shadow-sm">
+      <div className="min-h-122 flex-1 overflow-x-auto rounded-xl border border-border bg-card shadow-sm">
         <table className="w-full text-left text-sm">
           <thead>
             <tr className="border-b border-border bg-[#fdfbf7]">
@@ -152,7 +154,7 @@ export default function ProductPage() {
               <tr>
                 <td
                   colSpan={5}
-                  className="h-[28rem] px-4 py-8 text-center text-sm text-muted-foreground"
+                  className="h-112 px-4 py-8 text-center text-sm text-muted-foreground"
                 >
                   <div className="flex flex-col items-center justify-center gap-3">
                     <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-violet-100 text-primary">

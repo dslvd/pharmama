@@ -2,6 +2,7 @@ import {
   CreateTransactionPayload,
   GetTrListParams,
   Transaction,
+  UpdateTrStatusPayload,
 } from "../types/transaction";
 import { apiFetch } from "../utils/client";
 
@@ -36,4 +37,13 @@ export const createTransaction = (data: CreateTransactionPayload) =>
   apiFetch<Transaction>("/transaction", {
     method: "POST",
     body: JSON.stringify(data),
+  });
+
+export const updateTransactionStatus = (
+  id: number,
+  status: UpdateTrStatusPayload,
+) =>
+  apiFetch<Transaction>(`/transaction/${id}/updateStatus`, {
+    method: "PATCH",
+    body: JSON.stringify(status),
   });
