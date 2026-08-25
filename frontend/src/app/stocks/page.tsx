@@ -8,6 +8,7 @@ import { SortOrder } from "@/lib/types/product";
 import FilterBar, { FilterProps } from "@/components/FilterBar";
 import StockRow from "@/app/stocks/components/StockRow";
 import AddStockModal from "@/app/stocks/components/AddStockModal";
+import Loading from "./loading";
 import { Funnel, PackageOpen, Plus, Search } from "lucide-react";
 
 export default function StockPage() {
@@ -21,9 +22,11 @@ export default function StockPage() {
     undefined,
   );
   const [refreshKey, setRefreshKey] = useState(0);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function loadStock() {
+      setLoading(true);
       const result = searchTerm.trim()
         ? await searchStock(searchTerm)
         : await getStockList({ order, sortBy });
@@ -33,6 +36,7 @@ export default function StockPage() {
       } else {
         console.log(result.error);
       }
+      setLoading(false);
     }
     loadStock();
   }, [order, sortBy, searchTerm, refreshKey]);
@@ -61,7 +65,8 @@ export default function StockPage() {
   }
 
   return (
-    <main className="flex min-h-screen flex-col gap-5 p-6">
+    <>
+      <main className="flex min-h-screen flex-col gap-5 p-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <h2 className="text-3xl font-bold text-foreground">Stocks</h2>
@@ -117,7 +122,7 @@ export default function StockPage() {
         </div>
       </div>
 
-      <div className="min-h-[32rem] flex-1 overflow-x-auto rounded-xl border border-border bg-card shadow-sm">
+      <div className="min-h-128 flex-1 overflow-x-auto rounded-xl border border-border bg-card shadow-sm">
         <table className="w-full text-left text-sm">
           <thead>
             <tr className="border-b border-border bg-[#fdfbf7]">
@@ -144,7 +149,7 @@ export default function StockPage() {
               <tr>
                 <td
                   colSpan={6}
-                  className="h-[28rem] px-4 py-8 text-center text-sm text-muted-foreground"
+                  className="h-112 px-4 py-8 text-center text-sm text-muted-foreground"
                 >
                   <div className="flex flex-col items-center justify-center gap-3">
                     <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-violet-100 text-primary">
@@ -188,6 +193,12 @@ export default function StockPage() {
           onSuccess={() => setRefreshKey((k) => k + 1)}
         />
       )}
-    </main>
+      </main>
+      {loading && (
+        <div className="pointer-events-auto fixed inset-0 z-40 bg-background">
+          <Loading />
+        </div>
+      )}
+    </>
   );
 }

@@ -183,6 +183,12 @@
 }
 
 @layer components {
+  .skeleton {
+    background: linear-gradient(90deg, #e5e5e5 25%, #f4f4f4 50%, #e5e5e5 75%);
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 1.8s ease-in-out infinite;
+  }
+
   .cream {
     @apply bg-background;
   }
@@ -193,5 +199,20 @@
   
   .card-base {
     @apply bg-card rounded-lg border border-border shadow-sm;
+  }
+}
+
+@keyframes skeleton-shimmer {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
   }
 }

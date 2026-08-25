@@ -14,37 +14,37 @@ interface SalesTableProps {
   initialRecords?: Transaction[];
   onViewClick?: (id: number) => void;
   onError?: (message: string) => void;
+  onLoadingChange?: (loading: boolean) => void;
 }
 
 export default function SalesTable({
   initialRecords = [],
   onViewClick,
   onError,
+  onLoadingChange,
 }: SalesTableProps) {
   const [sales, setSales] = useState<Transaction[]>(initialRecords);
   const [status, setStatus] = useState<TransactionStatus | undefined>(
     undefined,
   );
   const [order, setOrder] = useState<SortOrder | undefined>(undefined);
-  const [loading, setLoading] = useState(false);
   const [filter, setFilter] = useState(false);
 
   useEffect(() => {
     async function getTransaction() {
-      setLoading(true);
+      onLoadingChange?.(true);
       const result = await getTransactionList({ status, order });
 
       if (result.ok) {
         setSales(result.value);
-        setLoading(false);
       } else {
         onError?.(result.error);
-        setLoading(false);
       }
+      onLoadingChange?.(false);
     }
 
     getTransaction();
-  }, [order, status, onError]);
+  }, [order, status, onError, onLoadingChange]);
 
   const getStatusColor = (status: TransactionStatus) => {
     switch (status) {
@@ -96,7 +96,6 @@ export default function SalesTable({
   return (
     <section>
       <div className="overflow-x-auto rounded-xl border border-border bg-card">
-        {loading && <div>Loading...</div>}
         <div className="max-h-88 overflow-y-auto">
           <table className="w-full border-collapse text-left text-sm">
             <thead className="sticky top-0 z-10 border-b border-border bg-muted/60">
@@ -153,7 +152,7 @@ export default function SalesTable({
                 sales.map((record) => (
                   <tr
                     key={record.id}
-                    className="border-t border-border odd:bg-card even:bg-muted/40 hover:bg-violet-50/60"
+                    className="border-t border-border bg-card"
                   >
                     <td className="px-4 py-3 font-mono text-xs text-muted-foreground">
                       #{record.id}
