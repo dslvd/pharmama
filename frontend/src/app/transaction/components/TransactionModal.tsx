@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Plus, Minus, Search, X, Funnel } from "lucide-react";
+import { Plus, Minus, Search, X, Funnel, Save } from "lucide-react";
 import { getProductList, searchProduct } from "@/lib/api/product";
 import { Category, Product, SortBy, SortOrder } from "@/lib/types/product";
-import FilterBar, { FilterProps } from "@/components/FilterBar";
+import FilterBar, { FilterProps } from "../../../components/FilterBar";
 import { CreateTransactionItemPayload } from "@/lib/types/transaction";
 import { getStockList } from "@/lib/api/stocks";
 import { Stock } from "@/lib/types/stock";
@@ -38,37 +38,33 @@ export default function AddTransactionModal({
   const [error, setError] = useState("");
 
   useEffect(() => {
-    async function getProducts() {
+    async function loadItems() {
       setError("");
       setLoading(true);
 
-      const result = searchTerm
-        ? await searchProduct(searchTerm)
-        : await getProductList({ category, order, sortBy });
+      const [stockResult, productResult] = await Promise.all([
+        getStockList(),
+        searchTerm
+          ? searchProduct(searchTerm)
+          : getProductList({ category, order, sortBy }),
+      ]);
 
-      if (result.ok) {
-        setProducts(result.value);
+      if (stockResult.ok) {
+        setStock(stockResult.value);
       } else {
-        setError(result.error);
+        setError(stockResult.error);
       }
+
+      if (productResult.ok) {
+        setProducts(productResult.value);
+      } else {
+        setError(productResult.error);
+      }
+
       setLoading(false);
     }
 
-    async function getstocks() {
-      setError("");
-      setLoading(true);
-
-      const result = await getStockList();
-
-      if (result.ok) {
-        setStock(result.value);
-      } else {
-        setError(result.error);
-      }
-      setLoading(false);
-    }
-    getstocks();
-    getProducts();
+    loadItems();
   }, [category, order, sortBy, searchTerm]);
 
   const availableProducts = products.filter((product) =>
@@ -157,7 +153,7 @@ export default function AddTransactionModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
       <div className="flex max-h-[85vh] w-full max-w-4xl flex-col rounded-2xl border border-border bg-[#fdf6ec] p-6 shadow-xl">
-        <div className="flex items-center justify-between gap-3 pb-4">
+          <div className="relative z-30 flex items-center justify-between gap-3 pb-4">
           <h2 className="text-2xl font-bold text-foreground">Items</h2>
 
           <div className="flex items-center gap-2">
@@ -176,7 +172,7 @@ export default function AddTransactionModal({
               </button>
 
               {filter && (
-                <div className="absolute right-0 z-10 mt-2 w-64 rounded-xl border border-border bg-card p-4 shadow-lg">
+                <div className="absolute right-0 top-full z-50 mt-2 max-h-[calc(85vh-6rem)] w-64 max-w-[calc(100vw-2rem)] overflow-y-auto rounded-xl border border-border bg-card p-4 shadow-lg">
                   <FilterBar
                     filters={FilterOptions}
                     onFilterChange={handleFilterChange}
@@ -233,7 +229,9 @@ export default function AddTransactionModal({
               </tr>
             </thead>
             <tbody>
-              {availableProducts.length === 0 ? (
+              {loading ? (
+                <ProductRowsSkeleton />
+              ) : availableProducts.length === 0 ? (
                 <tr>
                   <td
                     colSpan={6}
@@ -297,7 +295,7 @@ export default function AddTransactionModal({
                           className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
                             isAdded
                               ? "bg-rose-600 text-white hover:bg-rose-700"
-                              : "bg-violet-700 text-white hover:bg-violet-800"
+                              : "bg-primary text-white hover:bg-primary"
                           }`}
                         >
                           {isAdded ? "Remove" : "Add"}
@@ -311,17 +309,39 @@ export default function AddTransactionModal({
           </table>
         </div>
 
-        <div className="flex justify-end pt-4">
+        <div className="flex items-center justify-between pt-4">
           {error && <p className="text-sm text-rose-600">{error}</p>}
           <button
             onClick={handleSubmitItems}
             disabled={Object.keys(selections).length === 0}
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-violet-950 text-white shadow-md transition-colors hover:bg-violet-900"
+            className="ml-auto flex items-center gap-2 rounded-lg bg-emerald-800 px-4 py-2.5 text-sm font-semibold text-white shadow-md transition-colors hover:bg-emerald-900 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            <Plus size={20} />
+            <Save size={16} />
+            Save
           </button>
         </div>
       </div>
     </div>
+  );
+}
+
+function ProductRowsSkeleton() {
+  return (
+    <>
+      {Array.from({ length: 4 }).map((_, row) => (
+        <tr key={row} className="border-t border-border">
+          {Array.from({ length: 6 }).map((__, column) => (
+            <td key={column} className="px-4 py-4">
+              <div
+                aria-hidden="true"
+                className={`skeleton mx-auto h-4 rounded ${
+                  column === 5 ? "w-14" : column === 2 ? "w-24" : "w-full"
+                }`}
+              />
+            </td>
+          ))}
+        </tr>
+      ))}
+    </>
   );
 }

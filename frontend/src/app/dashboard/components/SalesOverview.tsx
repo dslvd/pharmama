@@ -86,7 +86,7 @@ export default function SalesOverview({
         </div>
       </div>
 
-      <div className="mt-5 h-64 w-full">
+      <div className="mt-5 h-[60vh] min-h-72 max-h-160 w-full">
         {loading ? (
           <div
             className="skeleton h-full w-full rounded-lg"
