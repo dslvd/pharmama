@@ -17,6 +17,9 @@ jobs:
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
 
+      - name: Debug token identity
+        run: vercel whoami --token=${{ secrets.VERCEL_TOKEN }}
+
       - name: Pull Vercel environment
         run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
 
