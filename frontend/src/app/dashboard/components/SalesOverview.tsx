@@ -81,7 +81,7 @@ export default function SalesOverview({
         </div>
       </div>
 
-      <div className="mt-5 min-h-64 flex-1 w-full">
+      <div className="mt-5 h-64 w-full">
         {loading ? (
           <div className="flex h-full items-center justify-center text-sm">
             loading...
