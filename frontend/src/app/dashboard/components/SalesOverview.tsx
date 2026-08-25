@@ -12,20 +12,19 @@ import {
 } from "recharts";
 import { TrendingUp } from "lucide-react";
 import { getSalesOverview } from "@/lib/api/sales";
-import { ErrorStack } from "@/components/ErrorCard";
 
 type Period = "Today" | "Week" | "Month" | "Year";
 
 const PERIODS: Period[] = ["Today", "Week", "Month", "Year"];
 
-export default function SalesOverview() {
+export default function SalesOverview({
+  onError,
+}: {
+  onError?: (message: string) => void;
+}) {
   const [period, setPeriod] = useState<Period>("Today");
   const [sales, setSales] = useState<{ label: string; value: number }[]>([]);
   const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState<{ id: string; message: string }[]>([]);
-
-  const addError = (message: string) =>
-    setErrors((prev) => [...prev, { id: crypto.randomUUID(), message }]);
 
   useEffect(() => {
     let cancelled = false;
@@ -40,7 +39,7 @@ export default function SalesOverview() {
       if (result.ok) {
         setSales(result.value);
       } else {
-        addError(result.error);
+        onError?.(result.error);
       }
 
       setLoading(false);
@@ -51,7 +50,7 @@ export default function SalesOverview() {
     return () => {
       cancelled = true;
     };
-  }, [period]);
+  }, [period, onError]);
 
   return (
     <section className="flex flex-1 flex-col rounded-xl border border-border bg-card p-5">
@@ -138,7 +137,6 @@ export default function SalesOverview() {
           </ResponsiveContainer>
         )}
       </div>
-      <ErrorStack errors={errors} />
     </section>
   );
 }
