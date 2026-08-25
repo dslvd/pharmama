@@ -35,15 +35,12 @@ export default function Dashboard() {
           <LowStocks />
         </section>
 
-        <SalesOverview onError={addError} onLoadingChange={handleLoadingChange} />
+        <SalesOverview onLoadingChange={handleLoadingChange} />
         <ErrorStack errors={errors} />
       </main>
 
-      {loadingCards > 0 && (
-        <div className="absolute inset-0 z-10 bg-background">
-          <Loading />
-        </div>
-      )}
-    </div>
+      <SalesOverview onError={addError} />
+      <ErrorStack errors={errors} />
+    </main>
   );
 }

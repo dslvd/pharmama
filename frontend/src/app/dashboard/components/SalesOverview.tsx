@@ -18,12 +18,9 @@ type Period = "Today" | "Week" | "Month" | "Year";
 const PERIODS: Period[] = ["Today", "Week", "Month", "Year"];
 
 export default function SalesOverview({
-  onLoadingChange,
   onError,
 }: {
-  onLoadingChange?: (loading: boolean) => void;
   onError?: (message: string) => void;
-}
 }) {
   const [period, setPeriod] = useState<Period>("Today");
   const [sales, setSales] = useState<{ label: string; value: number }[]>([]);
@@ -56,7 +53,7 @@ export default function SalesOverview({
       cancelled = true;
       onLoadingChange?.(false);
     };
-  }, [period, onLoadingChange, onError]);
+  }, [period, onLoadingChange]);
 
   return (
     <section className="flex flex-1 flex-col rounded-xl border border-border bg-card p-5">
