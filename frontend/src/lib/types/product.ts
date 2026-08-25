@@ -8,21 +8,7 @@ export interface Product {
   updatedAt: string;
 }
 
-export type Category =
-  | "ANALGESICS"
-  | "ANTIBIOTICS"
-  | "ANTIHISTAMINES"
-  | "VITAMINS"
-  | "SUPPLEMENTS"
-  | "ANTACIDS"
-  | "HYGIENNE"
-  | "OTHERS";
-
-export type SortBy =
-  | "name"
-  | "genericName"
-  | "category"
-  | "price";
+export type SortBy = "name" | "genericName" | "category" | "price";
 
 export interface CreateProductPayload {
   name: string;

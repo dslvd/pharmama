@@ -1,63 +1,158 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { Plus, Minus, Search, X } from "lucide-react"
-
-export interface ProductItem {
-  id: string
-  name: string
-  category: string
-  price: number
-}
-
-interface AddTransactionModalProps {
-  products?: ProductItem[]
-  categories?: string[]
-  onClose: () => void
-}
+import { useEffect, useState } from "react";
+import { Plus, Minus, Search, X, Funnel } from "lucide-react";
+import { getProductList, searchProduct } from "@/lib/api/product";
+import { Category, Product, SortBy, SortOrder } from "@/lib/types/product";
+import FilterBar, { FilterProps } from "@/components/FilterBar";
+import { CreateTransactionItemPayload } from "@/lib/types/transaction";
+import { getStockList } from "@/lib/api/stocks";
+import { Stock } from "@/lib/types/stock";
 
 const inputClasses =
   "rounded-full border border-border bg-white py-1.5 text-sm text-foreground focus:border-violet-400 focus:outline-none focus:ring-2 focus:ring-violet-100";
 
+export interface SubmittedItem {
+  trItems: CreateTransactionItemPayload;
+  product: Product;
+}
+
 export default function AddTransactionModal({
-  products = [],
-  categories = [],
+  onSubmit,
   onClose,
-}: AddTransactionModalProps) {
-  const [searchTerm, setSearchTerm] = useState("")
-  const [category, setCategory] = useState("")
-  const [selections, setSelections] = useState<Record<string, { quantity: number }>>({})
+}: {
+  onSubmit: (items: SubmittedItem[]) => void;
+  onClose: () => void;
+}) {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [stock, setStock] = useState<Stock[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filter, setFilter] = useState(false);
+  const [category, setCategory] = useState<Category | undefined>(undefined);
+  const [order, setOrder] = useState<SortOrder | undefined>(undefined);
+  const [sortBy, setSortBy] = useState<SortBy | undefined>(undefined);
+  const [selections, setSelections] = useState<
+    Record<number, CreateTransactionItemPayload>
+  >({});
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const filteredProducts = products.filter((product) => {
-    const matchesSearch =
-      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.id.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesCategory = category === "" || product.category === category
-    return matchesSearch && matchesCategory
-  })
+  useEffect(() => {
+    async function getProducts() {
+      setError("");
+      setLoading(true);
 
-  const toggleAdd = (id: string, isAdded: boolean) => {
-    setSelections((prev) => {
-      const updated = { ...prev }
-      if (isAdded) {
-        delete updated[id]
+      const result = searchTerm
+        ? await searchProduct(searchTerm)
+        : await getProductList({ category, order, sortBy });
+
+      if (result.ok) {
+        setProducts(result.value);
       } else {
-        updated[id] = { quantity: 1 }
+        setError(result.error);
       }
-      return updated
-    })
+      setLoading(false);
+    }
+
+    async function getstocks() {
+      setError("");
+      setLoading(true);
+
+      const result = await getStockList();
+
+      if (result.ok) {
+        setStock(result.value);
+      } else {
+        setError(result.error);
+      }
+      setLoading(false);
+    }
+    getstocks();
+    getProducts();
+  }, [category, order, sortBy, searchTerm]);
+
+  const availableProducts = products.filter((product) =>
+    stock.some((s) => s.productId === product.id && s.quantity > 0),
+  );
+
+  const handleSubmitItems = () => {
+    const submitted: SubmittedItem[] = Object.values(selections)
+      .filter((item) => item.quantity > 0)
+      .map((item) => {
+        const product = products.find((p) => p.id === item.productId);
+        return { trItems: item, product: product! };
+      })
+      .filter((entry): entry is SubmittedItem => !!entry.product);
+
+    onSubmit(submitted);
+    onClose();
+  };
+
+  const handleFilterChange = (title: string, sub: string, checked: boolean) => {
+    if (title === "CATEGORY") {
+      setCategory(checked ? (sub as Category) : undefined);
+    } else if (title === "ENTITY") {
+      setSortBy(checked ? (sub as SortBy) : undefined);
+    } else if (title === "ORDER") {
+      setOrder(checked ? (sub as SortOrder) : undefined);
+    }
+  };
+
+  const FilterOptions: FilterProps[] = [
+    {
+      title: "CATEGORY",
+      sub: [
+        "ANALGESICS",
+        "ANTIBIOTICS",
+        "ANTIHISTAMINES",
+        "VITAMINS",
+        "SUPPLEMENTS",
+        "ANTACIDS",
+        "HYGIENE",
+        "OTHERS",
+      ],
+    },
+    {
+      title: "SORTBY",
+      sub: ["name", "genericName", "category", "price"],
+    },
+    {
+      title: "ORDER",
+      sub: ["asc", "desc"],
+    },
+  ];
+
+  function findStockId(stocks: Stock[], productId: number): number | undefined {
+    return stocks.find((stock) => stock.productId === productId)?.id;
   }
 
-  const updateQuantity = (id: string, delta: number) => {
+  const toggleAdd = (id: number, price: number, isAdded: boolean) => {
     setSelections((prev) => {
-      const currentQty = prev[id]?.quantity ?? 0
-      const newQty = Math.max(1, currentQty + delta)
+      const updated = { ...prev };
+      if (isAdded) {
+        delete updated[id];
+      } else {
+        updated[id] = {
+          quantity: 1,
+          productId: id,
+          stockId: findStockId(stock, id) ?? 0,
+          unitPrice: price,
+        };
+      }
+      return updated;
+    });
+  };
+
+  const updateQuantity = (id: number, delta: number) => {
+    setSelections((prev) => {
+      const existing = prev[id];
+      if (!existing) return prev;
       return {
         ...prev,
-        [id]: { quantity: newQty },
-      }
-    })
-  }
+        [id]: { ...existing, quantity: Math.max(1, existing.quantity + delta) },
+      };
+    });
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
@@ -66,21 +161,35 @@ export default function AddTransactionModal({
           <h2 className="text-2xl font-bold text-foreground">Items</h2>
 
           <div className="flex items-center gap-2">
-            <select
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              className={`${inputClasses} px-3`}
-            >
-              <option value="">All Categories</option>
-              {categories.map((cat) => (
-                <option key={cat} value={cat}>
-                  {cat}
-                </option>
-              ))}
-            </select>
+            <div className="relative">
+              <button
+                onClick={() => setFilter(!filter)}
+                aria-label="Toggle filters"
+                aria-pressed={filter}
+                className={`rounded-lg border p-2.5 transition-colors ${
+                  filter
+                    ? "border-primary bg-violet-100 text-violet-700"
+                    : "border-border bg-card text-muted-foreground hover:bg-muted"
+                }`}
+              >
+                <Funnel size={18} />
+              </button>
+
+              {filter && (
+                <div className="absolute right-0 z-10 mt-2 w-64 rounded-xl border border-border bg-card p-4 shadow-lg">
+                  <FilterBar
+                    filters={FilterOptions}
+                    onFilterChange={handleFilterChange}
+                  />
+                </div>
+              )}
+            </div>
 
             <div className="relative">
-              <Search size={16} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+              <Search
+                size={16}
+                className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+              />
               <input
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -103,31 +212,55 @@ export default function AddTransactionModal({
           <table className="w-full border-collapse text-left text-sm">
             <thead className="sticky top-0 z-10 border-b border-border bg-muted/60">
               <tr>
-                <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">ID</th>
-                <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Product Name</th>
-                <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Category</th>
-                <th className="px-4 py-2.5 text-center text-xs font-semibold uppercase tracking-wide text-muted-foreground">Quantity</th>
-                <th className="px-4 py-2.5 text-center text-xs font-semibold uppercase tracking-wide text-muted-foreground">Price</th>
-                <th className="px-4 py-2.5 text-center text-xs font-semibold uppercase tracking-wide text-muted-foreground">Action</th>
+                <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  ID
+                </th>
+                <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  Product Name
+                </th>
+                <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  Category
+                </th>
+                <th className="px-4 py-2.5 text-center text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  Quantity
+                </th>
+                <th className="px-4 py-2.5 text-center text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  Price
+                </th>
+                <th className="px-4 py-2.5 text-center text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  Action
+                </th>
               </tr>
             </thead>
             <tbody>
-              {filteredProducts.length === 0 ? (
+              {availableProducts.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-4 py-8 text-center text-sm text-muted-foreground">
+                  <td
+                    colSpan={6}
+                    className="px-4 py-8 text-center text-sm text-muted-foreground"
+                  >
                     No products available.
                   </td>
                 </tr>
               ) : (
-                filteredProducts.map((product) => {
-                  const sel = selections[product.id]
-                  const isAdded = !!sel
+                availableProducts.map((product) => {
+                  const sel = selections[product.id];
+                  const isAdded = !!sel;
 
                   return (
-                    <tr key={product.id} className="border-t border-border odd:bg-card even:bg-muted/40 hover:bg-violet-50/60">
-                      <td className="px-4 py-3 font-mono text-xs text-muted-foreground">#{product.id}</td>
-                      <td className="px-4 py-3 text-sm font-medium text-foreground">{product.name}</td>
-                      <td className="px-4 py-3 text-sm text-muted-foreground">{product.category}</td>
+                    <tr
+                      key={product.id}
+                      className="border-t border-border odd:bg-card even:bg-muted/40 hover:bg-violet-50/60"
+                    >
+                      <td className="px-4 py-3 font-mono text-xs text-muted-foreground">
+                        #{product.id}
+                      </td>
+                      <td className="px-4 py-3 text-sm font-medium text-foreground">
+                        {product.name}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-muted-foreground">
+                        {product.category}
+                      </td>
                       <td className="px-4 py-3 text-center text-sm">
                         {isAdded ? (
                           <div className="flex items-center justify-center gap-2">
@@ -138,7 +271,9 @@ export default function AddTransactionModal({
                             >
                               <Minus size={14} />
                             </button>
-                            <span className="w-4 text-center font-semibold text-foreground">{sel.quantity}</span>
+                            <span className="w-4 text-center font-semibold text-foreground">
+                              {sel.quantity}
+                            </span>
                             <button
                               onClick={() => updateQuantity(product.id, 1)}
                               aria-label="Increase quantity"
@@ -151,10 +286,14 @@ export default function AddTransactionModal({
                           "—"
                         )}
                       </td>
-                      <td className="px-4 py-3 text-center text-sm text-foreground">${product.price}</td>
+                      <td className="px-4 py-3 text-center text-sm text-foreground">
+                        ${product.price}
+                      </td>
                       <td className="px-4 py-3 text-center">
                         <button
-                          onClick={() => toggleAdd(product.id, isAdded)}
+                          onClick={() =>
+                            toggleAdd(product.id, product.price, isAdded)
+                          }
                           className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
                             isAdded
                               ? "bg-rose-600 text-white hover:bg-rose-700"
@@ -165,7 +304,7 @@ export default function AddTransactionModal({
                         </button>
                       </td>
                     </tr>
-                  )
+                  );
                 })
               )}
             </tbody>
@@ -173,8 +312,9 @@ export default function AddTransactionModal({
         </div>
 
         <div className="flex justify-end pt-4">
+          {error && <p className="text-sm text-rose-600">{error}</p>}
           <button
-            onClick={onClose}
+            onClick={handleSubmitItems}
             disabled={Object.keys(selections).length === 0}
             className="flex h-10 w-10 items-center justify-center rounded-full bg-violet-950 text-white shadow-md transition-colors hover:bg-violet-900"
           >
@@ -183,5 +323,5 @@ export default function AddTransactionModal({
         </div>
       </div>
     </div>
-  )
+  );
 }

@@ -1,44 +1,44 @@
-import type { Metadata, Viewport } from 'next'
-import './globals.css'
-import Drawer from '../components/SideDrawer/Drawer'
+import type { Metadata, Viewport } from "next";
+import "./globals.css";
+import Drawer from "../components/SideDrawer/Drawer";
 
 export const metadata: Metadata = {
-  title: 'Pharmacy Database',
-  description: 'Pharmacy inventory and transaction management system',
+  title: "Pharmacy Database",
+  description: "Pharmacy inventory and transaction management system",
   icons: {
     icon: [
       {
-        url: '/icon-light-32x32.png',
-        media: '(prefers-color-scheme: light)',
+        url: "/icon-light-32x32.png",
+        media: "(prefers-color-scheme: light)",
       },
       {
-        url: '/icon-dark-32x32.png',
-        media: '(prefers-color-scheme: dark)',
+        url: "/icon-dark-32x32.png",
+        media: "(prefers-color-scheme: dark)",
       },
       {
-        url: '/icon.svg',
-        type: 'image/svg+xml',
+        url: "/icon.svg",
+        type: "image/svg+xml",
       },
     ],
-    apple: '/apple-icon.png',
+    apple: "/apple-icon.png",
   },
-}
+};
 
 export const viewport: Viewport = {
-  colorScheme: 'light',
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#2D1B4E' },
-  ],
-}
+  colorScheme: "light",
+  themeColor: [{ media: "(prefers-color-scheme: light)", color: "#2D1B4E" }],
+};
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode
+  children: React.ReactNode;
 }>) {
   return (
-      <main className="antialiased bg-background text-foreground">
+    <html lang="en">
+      <body className="antialiased bg-background text-foreground">
         <Drawer>{children}</Drawer>
-      </main>
-  )
+      </body>
+    </html>
+  );
 }
