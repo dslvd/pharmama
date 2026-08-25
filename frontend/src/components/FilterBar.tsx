@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import { ChevronDown } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Check, ChevronDown } from "lucide-react";
 
 export interface FilterProps {
   title: string;
@@ -23,7 +23,6 @@ export default function FilterBar({
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Close dropdown menu on outside click
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -33,6 +32,7 @@ export default function FilterBar({
         setOpenDropdown(null);
       }
     };
+
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
@@ -65,23 +65,20 @@ export default function FilterBar({
           selectedValues[group.title] ??
           selectedValues[titleKey] ??
           selectedValues[formatHeader(group.title)];
-
         const currentSelected: string[] = Array.isArray(rawValue)
           ? rawValue
           : rawValue
-          ? [rawValue]
-          : [];
-
+            ? [rawValue]
+            : [];
         const isSelect =
           group.type === "select" ||
           titleKey === "ORDER" ||
           titleKey.includes("SORT");
-
         const checkedItems = currentSelected.filter((item) =>
-          group.sub.includes(item)
+          group.sub.includes(item),
         );
         const uncheckedItems = group.sub.filter(
-          (item) => !currentSelected.includes(item)
+          (item) => !currentSelected.includes(item),
         );
         const orderedSubOptions = [...checkedItems, ...uncheckedItems];
         const isOpen = openDropdown === group.title;
@@ -93,15 +90,8 @@ export default function FilterBar({
               {formatHeader(group.title)}
             </h3>
             <hr className="border-border" />
-
             {isSelect ? (
               <div className="relative w-full">
-                {/* Floating field label notched on border like reference */}
-                <span className="absolute -top-2.5 left-4 z-10 bg-card px-1.5 text-[11px] font-medium text-muted-foreground">
-                  {formatHeader(group.title)}
-                </span>
-
-                {/* Custom Trigger Button */}
                 <button
                   type="button"
                   onClick={() =>
@@ -125,8 +115,6 @@ export default function FilterBar({
                     }`}
                   />
                 </button>
-
-                {/* Floating Menu List */}
                 {isOpen && (
                   <div className="absolute left-0 right-0 top-[calc(100%+6px)] z-30 max-h-56 overflow-y-auto rounded-2xl border border-border bg-card/95 py-1.5 shadow-xl backdrop-blur-md">
                     {group.sub.map((sub) => {
@@ -141,12 +129,11 @@ export default function FilterBar({
                           }}
                           className={`flex w-full items-center justify-between px-4 py-2.5 text-left text-xs transition-colors ${
                             isSelected
-                              ? "bg-violet-50 text-violet-950 font-semibold"
+                              ? "bg-violet-50 font-semibold text-violet-950"
                               : "text-foreground hover:bg-slate-100/70"
                           }`}
                         >
                           <span>{formatLabel(sub)}</span>
-                          {/* Accent bar indicator matching reference style */}
                           {isSelected && (
                             <span className="h-4 w-1 rounded-full bg-violet-900" />
                           )}
@@ -174,11 +161,14 @@ export default function FilterBar({
                         name={`filter-${group.title}`}
                         value={sub}
                         checked={isChecked}
-                        onChange={(e) =>
-                          onFilterChange(group.title, sub, e.target.checked)
+                        onChange={(event) =>
+                          onFilterChange(group.title, sub, event.target.checked)
                         }
-                        className="h-3 w-3 accent-foreground"
+                        className="peer sr-only"
                       />
+                      <span className="flex h-3.5 w-3.5 items-center justify-center rounded-lg border border-border bg-card text-transparent transition-colors peer-checked:border-violet-900 peer-checked:bg-violet-900 peer-checked:text-white">
+                        <Check className="h-2.5 w-2.5" strokeWidth={3} />
+                      </span>
                       <span>{formatLabel(sub)}</span>
                     </label>
                   );

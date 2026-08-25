@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import TransactionPanel from "./components/Transactionpanel";
 import TransactionTable from "./components/TransactionTable";
 import SalesTable from "./components/SalesTable";
 import AddTransactionModal, {
@@ -12,7 +11,6 @@ import { ErrorStack } from "@/components/ErrorCard";
 import Loading from "./loading";
 
 export default function TransactionsPage() {
-  const [isTransactionStarted, setIsTransactionStarted] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [items, setItems] = useState<SubmittedItem[]>([]);
@@ -25,16 +23,6 @@ export default function TransactionsPage() {
     [],
   );
 
-  const handleStartTransaction = () => {
-    setIsTransactionStarted(true);
-    setIsAddModalOpen(true);
-  };
-
-  const handleCancelTransaction = () => {
-    setIsTransactionStarted(false);
-    setIsAddModalOpen(false);
-  };
-
   return (
     <>
       <main className="space-y-6 p-6">
@@ -43,17 +31,13 @@ export default function TransactionsPage() {
       </div>
 
       <div className="space-y-6">
-        {!isTransactionStarted ? (
-          <TransactionPanel onAddTransaction={handleStartTransaction} />
-        ) : (
-          <TransactionTable
-            items={items}
-            setItems={setItems}
-            onOpenModal={() => setIsAddModalOpen(true)}
-            onCancelTransaction={handleCancelTransaction}
-            onError={addError}
-          />
-        )}
+        <TransactionTable
+          items={items}
+          setItems={setItems}
+          onOpenModal={() => setIsAddModalOpen(true)}
+          onCancelTransaction={() => setItems([])}
+          onError={addError}
+        />
 
         <SalesTable
           onError={addError}
