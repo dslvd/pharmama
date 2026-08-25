@@ -108,7 +108,6 @@ export default function AddStockModal({
               type="text"
               value={batchNumber}
               onChange={(e) => setBatchNumber(e.target.value)}
-              required
               className={inputClasses}
             />
           </label>
@@ -119,7 +118,6 @@ export default function AddStockModal({
               type="number"
               value={quantity}
               onChange={(e) => setQuantity(e.target.value)}
-              required
               className={inputClasses}
             />
           </label>
@@ -130,7 +128,6 @@ export default function AddStockModal({
               type="date"
               value={expiryDate}
               onChange={(e) => setExpiryDate(e.target.value)}
-              required
               className={inputClasses}
             />
           </label>

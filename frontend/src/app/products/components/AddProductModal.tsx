@@ -30,7 +30,9 @@ export default function AddProductModal({
 
   const [name, setName] = useState(product?.name ?? "");
   const [genericName, setGenericName] = useState(product?.genericName ?? "");
-  const [category, setCategory] = useState<Category>(product?.category ?? "OTHERS");
+  const [category, setCategory] = useState<Category>(
+    product?.category ?? "OTHERS",
+  );
   const [price, setPrice] = useState(product ? String(product.price) : "");
 
   const [submitting, setSubmitting] = useState(false);
@@ -63,6 +65,7 @@ export default function AddProductModal({
       onSuccess?.();
       onClose();
     } else {
+      console.log(result.error);
       setError(result.error);
     }
   }
@@ -92,7 +95,6 @@ export default function AddProductModal({
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              required
               className={inputClasses}
             />
           </label>
@@ -103,7 +105,6 @@ export default function AddProductModal({
               type="text"
               value={genericName}
               onChange={(e) => setGenericName(e.target.value)}
-              required
               className={inputClasses}
             />
           </label>
@@ -113,7 +114,6 @@ export default function AddProductModal({
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value as Category)}
-              required
               className={inputClasses}
             >
               {[
@@ -141,7 +141,6 @@ export default function AddProductModal({
               step="0.01"
               value={price}
               onChange={(e) => setPrice(e.target.value)}
-              required
               className={inputClasses}
             />
           </label>

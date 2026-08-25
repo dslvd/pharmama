@@ -12,7 +12,6 @@ import {
 } from "recharts";
 import { TrendingUp } from "lucide-react";
 import { getSalesOverview } from "@/lib/api/sales";
-import { ErrorStack } from "@/components/ErrorCard";
 
 type Period = "Today" | "Week" | "Month" | "Year";
 
@@ -20,16 +19,15 @@ const PERIODS: Period[] = ["Today", "Week", "Month", "Year"];
 
 export default function SalesOverview({
   onLoadingChange,
+  onError,
 }: {
   onLoadingChange?: (loading: boolean) => void;
+  onError?: (message: string) => void;
+}
 }) {
   const [period, setPeriod] = useState<Period>("Today");
   const [sales, setSales] = useState<{ label: string; value: number }[]>([]);
   const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState<{ id: string; message: string }[]>([]);
-
-  const addError = (message: string) =>
-    setErrors((prev) => [...prev, { id: crypto.randomUUID(), message }]);
 
   useEffect(() => {
     let cancelled = false;
@@ -45,7 +43,7 @@ export default function SalesOverview({
       if (result.ok) {
         setSales(result.value);
       } else {
-        addError(result.error);
+        onError?.(result.error);
       }
 
       setLoading(false);
@@ -58,7 +56,7 @@ export default function SalesOverview({
       cancelled = true;
       onLoadingChange?.(false);
     };
-  }, [period, onLoadingChange]);
+  }, [period, onLoadingChange, onError]);
 
   return (
     <section className="flex flex-1 flex-col rounded-xl border border-border bg-card p-5">
@@ -89,7 +87,7 @@ export default function SalesOverview({
         </div>
       </div>
 
-      <div className="mt-5 min-h-64 flex-1 w-full">
+      <div className="mt-5 h-64 w-full">
         {loading ? (
           <div className="flex h-full items-center justify-center text-sm">
             loading...
@@ -145,7 +143,6 @@ export default function SalesOverview({
           </ResponsiveContainer>
         )}
       </div>
-      <ErrorStack errors={errors} />
     </section>
   );
 }
