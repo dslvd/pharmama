@@ -139,7 +139,7 @@ export default function AddStockModal({
             <button
               type="submit"
               disabled={submitting}
-              className="rounded-md bg-violet-700 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-violet-800 disabled:opacity-60"
+              className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary/90 disabled:opacity-60"
             >
               {submitting ? "Saving..." : isEditing ? "Save Changes" : "Create"}
             </button>

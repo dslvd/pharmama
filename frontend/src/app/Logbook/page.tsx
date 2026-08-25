@@ -140,9 +140,16 @@ export default function LogbookPage() {
                   className="h-[28rem] px-4 py-8 text-center text-sm text-muted-foreground"
                 >
                   <div className="flex flex-col items-center justify-center gap-3">
-                    <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-violet-100 text-violet-700"><BookOpen className="h-7 w-7" /></span>
-                    <p className="text-base font-semibold text-foreground">Nothing logged yet</p>
-                    <p className="max-w-sm leading-5 text-muted-foreground">Every add, edit, and delete across the app will be recorded here automatically — no action needed.</p>
+                    <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-violet-100 text-violet-950">
+                      <BookOpen className="h-7 w-7" />
+                    </span>
+                    <p className="text-base font-semibold text-foreground">
+                      Nothing logged yet
+                    </p>
+                    <p className="max-w-sm leading-5 text-muted-foreground">
+                      Every add, edit, and delete across the app will be recorded
+                      here automatically — no action needed.
+                    </p>
                   </div>
                 </td>
               </tr>

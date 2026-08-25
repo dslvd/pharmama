@@ -176,7 +176,7 @@ export default function AddTransactionModal({
           <button
             onClick={onClose}
             disabled={Object.keys(selections).length === 0}
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-violet-900 text-white shadow-md transition-colors hover:bg-violet-950"
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-violet-950 text-white shadow-md transition-colors hover:bg-violet-900"
           >
             <Plus size={20} />
           </button>
