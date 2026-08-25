@@ -17,16 +17,22 @@ export default function LogbookPage() {
   const [filter, setFilter] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [errors, setErrors] = useState<{ id: string; message: string }[]>([]);
+  const [loading, setLoading] = useState(false);
 
   const addError = (message: string) =>
     setErrors((prev) => [...prev, { id: crypto.randomUUID(), message }]);
 
   useEffect(() => {
     async function loadAudit() {
+      setLoading(true);
       const result = await getAuditList({ entity, action, order });
 
       if (result.ok) {
         setAudit(result.value);
+        setLoading(false);
+      } else {
+        addError(result.error);
+        setLoading(false);
       }
     }
 
@@ -42,12 +48,6 @@ export default function LogbookPage() {
       setOrder(checked ? (sub as SortOrder) : undefined);
     }
   };
-
-  const filteredAudit = audit.filter((item) => {
-    const query = searchTerm.trim().toLowerCase();
-    if (!query) return true;
-    return `${item.entity} ${item.action}`.toLowerCase().includes(query);
-  });
 
   const FilterOptions: FilterProps[] = [
     {
@@ -76,13 +76,24 @@ export default function LogbookPage() {
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <h2 className="text-3xl font-bold text-foreground">Logbook</h2>
-          <p className="mt-1 text-sm text-muted-foreground">Audit trail of every change made in the system.</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Audit trail of every change made in the system.
+          </p>
         </div>
 
         <div className="flex w-full items-center justify-end gap-3 md:w-auto">
           <div className="relative min-w-56 flex-1 md:w-56 md:flex-none">
-            <Search size={16} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-            <input type="text" value={searchTerm} onChange={(event) => setSearchTerm(event.target.value)} placeholder="Search entity or action..." className="w-full rounded-lg border border-border bg-card py-2.5 pl-9 pr-3 text-sm text-foreground shadow-sm focus:border-violet-300 focus:outline-none focus:ring-2 focus:ring-violet-100" />
+            <Search
+              size={16}
+              className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+            />
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(event) => setSearchTerm(event.target.value)}
+              placeholder="Search entity or action..."
+              className="w-full rounded-lg border border-border bg-card py-2.5 pl-9 pr-3 text-sm text-foreground shadow-sm focus:border-violet-300 focus:outline-none focus:ring-2 focus:ring-violet-100"
+            />
           </div>
           <div className="relative">
             <button
@@ -111,6 +122,7 @@ export default function LogbookPage() {
       </div>
 
       <div className="min-h-128 flex-1 overflow-x-auto rounded-xl border border-border bg-card shadow-sm">
+        {loading && <div>Loading...</div>}
         <table className="w-full text-left text-sm">
           <thead>
             <tr className="border-b border-border bg-[#fdfbf7]">
@@ -133,11 +145,11 @@ export default function LogbookPage() {
           </thead>
 
           <tbody>
-            {filteredAudit.length === 0 ? (
+            {audit.length === 0 ? (
               <tr>
                 <td
                   colSpan={5}
-                  className="h-[28rem] px-4 py-8 text-center text-sm text-muted-foreground"
+                  className="h-112 px-4 py-8 text-center text-sm text-muted-foreground"
                 >
                   <div className="flex flex-col items-center justify-center gap-3">
                     <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-violet-100 text-violet-950">
@@ -147,14 +159,14 @@ export default function LogbookPage() {
                       Nothing logged yet
                     </p>
                     <p className="max-w-sm leading-5 text-muted-foreground">
-                      Every add, edit, and delete across the app will be recorded
-                      here automatically — no action needed.
+                      Every add, edit, and delete across the app will be
+                      recorded here automatically — no action needed.
                     </p>
                   </div>
                 </td>
               </tr>
             ) : (
-              filteredAudit.map((item) => <AuditRow key={item.id} audit={item} />)
+              audit.map((item) => <AuditRow key={item.id} audit={item} />)
             )}
           </tbody>
         </table>
