@@ -19,8 +19,10 @@ const PERIODS: Period[] = ["Today", "Week", "Month", "Year"];
 
 export default function SalesOverview({
   onError,
+  onLoadingChange,
 }: {
   onError?: (message: string) => void;
+  onLoadingChange?: (loading: boolean) => void;
 }) {
   const [period, setPeriod] = useState<Period>("Today");
   const [sales, setSales] = useState<{ label: string; value: number }[]>([]);
@@ -44,7 +46,7 @@ export default function SalesOverview({
       }
 
       setLoading(false);
-  onLoadingChange?.(false);
+        onLoadingChange?.(false);
     }
 
     fetchSales();

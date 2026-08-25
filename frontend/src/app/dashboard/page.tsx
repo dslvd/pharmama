@@ -35,12 +35,12 @@ export default function Dashboard() {
           <LowStocks />
         </section>
 
-        <SalesOverview onLoadingChange={handleLoadingChange} />
+        <SalesOverview
+          onError={addError}
+          onLoadingChange={handleLoadingChange}
+        />
         <ErrorStack errors={errors} />
       </main>
-
-      <SalesOverview onError={addError} />
-      <ErrorStack errors={errors} />
-    </main>
+    </div>
   );
 }
