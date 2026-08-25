@@ -6,6 +6,7 @@ import { Product, SortBy, SortOrder } from "@/lib/types/product";
 import FilterBar, { FilterProps } from "@/components/FilterBar";
 import ProductRow from "@/app/products/components/ProductRow";
 import AddProductModal from "@/app/products/components/AddProductModal";
+import Loading from "./loading";
 import { Funnel, PackageOpen, Search, Plus } from "lucide-react";
 import { ErrorStack } from "@/components/ErrorCard";
 
@@ -20,6 +21,7 @@ export default function ProductPage() {
     undefined,
   );
   const [refreshKey, setRefreshKey] = useState(0);
+  const [loading, setLoading] = useState(true);
   const [errors, setErrors] = useState<{ id: string; message: string }[]>([]);
 
   const addError = (message: string) =>
@@ -27,6 +29,7 @@ export default function ProductPage() {
 
   useEffect(() => {
     async function loadProducts() {
+      setLoading(true);
       const result = searchTerm.trim()
         ? await searchProduct(searchTerm)
         : await getProductList({ order, sortBy });
@@ -34,6 +37,7 @@ export default function ProductPage() {
       if (result.ok) {
         setProducts(result.value);
       }
+      setLoading(false);
     }
 
     loadProducts();
@@ -68,7 +72,8 @@ export default function ProductPage() {
   }
 
   return (
-    <main className="flex min-h-screen flex-col gap-5 p-6">
+    <>
+      <main className="flex min-h-screen flex-col gap-5 p-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <h2 className="text-3xl font-bold text-foreground">Products</h2>
@@ -200,6 +205,12 @@ export default function ProductPage() {
         />
       )}
       <ErrorStack errors={errors} />
-    </main>
+      </main>
+      {loading && (
+        <div className="pointer-events-auto fixed inset-0 z-40 bg-background">
+          <Loading />
+        </div>
+      )}
+    </>
   );
 }

@@ -8,6 +8,7 @@ import { BookOpen, Funnel, Search } from "lucide-react";
 import AuditRow from "./components/AuditRow";
 import FilterBar, { FilterProps } from "@/components/FilterBar";
 import { ErrorStack } from "@/components/ErrorCard";
+import Loading from "./loading";
 
 export default function LogbookPage() {
   const [audit, setAudit] = useState<AuditLog[]>([]);
@@ -17,7 +18,7 @@ export default function LogbookPage() {
   const [filter, setFilter] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [errors, setErrors] = useState<{ id: string; message: string }[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const addError = (message: string) =>
     setErrors((prev) => [...prev, { id: crypto.randomUUID(), message }]);
@@ -72,7 +73,8 @@ export default function LogbookPage() {
   ];
 
   return (
-    <main className="flex min-h-screen flex-col gap-5 p-6">
+    <>
+      <main className="flex min-h-screen flex-col gap-5 p-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <h2 className="text-3xl font-bold text-foreground">Logbook</h2>
@@ -172,6 +174,12 @@ export default function LogbookPage() {
         </table>
       </div>
       <ErrorStack errors={errors} />
-    </main>
+      </main>
+      {loading && (
+        <div className="pointer-events-auto fixed inset-0 z-40 bg-background">
+          <Loading />
+        </div>
+      )}
+    </>
   );
 }

@@ -4,13 +4,17 @@ import { getSalesOverview } from "@/lib/api/sales";
 
 export default function SalesCard({
   onError,
+  onLoadingChange,
 }: {
   onError?: (message: string) => void;
+  onLoadingChange?: (loading: boolean) => void;
 }) {
   const [sales, setSales] = useState<{ label: string; value: number }[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    onLoadingChange?.(true);
+
     async function loadSales() {
       const result = await getSalesOverview("Today");
 
@@ -20,9 +24,10 @@ export default function SalesCard({
         onError?.(result.error);
       }
       setLoading(false);
+      onLoadingChange?.(false);
     }
     loadSales();
-  }, [onError]);
+  }, [onError, onLoadingChange]);
 
   const total = sales.reduce((sum, i) => sum + i.value, 0);
 

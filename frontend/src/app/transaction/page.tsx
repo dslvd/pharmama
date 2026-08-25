@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import TransactionPanel from "./components/Transactionpanel";
 import TransactionTable from "./components/TransactionTable";
 import SalesTable from "./components/SalesTable";
@@ -9,6 +9,7 @@ import AddTransactionModal, {
 } from "./components/TransactionModal";
 import ViewTransactionModal from "./components/ViewTransactionModal";
 import { ErrorStack } from "@/components/ErrorCard";
+import Loading from "./loading";
 
 export default function TransactionsPage() {
   const [isTransactionStarted, setIsTransactionStarted] = useState(false);
@@ -16,9 +17,13 @@ export default function TransactionsPage() {
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [items, setItems] = useState<SubmittedItem[]>([]);
   const [errors, setErrors] = useState<{ id: string; message: string }[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const addError = (message: string) =>
-    setErrors((prev) => [...prev, { id: crypto.randomUUID(), message }]);
+  const addError = useCallback(
+    (message: string) =>
+      setErrors((prev) => [...prev, { id: crypto.randomUUID(), message }]),
+    [],
+  );
 
   const handleStartTransaction = () => {
     setIsTransactionStarted(true);
@@ -31,7 +36,8 @@ export default function TransactionsPage() {
   };
 
   return (
-    <main className="space-y-6 p-6">
+    <>
+      <main className="space-y-6 p-6">
       <div className="flex items-center gap-3">
         <h2 className="text-4xl font-bold text-foreground">Transaction</h2>
       </div>
@@ -51,6 +57,7 @@ export default function TransactionsPage() {
 
         <SalesTable
           onError={addError}
+          onLoadingChange={setLoading}
           onViewClick={() => setIsViewModalOpen(true)}
         />
       </div>
@@ -81,6 +88,12 @@ export default function TransactionsPage() {
         <ViewTransactionModal onClose={() => setIsViewModalOpen(false)} />
       )}
       <ErrorStack errors={errors} />
-    </main>
+      </main>
+      {loading && (
+        <div className="pointer-events-auto fixed inset-0 z-40 bg-background">
+          <Loading />
+        </div>
+      )}
+    </>
   );
 }

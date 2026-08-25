@@ -18,7 +18,11 @@ type Period = "Today" | "Week" | "Month" | "Year";
 
 const PERIODS: Period[] = ["Today", "Week", "Month", "Year"];
 
-export default function SalesOverview() {
+export default function SalesOverview({
+  onLoadingChange,
+}: {
+  onLoadingChange?: (loading: boolean) => void;
+}) {
   const [period, setPeriod] = useState<Period>("Today");
   const [sales, setSales] = useState<{ label: string; value: number }[]>([]);
   const [loading, setLoading] = useState(false);
@@ -32,6 +36,7 @@ export default function SalesOverview() {
 
     async function fetchSales() {
       setLoading(true);
+      onLoadingChange?.(true);
 
       const result = await getSalesOverview(period);
 
@@ -44,14 +49,16 @@ export default function SalesOverview() {
       }
 
       setLoading(false);
+  onLoadingChange?.(false);
     }
 
     fetchSales();
 
     return () => {
       cancelled = true;
+      onLoadingChange?.(false);
     };
-  }, [period]);
+  }, [period, onLoadingChange]);
 
   return (
     <section className="flex flex-1 flex-col rounded-xl border border-border bg-card p-5">

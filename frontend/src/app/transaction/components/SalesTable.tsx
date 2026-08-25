@@ -14,12 +14,14 @@ interface SalesTableProps {
   initialRecords?: Transaction[];
   onViewClick?: (id: number) => void;
   onError?: (message: string) => void;
+  onLoadingChange?: (loading: boolean) => void;
 }
 
 export default function SalesTable({
   initialRecords = [],
   onViewClick,
   onError,
+  onLoadingChange,
 }: SalesTableProps) {
   const [sales, setSales] = useState<Transaction[]>(initialRecords);
   const [status, setStatus] = useState<TransactionStatus | undefined>(
@@ -32,6 +34,7 @@ export default function SalesTable({
   useEffect(() => {
     async function getTransaction() {
       setLoading(true);
+      onLoadingChange?.(true);
       const result = await getTransactionList({ status, order });
 
       if (result.ok) {
@@ -41,6 +44,7 @@ export default function SalesTable({
         onError?.(result.error);
         setLoading(false);
       }
+      onLoadingChange?.(false);
     }
 
     getTransaction();
@@ -153,7 +157,7 @@ export default function SalesTable({
                 sales.map((record) => (
                   <tr
                     key={record.id}
-                    className="border-t border-border odd:bg-card even:bg-muted/40 hover:bg-violet-50/60"
+                    className="border-t border-border bg-card"
                   >
                     <td className="px-4 py-3 font-mono text-xs text-muted-foreground">
                       #{record.id}
