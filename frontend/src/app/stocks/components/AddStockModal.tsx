@@ -9,6 +9,8 @@ import {
   Stock,
   UpdateStockPayload,
 } from "@/lib/types/stock";
+import { Product } from "@/lib/types/product";
+import ProductModal from "@/components/ProductModal";
 
 interface AddStockModalProps {
   stock?: Stock;
@@ -26,10 +28,6 @@ export default function AddStockModal({
   onSuccess,
 }: AddStockModalProps) {
   const isEditing = !!stock;
-
-  const [productId, setProductId] = useState(
-    stock ? String(stock.productId) : "",
-  );
   const [batchNumber, setBatchNumber] = useState(stock?.batchNumber ?? "");
   const [quantity, setQuantity] = useState(stock ? String(stock.quantity) : "");
   const [expiryDate, setExpiryDate] = useState(
@@ -37,6 +35,8 @@ export default function AddStockModal({
   );
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedPr, setSelectedPr] = useState<Product | null>(null);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -44,7 +44,7 @@ export default function AddStockModal({
     setError(null);
 
     const payload: UpdateStockPayload = {
-      productId: Number(productId),
+      productId: selectedPr?.id,
       batchNumber,
       quantity: Number(quantity),
       expiryDate: new Date(expiryDate),
@@ -84,14 +84,23 @@ export default function AddStockModal({
         <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
           <label className={labelClasses}>
             Product
-            {/* TODO: populate options from the products API */}
-            <select
-              value={productId}
-              onChange={(e) => setProductId(e.target.value)}
-              required
+            <button
+              type="button"
+              onClick={() => setIsOpen(true)}
               className={inputClasses}
-            ></select>
+            >
+              {selectedPr ? selectedPr.name : "Select a product"}
+            </button>
           </label>
+
+          {isOpen && (
+            <ProductModal
+              onSelect={(pr) => {
+                setSelectedPr(pr);
+              }}
+              onClose={() => setIsOpen(false)}
+            />
+          )}
 
           <label className={labelClasses}>
             Batch Number

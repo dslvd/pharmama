@@ -1,27 +1,47 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Filter, Search } from "lucide-react";
 import { Transaction, TransactionStatus } from "@/lib/types/transaction";
+import { getTransactionList } from "@/lib/api/transaction";
+import { SortOrder } from "@/lib/types/product";
+import FilterBar, { FilterProps } from "@/components/FilterBar";
 
 interface SalesTableProps {
   initialRecords?: Transaction[];
   onViewClick?: (id: number) => void;
+  onError?: (message: string) => void;
 }
 
 export default function SalesTable({
   initialRecords = [],
   onViewClick,
+  onError,
 }: SalesTableProps) {
   const [sales, setSales] = useState<Transaction[]>(initialRecords);
+  const [status, setStatus] = useState<TransactionStatus | undefined>(
+    undefined,
+  );
+  const [order, setOrder] = useState<SortOrder | undefined>(undefined);
+  const [loading, setLoading] = useState(false);
+  const [filter, setFilter] = useState(false);
 
-  const handleStatusChange = (id: number, newStatus: TransactionStatus) => {
-    setSales((prev) =>
-      prev.map((item) =>
-        item.id === id ? { ...item, status: newStatus } : item,
-      ),
-    );
-  };
+  useEffect(() => {
+    async function getTransaction() {
+      setLoading(true);
+      const result = await getTransactionList({ status, order });
+
+      if (result.ok) {
+        setSales(result.value);
+        setLoading(false);
+      } else {
+        onError?.(result.error);
+        setLoading(false);
+      }
+    }
+
+    getTransaction();
+  }, [order, status, onError]);
 
   const getStatusColor = (status: TransactionStatus) => {
     switch (status) {
@@ -36,9 +56,46 @@ export default function SalesTable({
     }
   };
 
+  const handleStatusChange = async (
+    id: number,
+    newStatus: TransactionStatus,
+  ) => {
+    setSales((prev) =>
+      prev.map((s) => (s.id === id ? { ...s, status: newStatus } : s)),
+    );
+
+    const result = await updateTransactionStatus(id, newStatus);
+    if (!result.ok) {
+      onError?.(result.error);
+      setSales((prev) =>
+        prev.map((s) => (s.id === id ? { ...s, status: s.status } : s)),
+      );
+    }
+  };
+
+  const handleFilterChange = (title: string, sub: string, checked: boolean) => {
+    if (title === "STATUS") {
+      setStatus(checked ? (sub as TransactionStatus) : undefined);
+    } else if (title === "ORDER") {
+      setOrder(checked ? (sub as SortOrder) : undefined);
+    }
+  };
+
+  const FilterOptions: FilterProps[] = [
+    {
+      title: "ACTION",
+      sub: ["COMPLETED", "REFUNDED", "CANCELLED"],
+    },
+    {
+      title: "ORDER",
+      sub: ["asc", "desc"],
+    },
+  ];
+
   return (
     <section>
       <div className="overflow-x-auto rounded-xl border border-border bg-card">
+        {loading && <div>Loading...</div>}
         <div className="max-h-88 overflow-y-auto">
           <table className="w-full border-collapse text-left text-sm">
             <thead className="sticky top-0 z-10 border-b border-border bg-muted/60">
@@ -61,8 +118,16 @@ export default function SalesTable({
                       aria-label="Filter"
                       className="transition-colors hover:text-violet-900"
                     >
-                      <Filter size={14} />
+                      <Filter size={14} onClick={() => setFilter(true)} />
                     </button>
+                    {filter && (
+                      <div className="absolute right-0 z-10 mt-2 w-64 rounded-xl border border-border bg-card p-4 shadow-lg">
+                        <FilterBar
+                          filters={FilterOptions}
+                          onFilterChange={handleFilterChange}
+                        />
+                      </div>
+                    )}
                     <button
                       aria-label="Search"
                       className="transition-colors hover:text-violet-900"
@@ -111,7 +176,7 @@ export default function SalesTable({
                           record.status,
                         )}`}
                       >
-                        <option value="SUCCESS">SUCCESS</option>
+                        <option value="SUCCESS">COMPLETED</option>
                         <option value="REFUNDED">REFUNDED</option>
                         <option value="CANCELLED">CANCELLED</option>
                       </select>
