@@ -52,8 +52,8 @@ export default function Navigation ({ isOpen, onClose }: NavigationProps) {
                 onClick={onClose}
                 className={`flex items-center gap-3 rounded-md px-3 py-2.5 text-left text-sm transition-colors ${
                   isActive
-                    ? 'bg-violet-600 font-semibold text-white'
-                    : 'text-violet-100 hover:bg-violet-900'
+                    ? 'bg-violet-900 font-semibold text-white'
+                    : 'text-violet-100 hover:bg-violet-900/50'
                 }`}
               >
                 <Icon className="w-4 h-4 shrink-0" />
@@ -72,7 +72,7 @@ export default function Navigation ({ isOpen, onClose }: NavigationProps) {
                   href={page}
                   onClick={onClose}
                   className={`flex items-center gap-3 rounded-md px-3 py-2.5 text-left text-sm transition-colors ${
-                    isActive ? 'bg-violet-600 font-semibold text-white' : 'text-violet-100 hover:bg-violet-900'
+                    isActive ? 'bg-violet-900 font-semibold text-white' : 'text-violet-100 hover:bg-violet-900/50'
                   }`}
                 >
                   <Icon className="h-4 w-4 shrink-0" />
@@ -91,7 +91,7 @@ export default function Navigation ({ isOpen, onClose }: NavigationProps) {
                   href={page}
                   onClick={onClose}
                   className={`flex items-center gap-3 rounded-md px-3 py-2.5 text-left text-sm transition-colors ${
-                    isActive ? 'bg-violet-600 font-semibold text-white' : 'text-violet-100 hover:bg-violet-900'
+                    isActive ? 'bg-violet-900 font-semibold text-white' : 'text-violet-100 hover:bg-violet-900/50'
                   }`}
                 >
                   <Icon className="h-4 w-4 shrink-0" />
@@ -111,7 +111,7 @@ export default function Navigation ({ isOpen, onClose }: NavigationProps) {
               height={36}
               className="h-9 w-9 rounded-full object-cover" />
             <div>
-              <p className="text-sm font-bold text-white">Jill Dela Cruz</p>
+              <p className="text-sm font-bold text-white">Jeremy Giyangan</p>
               <p className="text-xs font-semibold text-violet-300">Pharmacist · Iloilo Branch</p>
             </div>
           </div>

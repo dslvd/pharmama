@@ -111,7 +111,7 @@ export default function StockPage() {
 
           <button
             onClick={() => setShowAddStockModal(true)}
-            className="flex items-center gap-2 rounded-lg bg-violet-700 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-violet-800"
+            className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-violet-950"
           >
             <Plus className="h-4 w-4" />
             Add stock
@@ -149,7 +149,7 @@ export default function StockPage() {
                   className="h-[28rem] px-4 py-8 text-center text-sm text-muted-foreground"
                 >
                   <div className="flex flex-col items-center justify-center gap-3">
-                    <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-violet-100 text-violet-700">
+                    <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-violet-100 text-primary">
                       <PackageOpen className="h-7 w-7" />
                     </span>
                     <p className="text-base font-semibold text-foreground">
@@ -161,7 +161,7 @@ export default function StockPage() {
                     </p>
                     <button
                       onClick={() => setShowAddStockModal(true)}
-                      className="mt-2 flex items-center gap-2 rounded-lg bg-violet-700 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-violet-800"
+                      className="mt-2 flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-violet-950"
                     >
                       <Plus className="h-4 w-4" />
                       Add your first stock
