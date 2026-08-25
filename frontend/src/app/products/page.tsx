@@ -72,9 +72,7 @@ export default function ProductPage() {
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <h2 className="text-3xl font-bold text-foreground">Products</h2>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Your catalog of items available to sell or dispense.
-          </p>
+          <p className="mt-1 text-sm text-muted-foreground">Your catalog of items available to sell or dispense.</p>
         </div>
 
         <div className="flex w-full flex-wrap items-center justify-end gap-3 md:w-auto">

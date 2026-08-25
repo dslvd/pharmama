@@ -65,9 +65,7 @@ export default function StockPage() {
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <h2 className="text-3xl font-bold text-foreground">Stocks</h2>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Track batches, quantities, and expiry across the branch.
-          </p>
+          <p className="mt-1 text-sm text-muted-foreground">Track batches, quantities, and expiry across the branch.</p>
         </div>
 
         <div className="flex w-full flex-wrap items-center justify-end gap-3 md:w-auto">

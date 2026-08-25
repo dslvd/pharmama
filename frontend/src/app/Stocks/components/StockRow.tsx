@@ -48,11 +48,7 @@ export default function StockRow({ stock, onDeleted, onEdit }: StockRowProps) {
         </span>
       </td>
       <td className="px-4 py-3">
-        <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${
-          stock.quantity <= LOW_QUANTITY_THRESHOLD
-            ? "bg-amber-100 text-amber-700"
-            : "bg-emerald-100 text-emerald-700"
-        }`}>
+        <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${stock.quantity <= LOW_QUANTITY_THRESHOLD ? "bg-amber-100 text-amber-700" : "bg-emerald-100 text-emerald-700"}`}>
           {stock.quantity <= LOW_QUANTITY_THRESHOLD ? "Low stock" : "In stock"}
         </span>
       </td>

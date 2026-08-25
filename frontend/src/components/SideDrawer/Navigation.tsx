@@ -30,19 +30,11 @@ export default function Navigation ({ isOpen, onClose }: NavigationProps) {
       >
         <div className="px-2 pt-6">
           <Link href="/dashboard" onClick={onClose} className="mb-8 flex items-center px-2">
-            <Image
-              src="/logo/pharlogo.png"
-              alt="PharMaMa"
-              width={160}
-              height={41}
-              className="shrink-0"
-              priority
-            />
+            <Image src="/logo/pharlogo.png" alt="PharMaMa" width={160} height={41} className="shrink-0" priority />
           </Link>
-
           <nav className="flex flex-col gap-1">
-            <p className="px-3 pb-2 text-[11px] font-medium uppercase tracking-wider text-violet-300">Overview</p>
-            {navItems.slice(0, 1).map(({ label, page, icon: Icon }) => {
+          <p className="px-3 pb-2 text-[11px] font-medium uppercase tracking-wider text-violet-300">Overview</p>
+          {navItems.slice(0, 1).map(({ label, page, icon: Icon }) => {
             const isActive = pathname === page || pathname.startsWith(`${page}/`)
 
             return (

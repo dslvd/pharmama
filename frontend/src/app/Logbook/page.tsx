@@ -27,8 +27,6 @@ export default function LogbookPage() {
 
       if (result.ok) {
         setAudit(result.value);
-      } else {
-        addError(result.error);
       }
     }
 
@@ -78,24 +76,13 @@ export default function LogbookPage() {
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <h2 className="text-3xl font-bold text-foreground">Logbook</h2>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Audit trail of every change made in the system.
-          </p>
+          <p className="mt-1 text-sm text-muted-foreground">Audit trail of every change made in the system.</p>
         </div>
 
         <div className="flex w-full items-center justify-end gap-3 md:w-auto">
           <div className="relative min-w-56 flex-1 md:w-56 md:flex-none">
-            <Search
-              size={16}
-              className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
-            />
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(event) => setSearchTerm(event.target.value)}
-              placeholder="Search entity or action..."
-              className="w-full rounded-lg border border-border bg-card py-2.5 pl-9 pr-3 text-sm text-foreground shadow-sm focus:border-violet-300 focus:outline-none focus:ring-2 focus:ring-violet-100"
-            />
+            <Search size={16} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+            <input type="text" value={searchTerm} onChange={(event) => setSearchTerm(event.target.value)} placeholder="Search entity or action..." className="w-full rounded-lg border border-border bg-card py-2.5 pl-9 pr-3 text-sm text-foreground shadow-sm focus:border-violet-300 focus:outline-none focus:ring-2 focus:ring-violet-100" />
           </div>
           <div className="relative">
             <button
