@@ -39,11 +39,8 @@ export default function Dashboard() {
         <ErrorStack errors={errors} />
       </main>
 
-      {loadingCards > 0 && (
-        <div className="absolute inset-0 z-10 bg-background">
-          <Loading />
-        </div>
-      )}
-    </div>
+      <SalesOverview onError={addError} />
+      <ErrorStack errors={errors} />
+    </main>
   );
 }
