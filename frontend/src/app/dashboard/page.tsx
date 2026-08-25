@@ -35,7 +35,7 @@ export default function Dashboard() {
           <LowStocks />
         </section>
 
-        <SalesOverview onLoadingChange={handleLoadingChange} onError={addError} />
+        <SalesOverview onError={addError} onLoadingChange={handleLoadingChange} />
         <ErrorStack errors={errors} />
       </main>
 
