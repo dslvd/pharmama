@@ -1,4 +1,3 @@
-// components/Stock/AddStockModal.tsx
 "use client";
 
 import { X } from "lucide-react";
@@ -37,6 +36,31 @@ export default function AddStockModal({
   const [error, setError] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [selectedPr, setSelectedPr] = useState<Product | null>(null);
+
+  const errors = (error ?? "").split(", ").map((err) => err.trim());
+
+  const productError = errors.find(
+    (err) =>
+      err.toLowerCase().startsWith("product") ||
+      err.toLowerCase().startsWith("productid"),
+  );
+  const batchNumberError = errors.find((err) =>
+    err.toLowerCase().startsWith("batchnumber"),
+  );
+  const quantityError = errors.find((err) =>
+    err.toLowerCase().startsWith("quantity"),
+  );
+  const expiryDateError = errors.find((err) =>
+    err.toLowerCase().startsWith("expirydate"),
+  );
+  const generalError = errors.find(
+    (err) =>
+      !err.toLowerCase().startsWith("product") &&
+      !err.toLowerCase().startsWith("productid") &&
+      !err.toLowerCase().startsWith("batchnumber") &&
+      !err.toLowerCase().startsWith("quantity") &&
+      !err.toLowerCase().startsWith("expirydate"),
+  );
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -91,6 +115,9 @@ export default function AddStockModal({
             >
               {selectedPr ? selectedPr.name : "Select a product"}
             </button>
+            {productError && (
+              <p className="mt-1 text-sm text-rose-600">{productError}</p>
+            )}
           </label>
 
           {isOpen && (
@@ -110,6 +137,9 @@ export default function AddStockModal({
               onChange={(e) => setBatchNumber(e.target.value)}
               className={inputClasses}
             />
+            {batchNumberError && (
+              <p className="mt-1 text-sm text-rose-600">{batchNumberError}</p>
+            )}
           </label>
 
           <label className={labelClasses}>
@@ -120,6 +150,9 @@ export default function AddStockModal({
               onChange={(e) => setQuantity(e.target.value)}
               className={inputClasses}
             />
+            {quantityError && (
+              <p className="mt-1 text-sm text-rose-600">{quantityError}</p>
+            )}
           </label>
 
           <label className={labelClasses}>
@@ -130,9 +163,14 @@ export default function AddStockModal({
               onChange={(e) => setExpiryDate(e.target.value)}
               className={inputClasses}
             />
+            {expiryDateError && (
+              <p className="mt-1 text-sm text-rose-600">{expiryDateError}</p>
+            )}
           </label>
 
-          {error && <p className="text-sm text-rose-600">{error}</p>}
+          {generalError && (
+            <p className="text-sm text-rose-600">{generalError}</p>
+          )}
 
           <div className="mt-2 flex justify-end gap-2">
             <button

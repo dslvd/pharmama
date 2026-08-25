@@ -34,7 +34,7 @@ export default function StockRow({ stock, onDeleted, onEdit }: StockRowProps) {
   }
 
   return (
-    <tr className="border-t border-border odd:bg-card even:bg-muted/40 hover:bg-violet-50/60">
+    <tr className="border-t border-border odd:bg-card even:bg-violet-50/60">
       <td className="px-4 py-3 text-foreground">{stock.productId}</td>
       <td className="px-4 py-3 text-muted-foreground">{stock.batchNumber}</td>
       <td className="px-4 py-3">
