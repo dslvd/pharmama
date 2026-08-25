@@ -1,4 +1,4 @@
-import { Type } from "class-transformer";
+import { Transform, Type } from "class-transformer";
 import {
   ArrayMinSize,
   IsEnum,
@@ -57,15 +57,29 @@ export const validateStatusUpdatable = <
 };
 
 export class TransactionItemDto {
-  @IsInt() @IsPositive() productId!: number;
-  @IsInt() @IsPositive() stockId!: number;
-  @IsInt() @Min(1) quantity!: number;
-  @IsNumber() @IsPositive() unitPrice!: number;
+  @Type(() => Number)
+  @IsInt()
+  @IsPositive()
+  productId!: number;
+  @Type(() => Number)
+  @IsInt()
+  @IsPositive()
+  stockId!: number;
+  @Type(() => Number) @IsInt() @Min(1) quantity!: number;
+  @Type(() => Number)
+  @IsNumber()
+  @IsPositive()
+  unitPrice!: number;
 }
 
 export class CreateTransactionDto {
-  @IsEnum(TransactionStatus) status!: TransactionStatus;
-  @IsString() @IsNotEmpty() handledBy!: string;
+  @Transform(({ value }) => value?.trim())
+  @IsEnum(TransactionStatus)
+  status!: TransactionStatus;
+  @Transform(({ value }) => value?.trim())
+  @IsString()
+  @IsNotEmpty()
+  handledBy!: string;
   @ValidateNested({ each: true })
   @Type(() => TransactionItemDto)
   @ArrayMinSize(1)

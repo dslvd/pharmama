@@ -7,15 +7,25 @@ import {
   IsString,
 } from "class-validator";
 import { PartialType } from "@nestjs/mapped-types";
+import { Transform, Type } from "class-transformer";
 
 export const validateStockExist = <T>(st: T | null): Result<T> => {
   return st ? ok(st) : err("Stock not found.");
 };
 export class CreateStockDto {
-  @IsInt() @IsPositive() productId!: number;
-  @IsString() @IsNotEmpty() batchNumber!: string;
-  @IsInt() @IsPositive() quantity!: number;
-  @IsDateString() expiryDate!: string;
+  @Type(() => Number)
+  @IsInt()
+  @IsPositive()
+  productId!: number;
+  @Transform(({ value }) => value?.trim())
+  @IsString()
+  @IsNotEmpty()
+  batchNumber!: string;
+  @Type(() => Number)
+  @IsInt()
+  @IsPositive()
+  quantity!: number;
+  @Transform(({ value }) => value?.trim()) @IsDateString() expiryDate!: string;
 }
 
 export class UpdateStockDto extends PartialType(CreateStockDto) {}
