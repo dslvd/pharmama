@@ -32,7 +32,7 @@ export default function ProductRow({
 
   return (
     <>
-      <tr className="border-t border-border odd:bg-card even:bg-muted/40 hover:bg-violet-50/60">
+      <tr className="border-t border-border odd:bg-card even:bg-violet-50/60">
         <td className="px-4 py-3 text-foreground">{product.name}</td>
         <td className="px-4 py-3 text-muted-foreground">
           {product.genericName}

@@ -38,6 +38,24 @@ export default function AddProductModal({
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const errors = (error ?? "").split(", ").map((err) => err.trim());
+
+  const nameError = errors.find((err) =>
+    err.toLowerCase().startsWith("name"),
+  );
+  const genericNameError = errors.find((err) =>
+    err.toLowerCase().startsWith("genericname"),
+  );
+  const priceError = errors.find((err) =>
+    err.toLowerCase().startsWith("price"),
+  );
+  const generalError = errors.find(
+    (err) =>
+      !err.toLowerCase().startsWith("name") &&
+      !err.toLowerCase().startsWith("genericname") &&
+      !err.toLowerCase().startsWith("price"),
+  );
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSubmitting(true);
@@ -97,6 +115,9 @@ export default function AddProductModal({
               onChange={(e) => setName(e.target.value)}
               className={inputClasses}
             />
+            {nameError && (
+              <p className="mt-1 text-sm text-rose-600">{nameError}</p>
+            )}
           </label>
 
           <label className={labelClasses}>
@@ -107,6 +128,9 @@ export default function AddProductModal({
               onChange={(e) => setGenericName(e.target.value)}
               className={inputClasses}
             />
+            {genericNameError && (
+              <p className="mt-1 text-sm text-rose-600">{genericNameError}</p>
+            )}
           </label>
 
           <label className={labelClasses}>
@@ -143,9 +167,14 @@ export default function AddProductModal({
               onChange={(e) => setPrice(e.target.value)}
               className={inputClasses}
             />
+            {priceError && (
+              <p className="mt-1 text-sm text-rose-600">{priceError}</p>
+            )}
           </label>
 
-          {error && <p className="text-sm text-rose-600">{error}</p>}
+          {generalError && (
+            <p className="text-sm text-rose-600">{generalError}</p>
+          )}
 
           <div className="mt-2 flex justify-end gap-2">
             <button
