@@ -8,7 +8,7 @@ import { SortOrder } from "@/lib/types/product";
 import FilterBar, { FilterProps } from "@/components/FilterBar";
 import StockRow from "@/app/stocks/components/StockRow";
 import AddStockModal from "@/app/stocks/components/AddStockModal";
-import Loading from "./loading";
+import Loading from "@/app/stocks/loading";
 import { Funnel, PackageOpen, Plus, Search } from "lucide-react";
 
 export default function StockPage() {

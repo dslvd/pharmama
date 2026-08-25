@@ -8,7 +8,7 @@ import { BookOpen, Funnel, Search } from "lucide-react";
 import AuditRow from "./components/AuditRow";
 import FilterBar, { FilterProps } from "@/components/FilterBar";
 import { ErrorStack } from "@/components/ErrorCard";
-import Loading from "./loading";
+import Loading from "@/app/logbook/loading";
 
 export default function LogbookPage() {
   const [audit, setAudit] = useState<AuditLog[]>([]);
@@ -174,11 +174,14 @@ export default function LogbookPage() {
       </div>
       <ErrorStack errors={errors} />
       </main>
-      {loading && (
-        <div className="pointer-events-auto fixed inset-0 z-40 bg-background">
+      <div
+        className={`fixed inset-0 z-40 bg-background transition-opacity duration-300 ease-out ${
+          loading ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"
+        }`}
+        aria-hidden={!loading}
+      >
           <Loading />
-        </div>
-      )}
+      </div>
     </>
   );
 }
