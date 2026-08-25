@@ -15,7 +15,7 @@ import {
   Transaction,
   TransactionStatus,
 } from "src/generated/prisma/client";
-import { CreateTransactionDto } from "./validation";
+import { CreateTransactionDto, UpdateTransactionStatusDto } from "./validation";
 
 @Controller("transaction")
 export class TransactionController {
@@ -49,5 +49,13 @@ export class TransactionController {
   @Post()
   async createTr(@Body() trData: CreateTransactionDto): Promise<Transaction> {
     return this.trService.createTransaction(trData);
+  }
+
+  @Patch(":id/updateStatus")
+  async updateTrStatus(
+    @Param("id", ParseIntPipe) id: number,
+    @Body() dto: UpdateTransactionStatusDto,
+  ): Promise<Transaction> {
+    return this.trService.updateTransactionStatus(id, dto);
   }
 }

@@ -15,7 +15,9 @@ import { PrismaService } from "src/prisma/prisma.service";
 import {
   CreateTransactionDto,
   TransactionItemDto,
+  UpdateTransactionStatusDto,
   validateCancellable,
+  validateStatusUpdatable,
   validateStock,
   validateTransactionExists,
 } from "./validation";
@@ -198,6 +200,50 @@ export class TransactionService {
         tx.handledBy.toLowerCase().includes(q) ||
         (statusMatch ? tx.status === statusMatch : false),
     );
+  }
+
+  async updateTransactionStatus(id: number, dto: UpdateTransactionStatusDto) {
+    return this.prisma.$transaction(async (tx) => {
+      const existing = await tx.transaction.findUnique({
+        where: { id },
+        select: { id: true, status: true, transactionItems: true },
+      });
+
+      const result = validateTransactionExists(existing);
+      if (!result.ok) throw new NotFoundException(result.error);
+
+      const transaction = result.value;
+
+      const check = validateStatusUpdatable(transaction, dto.status);
+      if (!check.ok) throw new BadRequestException(check.error);
+
+      await Promise.all(
+        transaction.transactionItems.map((item) =>
+          tx.stock.update({
+            where: { id: item.stockId },
+            data: { quantity: { increment: item.quantity } },
+          }),
+        ),
+      );
+
+      const updated = await tx.transaction.update({
+        where: { id },
+        data: { status: dto.status },
+      });
+
+      await createAuditLog(tx, {
+        entity: AuditEntity.TRANSACTION,
+        entityId: id,
+        action:
+          dto.status === "CANCELLED" ? AuditAction.CANCEL : AuditAction.UPDATE,
+        changes: {
+          old: { status: transaction.status },
+          new: { status: updated.status },
+        },
+      });
+
+      return updated;
+    });
   }
 }
 
