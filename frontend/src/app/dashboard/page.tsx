@@ -23,7 +23,7 @@ export default function Dashboard() {
         <LowStocks />
       </section>
 
-      <SalesOverview />
+      <SalesOverview onError={addError} />
       <ErrorStack errors={errors} />
     </main>
   );
