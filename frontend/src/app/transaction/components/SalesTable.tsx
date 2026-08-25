@@ -28,27 +28,23 @@ export default function SalesTable({
     undefined,
   );
   const [order, setOrder] = useState<SortOrder | undefined>(undefined);
-  const [loading, setLoading] = useState(false);
   const [filter, setFilter] = useState(false);
 
   useEffect(() => {
     async function getTransaction() {
-      setLoading(true);
       onLoadingChange?.(true);
       const result = await getTransactionList({ status, order });
 
       if (result.ok) {
         setSales(result.value);
-        setLoading(false);
       } else {
         onError?.(result.error);
-        setLoading(false);
       }
       onLoadingChange?.(false);
     }
 
     getTransaction();
-  }, [order, status, onError]);
+  }, [order, status, onError, onLoadingChange]);
 
   const getStatusColor = (status: TransactionStatus) => {
     switch (status) {
@@ -100,7 +96,6 @@ export default function SalesTable({
   return (
     <section>
       <div className="overflow-x-auto rounded-xl border border-border bg-card">
-        {loading && <div>Loading...</div>}
         <div className="max-h-88 overflow-y-auto">
           <table className="w-full border-collapse text-left text-sm">
             <thead className="sticky top-0 z-10 border-b border-border bg-muted/60">

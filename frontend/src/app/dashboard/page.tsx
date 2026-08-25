@@ -41,6 +41,11 @@ export default function Dashboard() {
         />
         <ErrorStack errors={errors} />
       </main>
+      {loadingCards > 0 && (
+        <div className="pointer-events-auto fixed inset-0 z-40 bg-background">
+          <Loading />
+        </div>
+      )}
     </div>
   );
 }

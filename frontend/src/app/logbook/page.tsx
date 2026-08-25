@@ -124,7 +124,6 @@ export default function LogbookPage() {
       </div>
 
       <div className="min-h-128 flex-1 overflow-x-auto rounded-xl border border-border bg-card shadow-sm">
-        {loading && <div>Loading...</div>}
         <table className="w-full text-left text-sm">
           <thead>
             <tr className="border-b border-border bg-[#fdfbf7]">

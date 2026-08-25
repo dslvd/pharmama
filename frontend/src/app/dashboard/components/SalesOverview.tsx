@@ -55,7 +55,7 @@ export default function SalesOverview({
       cancelled = true;
       onLoadingChange?.(false);
     };
-  }, [period, onLoadingChange]);
+  }, [period, onError, onLoadingChange]);
 
   return (
     <section className="flex flex-1 flex-col rounded-xl border border-border bg-card p-5">
@@ -88,9 +88,11 @@ export default function SalesOverview({
 
       <div className="mt-5 h-64 w-full">
         {loading ? (
-          <div className="flex h-full items-center justify-center text-sm">
-            loading...
-          </div>
+          <div
+            className="skeleton h-full w-full rounded-lg"
+            role="status"
+            aria-label="Loading sales overview"
+          />
         ) : (
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart

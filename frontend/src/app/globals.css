@@ -184,7 +184,7 @@
 
 @layer components {
   .skeleton {
-    background: linear-gradient(90deg, #e7e2da 25%, #f5f2ed 50%, #e7e2da 75%);
+    background: linear-gradient(90deg, #e5e5e5 25%, #f4f4f4 50%, #e5e5e5 75%);
     background-size: 200% 100%;
     animation: skeleton-shimmer 1.8s ease-in-out infinite;
   }
