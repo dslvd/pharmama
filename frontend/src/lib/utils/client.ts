@@ -8,16 +8,28 @@ export async function apiFetch<T>(
 ): Promise<Result<T>> {
   try {
     const res = await fetch(`${BASE_URL}${endpoint}`, {
-      headers: { "Content-Type": "application/json", ...options.headers },
+      headers: {
+        "Content-Type": "application/json",
+        ...options.headers,
+      },
       ...options,
     });
 
+    const data = await res.json();
+    const capitalize = (message: string) =>
+      message.charAt(0).toUpperCase() + message.slice(1);
+
     if (!res.ok) {
-      return err(`API error: ${res.status} ${res.statusText}`);
+      const message = Array.isArray(data.message)
+        ? data.message.join(", ")
+        : typeof data.message === "string"
+          ? data.message
+          : `API error: ${res.status} ${res.statusText}`;
+
+      return err(capitalize(message));
     }
 
-    const data = (await res.json()) as T;
-    return ok(data);
+    return ok(data as T);
   } catch (e) {
     return err(e instanceof Error ? e.message : "Unknown network error");
   }
