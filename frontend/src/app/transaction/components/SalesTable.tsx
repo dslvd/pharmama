@@ -3,7 +3,10 @@
 import { useEffect, useState } from "react";
 import { Filter, Search } from "lucide-react";
 import { Transaction, TransactionStatus } from "@/lib/types/transaction";
-import { getTransactionList } from "@/lib/api/transaction";
+import {
+  getTransactionList,
+  updateTransactionStatus,
+} from "@/lib/api/transaction";
 import { SortOrder } from "@/lib/types/product";
 import FilterBar, { FilterProps } from "@/components/FilterBar";
 
@@ -60,16 +63,14 @@ export default function SalesTable({
     id: number,
     newStatus: TransactionStatus,
   ) => {
-    setSales((prev) =>
-      prev.map((s) => (s.id === id ? { ...s, status: newStatus } : s)),
-    );
+    const result = await updateTransactionStatus(id, { status: newStatus });
 
-    const result = await updateTransactionStatus(id, newStatus);
-    if (!result.ok) {
-      onError?.(result.error);
+    if (result.ok) {
       setSales((prev) =>
-        prev.map((s) => (s.id === id ? { ...s, status: s.status } : s)),
+        prev.map((s) => (s.id === id ? { ...s, status: newStatus } : s)),
       );
+    } else {
+      onError?.(result.error);
     }
   };
 

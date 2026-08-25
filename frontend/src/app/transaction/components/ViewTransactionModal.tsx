@@ -1,31 +1,12 @@
-'use client'
+"use client";
 
-import { useState } from "react"
-import { X } from "lucide-react"
-
-export type TransactionStatus = "SUCCESS" | "REFUNDED" | "CANCELLED"
-
-export interface TransactionDetailItem {
-  id: string
-  productName: string
-  brand: string
-  date: string
-  time: string
-  quantity: number
-  price: number
-}
-
-export interface TransactionDetails {
-  id: string
-  handledBy: string
-  status: TransactionStatus
-  totalAmount: number
-  items: TransactionDetailItem[]
-}
+import { useState } from "react";
+import { X } from "lucide-react";
+import { Transaction, TransactionStatus } from "@/lib/types/transaction";
 
 interface ViewTransactionModalProps {
-  transaction?: TransactionDetails
-  onClose: () => void
+  transaction?: Transaction;
+  onClose: () => void;
 }
 
 export default function ViewTransactionModal({
@@ -33,23 +14,23 @@ export default function ViewTransactionModal({
   onClose,
 }: ViewTransactionModalProps) {
   const [status, setStatus] = useState<TransactionStatus>(
-    transaction?.status || "SUCCESS"
-  )
+    transaction?.status || "COMPLETED",
+  );
 
   const getStatusColor = (currentStatus: TransactionStatus) => {
     switch (currentStatus) {
-      case "SUCCESS":
-        return "bg-emerald-100 text-emerald-800 border-emerald-300"
+      case "COMPLETED":
+        return "bg-emerald-100 text-emerald-800 border-emerald-300";
       case "REFUNDED":
-        return "bg-amber-100 text-amber-800 border-amber-300"
+        return "bg-amber-100 text-amber-800 border-amber-300";
       case "CANCELLED":
-        return "bg-rose-100 text-rose-800 border-rose-300"
+        return "bg-rose-100 text-rose-800 border-rose-300";
       default:
-        return "bg-muted text-foreground border-border"
+        return "bg-muted text-foreground border-border";
     }
-  }
+  };
 
-  const items = transaction?.items || []
+  const items = transaction?.transactionitem || [];
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
@@ -71,33 +52,53 @@ export default function ViewTransactionModal({
           <table className="w-full border-collapse text-left text-sm">
             <thead className="sticky top-0 z-10 border-b border-border bg-muted/60">
               <tr>
-                <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">ID</th>
-                <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Product Name</th>
-                <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Brand</th>
-                <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Date</th>
-                <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Time</th>
-                <th className="px-4 py-2.5 text-center text-xs font-semibold uppercase tracking-wide text-muted-foreground">Quantity</th>
-                <th className="px-4 py-2.5 text-right text-xs font-semibold uppercase tracking-wide text-muted-foreground">Price</th>
+                <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  ID
+                </th>
+                <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  Product Name
+                </th>
+                <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  Brand
+                </th>
+                <th className="px-4 py-2.5 text-center text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  Quantity
+                </th>
+                <th className="px-4 py-2.5 text-right text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  Price
+                </th>
               </tr>
             </thead>
             <tbody>
               {items.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-4 py-8 text-center text-sm text-muted-foreground">
+                  <td
+                    colSpan={7}
+                    className="px-4 py-8 text-center text-sm text-muted-foreground"
+                  >
                     No items found for this transaction.
                   </td>
                 </tr>
               ) : (
                 items.map((item) => (
-                  <tr key={item.id} className="border-t border-border odd:bg-card even:bg-muted/40 hover:bg-violet-50/60">
-                    <td className="px-4 py-3 font-mono text-xs text-muted-foreground">#{item.id}</td>
-                    <td className="px-4 py-3 text-sm font-medium text-foreground">{item.productName}</td>
-                    <td className="px-4 py-3 text-xs text-muted-foreground">{item.brand}</td>
-                    <td className="px-4 py-3 text-xs text-muted-foreground">{item.date}</td>
-                    <td className="px-4 py-3 text-xs text-muted-foreground">{item.time}</td>
-                    <td className="px-4 py-3 text-center text-xs text-foreground">{item.quantity}</td>
+                  <tr
+                    key={item.id}
+                    className="border-t border-border odd:bg-card even:bg-muted/40 hover:bg-violet-50/60"
+                  >
+                    <td className="px-4 py-3 font-mono text-xs text-muted-foreground">
+                      #{item.id}
+                    </td>
+                    <td className="px-4 py-3 text-sm font-medium text-foreground">
+                      {item.product.name}
+                    </td>
+                    <td className="px-4 py-3 text-xs text-muted-foreground">
+                      {item.product.genericName}
+                    </td>
+                    <td className="px-4 py-3 text-center text-xs text-foreground">
+                      {item.quantity}
+                    </td>
                     <td className="px-4 py-3 text-right text-xs font-semibold text-foreground">
-                      ${item.price * item.quantity}
+                      ${item.product.price * item.quantity}
                     </td>
                   </tr>
                 ))
@@ -115,18 +116,20 @@ export default function ViewTransactionModal({
                 value={status}
                 onChange={(e) => setStatus(e.target.value as TransactionStatus)}
                 className={`rounded-full border px-2.5 py-1 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-violet-100 ${getStatusColor(
-                  status
+                  status,
                 )}`}
               >
-                <option value="SUCCESS">SUCCESS</option>
+                <option value="COMPLETED">COMPLETED</option>
                 <option value="REFUNDED">REFUNDED</option>
                 <option value="CANCELLED">CANCELLED</option>
               </select>
             </div>
           </div>
-          <span className="text-base font-bold text-foreground">Total: ${transaction?.totalAmount || 0}</span>
+          <span className="text-base font-bold text-foreground">
+            Total: ${transaction?.totalAmount || 0}
+          </span>
         </div>
       </div>
     </div>
-  )
+  );
 }

@@ -38,6 +38,24 @@ export function validateCancellable(transaction: {
   }
   return { ok: true, value: true };
 }
+
+export const validateStatusUpdatable = <
+  T extends { status: TransactionStatus },
+>(
+  transaction: T,
+  newStatus: TransactionStatus,
+): Result<T> => {
+  if (transaction.status !== "COMPLETED") {
+    return err(`Cannot change status of a ${transaction.status} transaction`);
+  }
+
+  if (newStatus === "COMPLETED") {
+    return err("Transaction is already completed");
+  }
+
+  return ok(transaction);
+};
+
 export class TransactionItemDto {
   @IsInt() @IsPositive() productId!: number;
   @IsInt() @IsPositive() stockId!: number;
@@ -52,4 +70,8 @@ export class CreateTransactionDto {
   @Type(() => TransactionItemDto)
   @ArrayMinSize(1)
   transactionItems!: TransactionItemDto[];
+}
+
+export class UpdateTransactionStatusDto {
+  @IsEnum(TransactionStatus) status!: TransactionStatus;
 }
