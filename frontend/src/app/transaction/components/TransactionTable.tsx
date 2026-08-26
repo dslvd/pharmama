@@ -11,6 +11,7 @@ interface TransactionTableProps {
   onOpenModal?: () => void;
   onCancelTransaction?: () => void;
   onError?: (message: string) => void;
+  onSuccess?: () => void;
 }
 
 export default function TransactionTable({
@@ -19,6 +20,7 @@ export default function TransactionTable({
   onOpenModal,
   onCancelTransaction,
   onError,
+  onSuccess,
 }: TransactionTableProps) {
   const [loading, setLoading] = useState(false);
 
@@ -32,6 +34,7 @@ export default function TransactionTable({
 
     if (result.ok) {
       setItems([]);
+      onSuccess?.();
       onCancelTransaction?.();
     } else {
       onError?.(result.error);

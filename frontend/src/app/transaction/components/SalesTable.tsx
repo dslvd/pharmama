@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Check, ChevronDown, Filter, Search } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Check, ChevronDown, Filter, Funnel, Search } from "lucide-react";
 import { Transaction, TransactionStatus } from "@/lib/types/transaction";
 import {
   getTransactionList,
@@ -12,38 +12,71 @@ import FilterBar, { FilterProps } from "../../../components/FilterBar";
 
 interface SalesTableProps {
   initialRecords?: Transaction[];
+  refreshKey?: number;
   onViewClick?: (id: number) => void;
   onError?: (message: string) => void;
   onLoadingChange?: (loading: boolean) => void;
 }
+const inputClasses =
+  "rounded-full border border-border bg-white py-1.5 text-sm text-foreground focus:border-violet-400 focus:outline-none focus:ring-2 focus:ring-violet-100";
+const STATUS_VALUES: TransactionStatus[] = [
+  "COMPLETED",
+  "REFUNDED",
+  "CANCELLED",
+];
 
 export default function SalesTable({
   initialRecords = [],
   onViewClick,
   onError,
   onLoadingChange,
+  refreshKey = 0,
 }: SalesTableProps) {
-  const [sales, setSales] = useState<Transaction[]>(initialRecords);
+  const [allSales, setAllSales] = useState<Transaction[]>(initialRecords);
   const [status, setStatus] = useState<TransactionStatus | undefined>(
     undefined,
   );
   const [order, setOrder] = useState<SortOrder | undefined>(undefined);
   const [filter, setFilter] = useState(false);
+  const [showSearch, setShowSearch] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
   const [openStatusId, setOpenStatusId] = useState<number | null>(null);
 
   useEffect(() => {
     async function getTransaction() {
       onLoadingChange?.(true);
-      const result = await getTransactionList({ status, order });
+      const result = await getTransactionList({});
       if (result.ok) {
-        setSales(result.value);
+        setAllSales(result.value);
       } else {
         onError?.(result.error);
       }
       onLoadingChange?.(false);
     }
     getTransaction();
-  }, [order, status]);
+  }, [refreshKey]);
+
+  const sales = useMemo(() => {
+    const q = searchTerm.trim().toLowerCase();
+
+    let list = allSales.filter((tx) => {
+      const statusFilterMatch = !status || tx.status === status;
+      const searchMatch =
+        !q ||
+        tx.handledBy.toLowerCase().includes(q) ||
+        tx.status.toLowerCase().includes(q);
+
+      return statusFilterMatch && searchMatch;
+    });
+
+    list = [...list].sort((a, b) =>
+      (order ?? "desc") === "asc"
+        ? new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+        : new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    );
+
+    return list;
+  }, [allSales, status, order, searchTerm]);
 
   const getStatusColor = (status: TransactionStatus) => {
     switch (status) {
@@ -66,7 +99,7 @@ export default function SalesTable({
     const result = await updateTransactionStatus(id, { status: newStatus });
 
     if (result.ok) {
-      setSales((prev) =>
+      setAllSales((prev) =>
         prev.map((s) => (s.id === id ? { ...s, status: newStatus } : s)),
       );
     } else {
@@ -83,14 +116,8 @@ export default function SalesTable({
   };
 
   const FilterOptions: FilterProps[] = [
-    {
-      title: "STATUS",
-      sub: ["COMPLETED", "REFUNDED", "CANCELLED"],
-    },
-    {
-      title: "ORDER",
-      sub: ["asc", "desc"],
-    },
+    { title: "STATUS", sub: ["COMPLETED", "REFUNDED", "CANCELLED"] },
+    { title: "ORDER", sub: ["asc", "desc"] },
   ];
 
   return (
@@ -114,10 +141,16 @@ export default function SalesTable({
               <th className="px-4 py-2.5 text-right text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                 <div className="flex items-center justify-end gap-3 text-muted-foreground">
                   <button
-                    aria-label="Filter"
-                    className="transition-colors hover:text-violet-900"
+                    onClick={() => setFilter((f) => !f)}
+                    aria-label="Toggle filters"
+                    aria-pressed={filter}
+                    className={`rounded-lg border p-2.5 transition-colors ${
+                      filter
+                        ? "border-primary bg-violet-100 text-violet-700"
+                        : "border-border bg-card text-muted-foreground hover:bg-muted"
+                    }`}
                   >
-                    <Filter size={14} onClick={() => setFilter(true)} />
+                    <Funnel size={18} />
                   </button>
 
                   {filter && (
@@ -125,15 +158,25 @@ export default function SalesTable({
                       <FilterBar
                         filters={FilterOptions}
                         onFilterChange={handleFilterChange}
+                        selectedValues={{
+                          STATUS: status,
+                          ORDER: order,
+                        }}
                       />
                     </div>
                   )}
-                  <button
-                    aria-label="Search"
-                    className="transition-colors hover:text-violet-900"
-                  >
-                    <Search size={14} />
-                  </button>
+                  <div className="relative">
+                    <Search
+                      size={16}
+                      className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                    />
+                    <input
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      placeholder="Search"
+                      className={`${inputClasses} pl-9 pr-3`}
+                    />
+                  </div>
                 </div>
               </th>
             </tr>
@@ -193,13 +236,7 @@ export default function SalesTable({
                               : "top-[calc(100%+6px)]"
                           }`}
                         >
-                          {(
-                            [
-                              "COMPLETED",
-                              "REFUNDED",
-                              "CANCELLED",
-                            ] as TransactionStatus[]
-                          ).map((option) => (
+                          {STATUS_VALUES.map((option) => (
                             <button
                               key={option}
                               type="button"

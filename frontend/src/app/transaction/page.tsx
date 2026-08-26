@@ -17,6 +17,7 @@ export default function TransactionsPage() {
   const [errors, setErrors] = useState<{ id: string; message: string }[]>([]);
   const [loading, setLoading] = useState(true);
   const [trId, setTrId] = useState<number>(0);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const addError = (message: string) =>
     setErrors((prev) => [...prev, { id: crypto.randomUUID(), message }]);
@@ -35,16 +36,18 @@ export default function TransactionsPage() {
             onOpenModal={() => setIsAddModalOpen(true)}
             onCancelTransaction={() => setItems([])}
             onError={addError}
+            onSuccess={() => setRefreshKey((k) => k + 1)}
           />
 
           <SalesTable
-            onError={addError}
-            onLoadingChange={setLoading}
-            onViewClick={(id) => {
-              setTrId(id);
-              setIsViewModalOpen(true);
-            }}
-          />
+  refreshKey={refreshKey}
+  onError={addError}
+  onLoadingChange={setLoading}
+  onViewClick={(id) => {
+    setTrId(id);
+    setIsViewModalOpen(true);
+  }}
+/>
         </div>
 
         {isAddModalOpen && (

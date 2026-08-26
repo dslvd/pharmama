@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { getProductList, searchProduct } from "@/lib/api/product";
+import { useEffect, useMemo, useState } from "react";
+import { getProductList } from "@/lib/api/product";
 import { Category, Product, SortOrder } from "@/lib/types/product";
 import FilterBar, { FilterProps } from "@/components/FilterBar";
 import ProductRow from "@/app/products/components/ProductRow";
@@ -11,7 +11,7 @@ import { Funnel, PackageOpen, Search, Plus } from "lucide-react";
 import { ErrorStack } from "@/components/ErrorCard";
 
 export default function ProductPage() {
-  const [products, setProducts] = useState<Product[]>([]);
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [order, setOrder] = useState<SortOrder | undefined>(undefined);
   const [category, setCategory] = useState<Category | undefined>(undefined);
   const [searchTerm, setSearchTerm] = useState("");
@@ -30,18 +30,43 @@ export default function ProductPage() {
   useEffect(() => {
     async function loadProducts() {
       setLoading(true);
-      const result = searchTerm.trim()
-        ? await searchProduct(searchTerm)
-        : await getProductList({ order, category });
+      const result = await getProductList({});
 
       if (result.ok) {
-        setProducts(result.value);
+        setAllProducts(result.value);
+      } else {
+        addError(result.error);
       }
       setLoading(false);
     }
 
     loadProducts();
-  }, [order, category, searchTerm, refreshKey]);
+  }, [refreshKey]);
+
+  const products = useMemo(() => {
+    const q = searchTerm.trim().toLowerCase();
+
+    let list = allProducts.filter((product) => {
+      const matchesCategoryFilter = !category || product.category === category;
+      const matchesSearch =
+        !q ||
+        product.name.toLowerCase().includes(q) ||
+        product.genericName?.toLowerCase().includes(q) ||
+        product.category.toLowerCase().includes(q);
+
+      return matchesCategoryFilter && matchesSearch;
+    });
+
+    if (order) {
+      list = [...list].sort((a, b) =>
+        order === "asc"
+          ? new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+          : new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+      );
+    }
+
+    return list;
+  }, [allProducts, category, order, searchTerm]);
 
   const handleFilterChange = (title: string, sub: string, checked: boolean) => {
     if (title === "CATEGORY") {

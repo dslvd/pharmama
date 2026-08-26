@@ -31,7 +31,7 @@ export default function Dashboard() {
         {/* Stats Grid */}
         <section className="grid grid-cols-1 gap-4 md:grid-cols-3">
           <SalesCard onError={addError} onLoadingChange={handleLoadingChange} />
-          <CurrentStocks />
+          <CurrentStocks onError={addError} />
           <LowStocks />
         </section>
 

@@ -2,9 +2,10 @@ import { Trash, PencilLine } from "lucide-react";
 import { Stock } from "@/lib/types/stock";
 import { useState } from "react";
 import { deleteStock } from "@/lib/api/stocks";
+import { StockWithProduct } from "../page";
 
 interface StockRowProps {
-  stock: Stock;
+  stock: StockWithProduct;
   onDeleted?: (id: number) => void;
   onEdit?: (stock: Stock) => void;
 }
@@ -36,6 +37,7 @@ export default function StockRow({ stock, onDeleted, onEdit }: StockRowProps) {
   return (
     <tr className="border-t border-border odd:bg-card even:bg-violet-50/60">
       <td className="px-4 py-3 text-foreground">{stock.productId}</td>
+      <td className="px-4 py-3 text-foreground">{stock.product?.name}</td>
       <td className="px-4 py-3 text-muted-foreground">{stock.batchNumber}</td>
       <td className="px-4 py-3">
         <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${quantityStyle}`}>
