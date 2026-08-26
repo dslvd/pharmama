@@ -7,7 +7,7 @@ export default function LowStocks() {
         <AlertTriangle className="h-5 w-5" />
       </span>
       <p className="mt-4 text-sm text-muted-foreground">Low Stocks</p>
-      <p className="mt-1 text-3xl font-bold text-foreground">— Nig</p>
+      <p className="mt-1 text-3xl font-bold text-foreground">—</p>
     </article>
   );
 }

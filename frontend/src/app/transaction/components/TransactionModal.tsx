@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Plus, Minus, Search, X, Funnel, Save } from "lucide-react";
 import { getProductList, searchProduct } from "@/lib/api/product";
-import { Category, Product, SortBy, SortOrder } from "@/lib/types/product";
+import { Category, Product, SortOrder } from "@/lib/types/product";
 import FilterBar, { FilterProps } from "../../../components/FilterBar";
 import { CreateTransactionItemPayload } from "@/lib/types/transaction";
 import { getStockList } from "@/lib/api/stocks";
@@ -30,7 +30,6 @@ export default function AddTransactionModal({
   const [filter, setFilter] = useState(false);
   const [category, setCategory] = useState<Category | undefined>(undefined);
   const [order, setOrder] = useState<SortOrder | undefined>(undefined);
-  const [sortBy, setSortBy] = useState<SortBy | undefined>(undefined);
   const [selections, setSelections] = useState<
     Record<number, CreateTransactionItemPayload>
   >({});
@@ -46,7 +45,7 @@ export default function AddTransactionModal({
         getStockList(),
         searchTerm
           ? searchProduct(searchTerm)
-          : getProductList({ category, order, sortBy }),
+          : getProductList({ category, order }),
       ]);
 
       if (stockResult.ok) {
@@ -65,7 +64,7 @@ export default function AddTransactionModal({
     }
 
     loadItems();
-  }, [category, order, sortBy, searchTerm]);
+  }, [category, order, searchTerm]);
 
   const availableProducts = products.filter((product) =>
     stock.some((s) => s.productId === product.id && s.quantity > 0),
@@ -87,8 +86,6 @@ export default function AddTransactionModal({
   const handleFilterChange = (title: string, sub: string, checked: boolean) => {
     if (title === "CATEGORY") {
       setCategory(checked ? (sub as Category) : undefined);
-    } else if (title === "ENTITY") {
-      setSortBy(checked ? (sub as SortBy) : undefined);
     } else if (title === "ORDER") {
       setOrder(checked ? (sub as SortOrder) : undefined);
     }
@@ -107,10 +104,6 @@ export default function AddTransactionModal({
         "HYGIENE",
         "OTHERS",
       ],
-    },
-    {
-      title: "SORTBY",
-      sub: ["name", "genericName", "category", "price"],
     },
     {
       title: "ORDER",
@@ -153,7 +146,7 @@ export default function AddTransactionModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
       <div className="flex max-h-[85vh] w-full max-w-4xl flex-col rounded-2xl border border-border bg-[#fdf6ec] p-6 shadow-xl">
-          <div className="relative z-30 flex items-center justify-between gap-3 pb-4">
+        <div className="relative z-30 flex items-center justify-between gap-3 pb-4">
           <h2 className="text-2xl font-bold text-foreground">Items</h2>
 
           <div className="flex items-center gap-2">

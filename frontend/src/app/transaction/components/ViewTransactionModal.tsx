@@ -1,21 +1,62 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { X } from "lucide-react";
 import { Transaction, TransactionStatus } from "@/lib/types/transaction";
+import { getTransaction } from "@/lib/api/transaction";
+import { Product } from "@/lib/types/product";
+import { getProduct } from "@/lib/api/product";
 
 interface ViewTransactionModalProps {
-  transaction?: Transaction;
+  transactionId: number;
   onClose: () => void;
 }
 
 export default function ViewTransactionModal({
-  transaction,
+  transactionId,
   onClose,
 }: ViewTransactionModalProps) {
+  const [transaction, setTransaction] = useState<Transaction | null>(null);
+  const [products, setProducts] = useState<Record<number, Product>>({});
+  const [error, setError] = useState("");
   const [status, setStatus] = useState<TransactionStatus>(
     transaction?.status || "COMPLETED",
   );
+
+  const items = useMemo(
+    () => transaction?.transactionItems ?? [],
+    [transaction?.transactionItems],
+  );
+
+  useEffect(() => {
+    async function getTr() {
+      const result = await getTransaction(transactionId);
+      if (result.ok) {
+        setTransaction(result.value);
+        setStatus(result.value.status);
+      } else {
+        setError(result.error);
+      }
+    }
+    getTr();
+  }, [transactionId]);
+
+  useEffect(() => {
+    if (items.length === 0) return;
+
+    async function getPr() {
+      const productIds = items.map((item) => item.productId);
+      for (const id of productIds) {
+        const result = await getProduct(id);
+        if (result.ok) {
+          setProducts((prev) => ({ ...prev, [id]: result.value }));
+        } else {
+          setError(result.error);
+        }
+      }
+    }
+    getPr();
+  }, [items]);
 
   const getStatusColor = (currentStatus: TransactionStatus) => {
     switch (currentStatus) {
@@ -29,8 +70,6 @@ export default function ViewTransactionModal({
         return "bg-muted text-foreground border-border";
     }
   };
-
-  const items = transaction?.transactionitem || [];
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
@@ -59,7 +98,7 @@ export default function ViewTransactionModal({
                   Product Name
                 </th>
                 <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                  Brand
+                  Generic Name
                 </th>
                 <th className="px-4 py-2.5 text-center text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                   Quantity
@@ -70,38 +109,41 @@ export default function ViewTransactionModal({
               </tr>
             </thead>
             <tbody>
-              {items.length === 0 ? (
+              {items.length === 0 && products === null ? (
                 <tr>
                   <td
-                    colSpan={7}
+                    colSpan={5}
                     className="px-4 py-8 text-center text-sm text-muted-foreground"
                   >
                     No items found for this transaction.
                   </td>
                 </tr>
               ) : (
-                items.map((item) => (
-                  <tr
-                    key={item.id}
-                    className="border-t border-border odd:bg-card even:bg-muted/40 hover:bg-violet-50/60"
-                  >
-                    <td className="px-4 py-3 font-mono text-xs text-muted-foreground">
-                      #{item.id}
-                    </td>
-                    <td className="px-4 py-3 text-sm font-medium text-foreground">
-                      {item.product.name}
-                    </td>
-                    <td className="px-4 py-3 text-xs text-muted-foreground">
-                      {item.product.genericName}
-                    </td>
-                    <td className="px-4 py-3 text-center text-xs text-foreground">
-                      {item.quantity}
-                    </td>
-                    <td className="px-4 py-3 text-right text-xs font-semibold text-foreground">
-                      ${item.product.price * item.quantity}
-                    </td>
-                  </tr>
-                ))
+                items.map((item) => {
+                  const itemProduct = products[item.productId];
+                  return (
+                    <tr
+                      key={item.id}
+                      className="border-t border-border odd:bg-card even:bg-muted/40 hover:bg-violet-50/60"
+                    >
+                      <td className="px-4 py-3 font-mono text-xs text-muted-foreground">
+                        #{item.id}
+                      </td>
+                      <td className="px-4 py-3 text-sm font-medium text-foreground">
+                        {itemProduct?.name ?? "Unknown product"}
+                      </td>
+                      <td className="px-4 py-3 text-xs text-muted-foreground">
+                        {itemProduct?.genericName ?? "Unknown product"}
+                      </td>
+                      <td className="px-4 py-3 text-center text-xs text-foreground">
+                        {item.quantity ?? "-"}
+                      </td>
+                      <td className="px-4 py-3 text-right text-xs font-semibold text-foreground">
+                        ${(itemProduct?.price || 0) * item.quantity}
+                      </td>
+                    </tr>
+                  );
+                })
               )}
             </tbody>
           </table>
@@ -124,7 +166,9 @@ export default function ViewTransactionModal({
                 <option value="CANCELLED">CANCELLED</option>
               </select>
             </div>
+            {error && <p className="mt-1 text-sm text-rose-600">{error}</p>}
           </div>
+
           <span className="text-base font-bold text-foreground">
             Total: ${transaction?.totalAmount || 0}
           </span>

@@ -1,7 +1,12 @@
 import type { HTMLAttributes } from "react";
 
-function Skeleton({ className = "", ...props }: HTMLAttributes<HTMLDivElement>) {
-  return <div aria-hidden="true" className={`skeleton ${className}`} {...props} />;
+function Skeleton({
+  className = "",
+  ...props
+}: HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div aria-hidden="true" className={`skeleton ${className}`} {...props} />
+  );
 }
 
 function StatCardSkeleton() {

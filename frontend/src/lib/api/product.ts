@@ -9,12 +9,11 @@ import { apiFetch } from "../utils/client";
 export const searchProduct = (query: string) =>
   apiFetch<Product[]>(`/product/search?query=${encodeURIComponent(query)}`);
 
-export const getProduct = (id: string) => apiFetch<Product>(`/product/${id}`);
+export const getProduct = (id: number) => apiFetch<Product>(`/product/${id}`);
 
-export const getProductList = ({ category, sortBy, order }: GetPrListParams = {}) => {
+export const getProductList = ({ category, order }: GetPrListParams = {}) => {
   const params = new URLSearchParams();
   if (category) params.set("category", category);
-  if (sortBy) params.set("sortBy", sortBy);
   if (order) params.set("order", order);
 
   const query = params.toString();

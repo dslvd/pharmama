@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { getProductList, searchProduct } from "@/lib/api/product";
-import { Product, SortBy, SortOrder } from "@/lib/types/product";
+import { Category, Product, SortOrder } from "@/lib/types/product";
 import FilterBar, { FilterProps } from "@/components/FilterBar";
 import ProductRow from "@/app/products/components/ProductRow";
 import AddProductModal from "@/app/products/components/AddProductModal";
@@ -13,7 +13,7 @@ import { ErrorStack } from "@/components/ErrorCard";
 export default function ProductPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [order, setOrder] = useState<SortOrder | undefined>(undefined);
-  const [sortBy, setSortBy] = useState<SortBy[]>([]);
+  const [category, setCategory] = useState<Category | undefined>(undefined);
   const [searchTerm, setSearchTerm] = useState("");
   const [filter, setFilter] = useState(false);
   const [showAddProductModal, setShowAddProductModal] = useState(false);
@@ -32,7 +32,7 @@ export default function ProductPage() {
       setLoading(true);
       const result = searchTerm.trim()
         ? await searchProduct(searchTerm)
-        : await getProductList({ order, sortBy: sortBy[0] });
+        : await getProductList({ order, category });
 
       if (result.ok) {
         setProducts(result.value);
@@ -41,21 +41,30 @@ export default function ProductPage() {
     }
 
     loadProducts();
-  }, [order, sortBy, searchTerm, refreshKey]);
+  }, [order, category, searchTerm, refreshKey]);
 
   const handleFilterChange = (title: string, sub: string, checked: boolean) => {
-    if (title === "SORTBY") {
-      setSortBy((prev) => {
-        if (checked) return [sub as SortBy, ...prev.filter((item) => item !== sub)];
-        return prev.filter((item) => item !== sub);
-      });
+    if (title === "CATEGORY") {
+      setCategory(checked ? (sub as Category) : undefined);
     } else if (title === "ORDER") {
       setOrder(checked ? (sub as SortOrder) : undefined);
     }
   };
 
   const FilterOptions: FilterProps[] = [
-    { title: "SORTBY", sub: ["name", "genericName", "category", "price"] },
+    {
+      title: "CATEGORY",
+      sub: [
+        "ANALGESICS",
+        "ANTIBIOTICS",
+        "ANTIHISTAMINES",
+        "VITAMINS",
+        "SUPPLEMENTS",
+        "ANTACIDS",
+        "HYGIENE",
+        "OTHERS",
+      ],
+    },
     { title: "ORDER", sub: ["asc", "desc"] },
   ];
 
@@ -121,7 +130,7 @@ export default function ProductPage() {
                     filters={FilterOptions}
                     onFilterChange={handleFilterChange}
                     selectedValues={{
-                      SORTBY: sortBy,
+                      CATEGORY: category,
                       ORDER: order,
                     }}
                   />
@@ -176,8 +185,8 @@ export default function ProductPage() {
                         No products yet
                       </p>
                       <p className="max-w-xs leading-5 text-muted-foreground">
-                        Add a product to start building your catalog. You can link
-                        stock batches to it right after.
+                        Add a product to start building your catalog. You can
+                        link stock batches to it right after.
                       </p>
                       <button
                         onClick={openAddModal}
