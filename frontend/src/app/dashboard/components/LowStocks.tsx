@@ -25,7 +25,7 @@ export default function LowStocks() {
   }, []);
 
   return (
-    <article className="rounded-xl border border-border bg-card p-5">
+    <article className="flex h-48 flex-col rounded-xl border border-border bg-card p-5">
       <div className="flex items-center gap-3">
         <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-100 text-amber-600">
           <AlertTriangle className="h-5 w-5" />
@@ -37,7 +37,7 @@ export default function LowStocks() {
           </p>
         </div>
       </div>
-      <ul className="mt-4 max-h-48 space-y-2 overflow-y-auto">
+      <ul className="mt-4 min-h-0 max-h-56 flex-1 space-y-2 overflow-y-auto scheme-light">
         {stocks === null ? (
           <li className="text-sm text-muted-foreground">Loading stocks...</li>
         ) : stocks.length === 0 ? (
