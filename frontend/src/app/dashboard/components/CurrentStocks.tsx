@@ -5,7 +5,7 @@ import { Stock } from "@/lib/types/stock";
 import { Package } from "lucide-react";
 import { useEffect, useState } from "react";
 
-export default function CurrentStocks() {
+export default function CurrentStocks({onError}: {onError?: (message: string) => void;}) {
   const [stocks, setStocks] = useState<Stock[] | null>(null);
 
   useEffect(() => {
@@ -15,7 +15,7 @@ export default function CurrentStocks() {
       if (result.ok) {
         setStocks(result.value);
       } else {
-        setStocks([]);
+        onError?.(result.error);
       }
     }
 

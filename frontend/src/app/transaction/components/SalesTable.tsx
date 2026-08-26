@@ -3,34 +3,44 @@
 import { useEffect, useMemo, useState } from "react";
 import { Check, ChevronDown, Filter, Funnel, Search } from "lucide-react";
 import { Transaction, TransactionStatus } from "@/lib/types/transaction";
-import { getTransactionList, updateTransactionStatus } from "@/lib/api/transaction";
+import {
+  getTransactionList,
+  updateTransactionStatus,
+} from "@/lib/api/transaction";
 import { SortOrder } from "@/lib/types/product";
 import FilterBar, { FilterProps } from "../../../components/FilterBar";
 
 interface SalesTableProps {
   initialRecords?: Transaction[];
+  refreshKey?: number;
   onViewClick?: (id: number) => void;
   onError?: (message: string) => void;
   onLoadingChange?: (loading: boolean) => void;
 }
 const inputClasses =
   "rounded-full border border-border bg-white py-1.5 text-sm text-foreground focus:border-violet-400 focus:outline-none focus:ring-2 focus:ring-violet-100";
-const STATUS_VALUES: TransactionStatus[] = ["COMPLETED", "REFUNDED", "CANCELLED"];
+const STATUS_VALUES: TransactionStatus[] = [
+  "COMPLETED",
+  "REFUNDED",
+  "CANCELLED",
+];
 
 export default function SalesTable({
   initialRecords = [],
   onViewClick,
   onError,
   onLoadingChange,
+  refreshKey = 0,
 }: SalesTableProps) {
   const [allSales, setAllSales] = useState<Transaction[]>(initialRecords);
-  const [status, setStatus] = useState<TransactionStatus | undefined>(undefined);
+  const [status, setStatus] = useState<TransactionStatus | undefined>(
+    undefined,
+  );
   const [order, setOrder] = useState<SortOrder | undefined>(undefined);
   const [filter, setFilter] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [openStatusId, setOpenStatusId] = useState<number | null>(null);
-  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     async function getTransaction() {
@@ -131,17 +141,17 @@ export default function SalesTable({
               <th className="px-4 py-2.5 text-right text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                 <div className="flex items-center justify-end gap-3 text-muted-foreground">
                   <button
-                onClick={() => setFilter((f) => !f)}
-                aria-label="Toggle filters"
-                aria-pressed={filter}
-                className={`rounded-lg border p-2.5 transition-colors ${
-                  filter
-                    ? "border-primary bg-violet-100 text-violet-700"
-                    : "border-border bg-card text-muted-foreground hover:bg-muted"
-                }`}
-              >
-                <Funnel size={18} />
-              </button>
+                    onClick={() => setFilter((f) => !f)}
+                    aria-label="Toggle filters"
+                    aria-pressed={filter}
+                    className={`rounded-lg border p-2.5 transition-colors ${
+                      filter
+                        ? "border-primary bg-violet-100 text-violet-700"
+                        : "border-border bg-card text-muted-foreground hover:bg-muted"
+                    }`}
+                  >
+                    <Funnel size={18} />
+                  </button>
 
                   {filter && (
                     <div className="absolute right-0 z-10 mt-2 w-64 rounded-xl border border-border bg-card p-4 shadow-lg">
@@ -155,18 +165,18 @@ export default function SalesTable({
                       />
                     </div>
                   )}
-                 <div className="relative">
-                               <Search
-                                 size={16}
-                                 className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
-                               />
-                               <input
-                                 value={searchTerm}
-                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                 placeholder="Search"
-                                 className={`${inputClasses} pl-9 pr-3`}
-                               />
-                             </div>
+                  <div className="relative">
+                    <Search
+                      size={16}
+                      className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                    />
+                    <input
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      placeholder="Search"
+                      className={`${inputClasses} pl-9 pr-3`}
+                    />
+                  </div>
                 </div>
               </th>
             </tr>
