@@ -1,6 +1,6 @@
 "use client";
 
-import { getAuditList } from "@/lib/api/logbook";
+import { getAuditList, searchAudit } from "@/lib/api/logbook";
 import { AuditAction, AuditEntity, AuditLog } from "@/lib/types/audit-log";
 import { SortOrder } from "@/lib/types/product";
 import { useEffect, useState } from "react";
@@ -12,8 +12,8 @@ import Loading from "@/app/logbook/loading";
 
 export default function LogbookPage() {
   const [audit, setAudit] = useState<AuditLog[]>([]);
-  const [actions, setActions] = useState<AuditAction[]>([]);
-  const [entities, setEntities] = useState<AuditEntity[]>([]);
+  const [action, setAction] = useState<AuditAction | undefined>(undefined);
+  const [entity, setEntity] = useState<AuditEntity | undefined>(undefined);
   const [order, setOrder] = useState<SortOrder | undefined>(undefined);
   const [filter, setFilter] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -26,35 +26,27 @@ export default function LogbookPage() {
   useEffect(() => {
     async function loadAudit() {
       setLoading(true);
-      const result = await getAuditList({
-        entity: entities[0],
-        action: actions[0],
-        order,
-      });
+
+      const result = searchTerm
+        ? await searchAudit(searchTerm)
+        : await getAuditList({ entity, action, order });
 
       if (result.ok) {
         setAudit(result.value);
-        setLoading(false);
       } else {
         addError(result.error);
-        setLoading(false);
       }
+      setLoading(false);
     }
 
     loadAudit();
-  }, [entities, actions, order]);
+  }, [entity, action, order, searchTerm]);
 
   const handleFilterChange = (title: string, sub: string, checked: boolean) => {
     if (title === "ACTION") {
-      setActions((prev) => {
-        if (checked) return [sub as AuditAction, ...prev.filter((item) => item !== sub)];
-        return prev.filter((item) => item !== sub);
-      });
+      setAction(checked ? (sub as AuditAction) : undefined);
     } else if (title === "ENTITY") {
-      setEntities((prev) => {
-        if (checked) return [sub as AuditEntity, ...prev.filter((item) => item !== sub)];
-        return prev.filter((item) => item !== sub);
-      });
+      setEntity(checked ? (sub as AuditEntity) : undefined);
     } else if (title === "ORDER") {
       setOrder(checked ? (sub as SortOrder) : undefined);
     }
@@ -127,8 +119,8 @@ export default function LogbookPage() {
                     filters={FilterOptions}
                     onFilterChange={handleFilterChange}
                     selectedValues={{
-                      ACTION: actions,
-                      ENTITY: entities,
+                      ACTION: action,
+                      ENTITY: entity,
                       ORDER: order,
                     }}
                   />
@@ -147,6 +139,9 @@ export default function LogbookPage() {
                 </th>
                 <th className="px-4 py-3 text-center text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                   Time
+                </th>
+                <th className="px-4 py-3 text-center text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  ID
                 </th>
                 <th className="px-4 py-3 text-center text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                   Action
@@ -191,7 +186,9 @@ export default function LogbookPage() {
       </main>
       <div
         className={`fixed inset-0 z-40 bg-background transition-opacity duration-300 ease-out ${
-          loading ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"
+          loading
+            ? "pointer-events-auto opacity-100"
+            : "pointer-events-none opacity-0"
         }`}
         aria-hidden={!loading}
       >

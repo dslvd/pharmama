@@ -9,6 +9,7 @@ import StockRow from "@/app/stocks/components/StockRow";
 import AddStockModal from "@/app/stocks/components/AddStockModal";
 import Loading from "@/app/stocks/loading";
 import { Funnel, PackageOpen, Plus, Search } from "lucide-react";
+import { ErrorStack } from "@/components/ErrorCard";
 
 export default function StockPage() {
   const [stock, setStock] = useState<Stock[]>([]);
@@ -22,6 +23,10 @@ export default function StockPage() {
   );
   const [refreshKey, setRefreshKey] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [errors, setErrors] = useState<{ id: string; message: string }[]>([]);
+
+  const addError = (message: string) =>
+    setErrors((prev) => [...prev, { id: crypto.randomUUID(), message }]);
 
   useEffect(() => {
     async function loadStock() {
@@ -33,7 +38,7 @@ export default function StockPage() {
       if (result.ok) {
         setStock(result.value);
       } else {
-        console.log(result.error);
+        addError?.(result.error);
       }
       setLoading(false);
     }
@@ -43,7 +48,8 @@ export default function StockPage() {
   const handleFilterChange = (title: string, sub: string, checked: boolean) => {
     if (title === "SORTBY") {
       setSortBy((prev) => {
-        if (checked) return [sub as SortBy, ...prev.filter((item) => item !== sub)];
+        if (checked)
+          return [sub as SortBy, ...prev.filter((item) => item !== sub)];
         return prev.filter((item) => item !== sub);
       });
     } else if (title === "ORDER") {
@@ -167,8 +173,8 @@ export default function StockPage() {
                         No stock recorded yet
                       </p>
                       <p className="max-w-xs leading-5 text-muted-foreground">
-                        Once you add a batch, it&apos;ll show up here with quantity,
-                        expiry, and low-stock status at a glance.
+                        Once you add a batch, it&apos;ll show up here with
+                        quantity, expiry, and low-stock status at a glance.
                       </p>
                       <button
                         onClick={() => setShowAddStockModal(true)}
@@ -201,6 +207,7 @@ export default function StockPage() {
             onSuccess={() => setRefreshKey((k) => k + 1)}
           />
         )}
+        <ErrorStack errors={errors} />
       </main>
       {loading && (
         <div className="pointer-events-auto fixed inset-0 z-40 bg-background">

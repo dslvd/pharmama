@@ -11,7 +11,7 @@ export const searchtransaction = (query: string) =>
     `/transaction/search?query=${encodeURIComponent(query)}`,
   );
 
-export const getTransaction = (id: string) =>
+export const getTransaction = (id: number) =>
   apiFetch<Transaction>(`/transaction/${id}`);
 
 export const getTransactionList = ({
@@ -20,7 +20,7 @@ export const getTransactionList = ({
   handledBy,
 }: GetTrListParams = {}) => {
   const params = new URLSearchParams();
-  if (status) params.set("category", status);
+  if (status) params.set("status", status);
   if (handledBy) params.set("category", handledBy);
   if (order) params.set("order", order);
 

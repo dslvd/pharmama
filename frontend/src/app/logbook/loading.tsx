@@ -1,12 +1,21 @@
 import type { HTMLAttributes } from "react";
 
-function Skeleton({ className = "", ...props }: HTMLAttributes<HTMLDivElement>) {
-  return <div aria-hidden="true" className={`skeleton ${className}`} {...props} />;
+function Skeleton({
+  className = "",
+  ...props
+}: HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div aria-hidden="true" className={`skeleton ${className}`} {...props} />
+  );
 }
 
 export default function Loading() {
   return (
-    <main className="flex min-h-screen flex-col gap-5 p-6" role="status" aria-label="Loading logbook">
+    <main
+      className="flex min-h-screen flex-col gap-5 p-6"
+      role="status"
+      aria-label="Loading logbook"
+    >
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <Skeleton className="h-9 w-36 rounded-lg" />

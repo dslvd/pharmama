@@ -6,7 +6,7 @@ export interface Transaction {
   status: TransactionStatus;
   handledBy: string;
   createdAt: Date;
-  transactionitem: TransactionItem[];
+  transactionItems: TransactionItem[];
 }
 
 export type TransactionStatus = "REFUNDED" | "COMPLETED" | "CANCELLED";

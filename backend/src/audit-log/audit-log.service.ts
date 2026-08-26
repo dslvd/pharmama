@@ -36,22 +36,13 @@ export class AuditLogService {
 
     if (!query) return list;
 
-    const q = query.toLowerCase();
-    const actionMatch = Object.values(AuditAction).includes(
-      query.toUpperCase() as AuditAction,
-    )
-      ? (query.toUpperCase() as AuditAction)
-      : undefined;
-    const entityMatch = Object.values(AuditEntity).includes(
-      query.toUpperCase() as AuditEntity,
-    )
-      ? (query.toUpperCase() as AuditEntity)
-      : undefined;
+    const q = query.trim().toLowerCase();
+    if (!q) return list;
 
     return list.filter(
       (log) =>
-        (actionMatch ? log.action === actionMatch : false) ||
-        (entityMatch ? log.entity === entityMatch : false),
+        log.action.toLowerCase().includes(q) ||
+        log.entity.toLowerCase().includes(q),
     );
   }
 }
