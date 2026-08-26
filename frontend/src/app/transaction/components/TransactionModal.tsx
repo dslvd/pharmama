@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Plus, Minus, Search, X, Funnel, Save } from "lucide-react";
-import { getProductList, searchProduct } from "@/lib/api/product";
+import { getProductList } from "@/lib/api/product";
 import { Category, Product, SortOrder } from "@/lib/types/product";
 import FilterBar, { FilterProps } from "../../../components/FilterBar";
 import { CreateTransactionItemPayload } from "@/lib/types/transaction";
@@ -11,6 +11,19 @@ import { Stock } from "@/lib/types/stock";
 
 const inputClasses =
   "rounded-full border border-border bg-white py-1.5 text-sm text-foreground focus:border-violet-400 focus:outline-none focus:ring-2 focus:ring-violet-100";
+
+// Category is a type, not a runtime enum — keep a plain array for
+// anywhere we need the actual values at runtime.
+const CATEGORY_VALUES: Category[] = [
+  "ANALGESICS",
+  "ANTIBIOTICS",
+  "ANTIHISTAMINES",
+  "VITAMINS",
+  "SUPPLEMENTS",
+  "ANTACIDS",
+  "HYGIENE",
+  "OTHERS",
+];
 
 export interface SubmittedItem {
   trItems: CreateTransactionItemPayload;
@@ -24,28 +37,26 @@ export default function AddTransactionModal({
   onSubmit: (items: SubmittedItem[]) => void;
   onClose: () => void;
 }) {
-  const [products, setProducts] = useState<Product[]>([]);
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [stock, setStock] = useState<Stock[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [filter, setFilter] = useState(false);
   const [category, setCategory] = useState<Category | undefined>(undefined);
   const [order, setOrder] = useState<SortOrder | undefined>(undefined);
-  const [selections, setSelections] = useState<
-    Record<number, CreateTransactionItemPayload>
-  >({});
+  const [selections, setSelections] = useState<Record<number, CreateTransactionItemPayload>>({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  // Fetch the full product & stock lists once on mount. Category filter,
+  // search, and sort are all done client-side below via useMemo.
   useEffect(() => {
     async function loadItems() {
       setError("");
       setLoading(true);
 
       const [stockResult, productResult] = await Promise.all([
-        getStockList(),
-        searchTerm
-          ? searchProduct(searchTerm)
-          : getProductList({ category, order }),
+        getStockList({}),
+        getProductList({}),
       ]);
 
       if (stockResult.ok) {
@@ -55,7 +66,7 @@ export default function AddTransactionModal({
       }
 
       if (productResult.ok) {
-        setProducts(productResult.value);
+        setAllProducts(productResult.value);
       } else {
         setError(productResult.error);
       }
@@ -64,7 +75,32 @@ export default function AddTransactionModal({
     }
 
     loadItems();
-  }, [category, order, searchTerm]);
+  }, []);
+
+  const products = useMemo(() => {
+    const q = searchTerm.trim().toLowerCase();
+
+    let list = allProducts.filter((product) => {
+      const matchesCategoryFilter = !category || product.category === category;
+      const matchesSearch =
+        !q ||
+        product.name.toLowerCase().includes(q) ||
+        product.genericName?.toLowerCase().includes(q) ||
+        product.category.toLowerCase().includes(q);
+
+      return matchesCategoryFilter && matchesSearch;
+    });
+
+    if (order) {
+      list = [...list].sort((a, b) =>
+        order === "asc"
+          ? new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+          : new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+      );
+    }
+
+    return list;
+  }, [allProducts, category, order, searchTerm]);
 
   const availableProducts = products.filter((product) =>
     stock.some((s) => s.productId === product.id && s.quantity > 0),
@@ -74,7 +110,7 @@ export default function AddTransactionModal({
     const submitted: SubmittedItem[] = Object.values(selections)
       .filter((item) => item.quantity > 0)
       .map((item) => {
-        const product = products.find((p) => p.id === item.productId);
+        const product = allProducts.find((p) => p.id === item.productId);
         return { trItems: item, product: product! };
       })
       .filter((entry): entry is SubmittedItem => !!entry.product);
@@ -92,23 +128,8 @@ export default function AddTransactionModal({
   };
 
   const FilterOptions: FilterProps[] = [
-    {
-      title: "CATEGORY",
-      sub: [
-        "ANALGESICS",
-        "ANTIBIOTICS",
-        "ANTIHISTAMINES",
-        "VITAMINS",
-        "SUPPLEMENTS",
-        "ANTACIDS",
-        "HYGIENE",
-        "OTHERS",
-      ],
-    },
-    {
-      title: "ORDER",
-      sub: ["asc", "desc"],
-    },
+    { title: "CATEGORY", sub: CATEGORY_VALUES },
+    { title: "ORDER", sub: ["asc", "desc"] },
   ];
 
   function findStockId(stocks: Stock[], productId: number): number | undefined {
@@ -169,6 +190,10 @@ export default function AddTransactionModal({
                   <FilterBar
                     filters={FilterOptions}
                     onFilterChange={handleFilterChange}
+                    selectedValues={{
+                      CATEGORY: category,
+                      ORDER: order,
+                    }}
                   />
                 </div>
               )}

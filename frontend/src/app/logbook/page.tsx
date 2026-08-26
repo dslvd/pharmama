@@ -1,9 +1,9 @@
 "use client";
 
-import { getAuditList, searchAudit } from "@/lib/api/logbook";
+import { getAuditList } from "@/lib/api/logbook";
 import { AuditAction, AuditEntity, AuditLog } from "@/lib/types/audit-log";
 import { SortOrder } from "@/lib/types/product";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { BookOpen, Funnel, Search } from "lucide-react";
 import AuditRow from "./components/AuditRow";
 import FilterBar, { FilterProps } from "@/components/FilterBar";
@@ -11,7 +11,7 @@ import { ErrorStack } from "@/components/ErrorCard";
 import Loading from "@/app/logbook/loading";
 
 export default function LogbookPage() {
-  const [audit, setAudit] = useState<AuditLog[]>([]);
+  const [allAudit, setAllAudit] = useState<AuditLog[]>([]);
   const [action, setAction] = useState<AuditAction | undefined>(undefined);
   const [entity, setEntity] = useState<AuditEntity | undefined>(undefined);
   const [order, setOrder] = useState<SortOrder | undefined>(undefined);
@@ -23,16 +23,16 @@ export default function LogbookPage() {
   const addError = (message: string) =>
     setErrors((prev) => [...prev, { id: crypto.randomUUID(), message }]);
 
+  // Fetch the full audit log once on mount. All filtering/search/sort
+  // afterwards happens client-side against this cached list.
   useEffect(() => {
     async function loadAudit() {
       setLoading(true);
 
-      const result = searchTerm
-        ? await searchAudit(searchTerm)
-        : await getAuditList({ entity, action, order });
+      const result = await getAuditList({});
 
       if (result.ok) {
-        setAudit(result.value);
+        setAllAudit(result.value);
       } else {
         addError(result.error);
       }
@@ -40,7 +40,28 @@ export default function LogbookPage() {
     }
 
     loadAudit();
-  }, [entity, action, order, searchTerm]);
+  }, []);
+
+  const audit = useMemo(() => {
+    const q = searchTerm.trim().toLowerCase();
+
+    let list = allAudit.filter(
+      (log) =>
+        (!entity || log.entity === entity) &&
+        (!action || log.action === action) &&
+        (!q ||
+          log.action.toLowerCase().includes(q) ||
+          log.entity.toLowerCase().includes(q)),
+    );
+
+    list = [...list].sort((a, b) =>
+      (order ?? "desc") === "asc"
+        ? new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+        : new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    );
+
+    return list;
+  }, [allAudit, entity, action, order, searchTerm]);
 
   const handleFilterChange = (title: string, sub: string, checked: boolean) => {
     if (title === "ACTION") {

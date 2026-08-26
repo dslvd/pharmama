@@ -1,18 +1,22 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { getStockList, searchStock } from "@/lib/api/stocks";
+import { useEffect, useMemo, useState } from "react";
+import { getStockList } from "@/lib/api/stocks";
 import { Stock, SortBy } from "@/lib/types/stock";
-import { SortOrder } from "@/lib/types/product";
+import { Product, SortOrder } from "@/lib/types/product";
 import FilterBar, { FilterProps } from "@/components/FilterBar";
 import StockRow from "@/app/stocks/components/StockRow";
 import AddStockModal from "@/app/stocks/components/AddStockModal";
 import Loading from "@/app/stocks/loading";
 import { Funnel, PackageOpen, Plus, Search } from "lucide-react";
 import { ErrorStack } from "@/components/ErrorCard";
+import { getProduct } from "@/lib/api/product";
+
+// Stock rows enriched with their resolved product info.
+export type StockWithProduct = Stock & { product?: Product };
 
 export default function StockPage() {
-  const [stock, setStock] = useState<Stock[]>([]);
+  const [allStock, setAllStock] = useState<StockWithProduct[]>([]);
   const [order, setOrder] = useState<SortOrder | undefined>(undefined);
   const [sortBy, setSortBy] = useState<SortBy[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -31,19 +35,71 @@ export default function StockPage() {
   useEffect(() => {
     async function loadStock() {
       setLoading(true);
-      const result = searchTerm.trim()
-        ? await searchStock(searchTerm)
-        : await getStockList({ order, sortBy: sortBy[0] });
+      const result = await getStockList({});
 
-      if (result.ok) {
-        setStock(result.value);
-      } else {
+      if (!result.ok) {
         addError?.(result.error);
+        setLoading(false);
+        return;
       }
+
+      const stockList = result.value;
+
+      const uniqueProductIds = Array.from(
+        new Set(stockList.map((s) => s.productId)),
+      );
+
+      const productEntries = await Promise.all(
+        uniqueProductIds.map(async (id) => {
+          const productResult = await getProduct(id);
+          if (!productResult.ok) {
+            addError(productResult.error);
+            return [id, undefined] as const;
+          }
+          return [id, productResult.value] as const;
+        }),
+      );
+
+      const productMap = new Map(productEntries);
+
+      const enriched: StockWithProduct[] = stockList.map((s) => ({
+        ...s,
+        product: productMap.get(s.productId),
+      }));
+
+      setAllStock(enriched);
       setLoading(false);
     }
     loadStock();
-  }, [order, sortBy, searchTerm, refreshKey]);
+  }, [refreshKey]);
+
+  const stock = useMemo(() => {
+    const q = searchTerm.trim().toLowerCase();
+
+    let list = allStock.filter(
+      (item) =>
+        !q ||
+        item.batchNumber.toLowerCase().includes(q) ||
+        item.product?.name.toLowerCase().includes(q),
+    );
+
+    const activeSortBy = sortBy[0] ?? "createdAt";
+    const activeOrder = order ?? "desc";
+
+    list = [...list].sort((a, b) => {
+      const aVal =
+        activeSortBy === "quantity"
+          ? a.quantity
+          : new Date(a[activeSortBy]).getTime();
+      const bVal =
+        activeSortBy === "quantity"
+          ? b.quantity
+          : new Date(b[activeSortBy]).getTime();
+      return activeOrder === "asc" ? aVal - bVal : bVal - aVal;
+    });
+
+    return list;
+  }, [allStock, sortBy, order, searchTerm]);
 
   const handleFilterChange = (title: string, sub: string, checked: boolean) => {
     if (title === "SORTBY") {
@@ -141,7 +197,10 @@ export default function StockPage() {
             <thead>
               <tr className="border-b border-border bg-[#fdfbf7]">
                 <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                  Product
+                  Product ID
+                </th>
+                <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  Product Name
                 </th>
                 <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                   Batch No.
