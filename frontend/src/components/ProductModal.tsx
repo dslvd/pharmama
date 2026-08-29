@@ -1,6 +1,6 @@
 "use client";
 
-import { Search, X } from "lucide-react";
+import { X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { getProductList } from "@/lib/api/product";
 import { Product } from "@/lib/types/product";
@@ -55,16 +55,17 @@ export default function ProductModal({ onSelect, onClose }: ProductModalProps) {
     >
       <section
         aria-labelledby="product-picker-title"
-        className="flex max-h-[min(680px,calc(100vh-2rem))] w-full max-w-xl flex-col overflow-hidden rounded-2xl border border-border bg-[#fdf6ec] shadow-2xl"
+        className="flex h-[600px] w-full max-w-md flex-col overflow-hidden rounded-2xl border border-border bg-[#fdf6ec] shadow-2xl"
         role="dialog"
         aria-modal="true"
       >
+        {/* Header */}
         <div className="flex items-start justify-between gap-4 border-b border-border px-6 py-5">
           <div>
             <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
               Stock inventory
             </p>
-            <h2 id="product-picker-title" className="mt-1 text-xl font-bold text-foreground">
+            <h2 id="product-picker-title" className="mt-1 text-lg font-bold text-foreground">
               Select a product
             </h2>
           </div>
@@ -78,47 +79,57 @@ export default function ProductModal({ onSelect, onClose }: ProductModalProps) {
           </button>
         </div>
 
+        {/* Search */}
         <div className="border-b border-border px-6 py-4">
           <label className="relative block">
             <span className="sr-only">Search products</span>
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <input
               type="search"
               value={search}
               onChange={(event) => setSearch(event.target.value)}
               placeholder="Search by product or generic name"
               autoFocus
-              className="w-full rounded-lg border border-border bg-white py-2.5 pl-9 pr-3 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-violet-400 focus:ring-2 focus:ring-violet-100"
+              className="w-full rounded-md border border-border bg-white py-2 px-3 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-violet-400 focus:ring-2 focus:ring-violet-100"
             />
           </label>
         </div>
 
-        <div className="min-h-0 flex-1 overflow-y-auto px-3 py-3">
+        {/* Product List */}
+        <div className="min-h-0 flex-1 overflow-y-auto">
           {loading && (
-            <p className="px-3 py-8 text-center text-sm text-muted-foreground">
+            <p className="px-6 py-8 text-center text-sm text-muted-foreground">
               Loading products...
             </p>
           )}
-          {error && <p className="px-3 py-8 text-center text-sm text-rose-600">Error: {error}</p>}
+          {error && (
+            <p className="px-6 py-8 text-center text-sm text-rose-600">
+              Error: {error}
+            </p>
+          )}
           {!loading && !error && filteredProducts.length === 0 && (
-            <p className="px-3 py-8 text-center text-sm text-muted-foreground">
+            <p className="px-6 py-8 text-center text-sm text-muted-foreground">
               {search ? "No products match your search." : "No products available."}
             </p>
           )}
           {!loading && !error && filteredProducts.length > 0 && (
-            <div className="grid gap-1 sm:grid-cols-2">
+            <ul className="divide-y divide-border">
               {filteredProducts.map((product) => (
-                <button
-                  key={product.id}
-                  type="button"
-                  onClick={() => handleClick(product)}
-                  className="rounded-lg px-3 py-3 text-left transition-colors hover:bg-violet-50 focus:bg-violet-50 focus:outline-none focus:ring-2 focus:ring-violet-300"
-                >
-                  <span className="block text-sm font-semibold text-foreground">{product.name}</span>
-                  <span className="mt-0.5 block text-xs text-muted-foreground">{product.genericName}</span>
-                </button>
+                <li key={product.id}>
+                  <button
+                    type="button"
+                    onClick={() => handleClick(product)}
+                    className="w-full px-6 py-3 text-left transition-colors hover:bg-violet-50 focus:bg-violet-50 focus:outline-none active:bg-violet-100"
+                  >
+                    <span className="block text-sm font-semibold text-foreground">
+                      {product.name}
+                    </span>
+                    <span className="mt-0.5 block text-xs text-muted-foreground">
+                      {product.genericName}
+                    </span>
+                  </button>
+                </li>
               ))}
-            </div>
+            </ul>
           )}
         </div>
       </section>
