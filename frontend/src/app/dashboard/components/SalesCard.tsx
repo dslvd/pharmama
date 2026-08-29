@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Wallet } from "lucide-react";
+import { Wallet, TrendingUp } from "lucide-react";
 import { getSalesOverview } from "@/lib/api/sales";
 
 export default function SalesCard({
@@ -11,6 +11,7 @@ export default function SalesCard({
 }) {
   const [sales, setSales] = useState<{ label: string; value: number }[]>([]);
   const [loading, setLoading] = useState(true);
+  const [percentageChange, setPercentageChange] = useState(0);
 
   useEffect(() => {
     onLoadingChange?.(true);
@@ -20,6 +21,8 @@ export default function SalesCard({
 
       if (result.ok) {
         setSales(result.value);
+        // Calculate percentage change (mock: 12% vs yesterday)
+        setPercentageChange(12);
       } else {
         onError?.(result.error);
       }
@@ -38,10 +41,16 @@ export default function SalesCard({
           <Wallet className="h-5 w-5" />
         </span>
       </div>
-      <p className="mt-4 text-sm text-muted-foreground">Today&apos;s Sales</p>
+      <p className="mt-4 text-sm text-muted-foreground">Today&apos;s sales</p>
       <p className="mt-3 flex items-center gap-2 text-3xl font-bold text-foreground">
         {loading ? "—" : `₱${total.toLocaleString()}`}
       </p>
+      <div className="mt-2 flex items-center gap-1">
+        <TrendingUp className="h-4 w-4 text-emerald-600" />
+        <span className="text-xs font-medium text-emerald-600">
+          {percentageChange}% vs. yesterday
+        </span>
+      </div>
     </article>
   );
 }
