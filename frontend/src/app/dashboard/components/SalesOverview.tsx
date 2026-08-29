@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import {
-  AreaChart,
-  Area,
+  BarChart,
+  Bar,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -46,7 +46,7 @@ export default function SalesOverview({
       }
 
       setLoading(false);
-        onLoadingChange?.(false);
+      onLoadingChange?.(false);
     }
 
     fetchSales();
@@ -65,7 +65,7 @@ export default function SalesOverview({
             <TrendingUp className="h-4 w-4" />
           </span>
           <h3 className="text-lg font-semibold text-foreground">
-            Sales Overview
+            Sales overview
           </h3>
         </div>
 
@@ -86,7 +86,7 @@ export default function SalesOverview({
         </div>
       </div>
 
-      <div className="mt-5 h-[60vh] min-h-72 max-h-160 w-full">
+      <div className="mt-5 h-64 w-full">
         {loading ? (
           <div
             className="skeleton h-full w-full rounded-lg"
@@ -95,16 +95,10 @@ export default function SalesOverview({
           />
         ) : (
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart
+            <BarChart
               data={sales}
               margin={{ top: 5, right: 10, left: -10, bottom: 0 }}
             >
-              <defs>
-                <linearGradient id="salesGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#7c3aed" stopOpacity={0.35} />
-                  <stop offset="95%" stopColor="#7c3aed" stopOpacity={0} />
-                </linearGradient>
-              </defs>
               <CartesianGrid
                 strokeDasharray="3 3"
                 vertical={false}
@@ -133,14 +127,12 @@ export default function SalesOverview({
                   fontSize: 12,
                 }}
               />
-              <Area
-                type="monotone"
+              <Bar
                 dataKey="value"
-                stroke="#7c3aed"
-                strokeWidth={2}
-                fill="url(#salesGradient)"
+                fill="#c2185b"
+                radius={[8, 8, 0, 0]}
               />
-            </AreaChart>
+            </BarChart>
           </ResponsiveContainer>
         )}
       </div>
