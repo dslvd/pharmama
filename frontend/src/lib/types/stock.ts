@@ -1,3 +1,5 @@
+export type SortBy = "quantity" | "expiryDate" | "createdAt";
+
 export interface Stock {
   id: number;
   productId: number;
