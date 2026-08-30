@@ -9,6 +9,7 @@ export interface Product {
 }
 
 export type SortBy = "name" | "genericName" | "category" | "price";
+export type SortOrder = "asc" | "desc";
 
 export interface CreateProductPayload {
   name: string;
