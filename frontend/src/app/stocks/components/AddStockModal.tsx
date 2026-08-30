@@ -167,6 +167,7 @@ export default function AddStockModal({
               type="text"
               value={batchNumber}
               onChange={(e) => setBatchNumber(e.target.value)}
+              placeholder="e.g. BIO567"
               className="mt-1 w-full rounded-md border border-[#d9d0c6] bg-[#f8f8f5] px-3 py-2.5 text-sm text-[#2e2b4c] outline-none transition-colors duration-200 placeholder:text-[#8f8d95] focus:border-violet-400 focus:ring-2 focus:ring-violet-100"
             />
             {batchNumberError && (
