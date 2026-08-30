@@ -73,37 +73,37 @@ export default function ViewTransactionModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-      <div className="flex max-h-[85vh] w-full max-w-4xl flex-col rounded-2xl border border-border bg-[#fdf6ec] p-6 shadow-xl">
+      <div className="flex max-h-[85vh] w-full max-w-4xl flex-col rounded-2xl border border-[#e4dccf] bg-[#f5f1e8] p-6 shadow-xl">
         <div className="flex items-center justify-between pb-4">
-          <h2 className="text-2xl font-bold text-foreground">
+          <h2 className="text-2xl font-bold text-[#1e1b3a]">
             Transaction #{transaction?.id || "—"} Details
           </h2>
           <button
             onClick={onClose}
             aria-label="Close"
-            className="rounded-full p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+            className="rounded-full p-1.5 text-[#6f6787] transition-colors hover:bg-[#efe9db] hover:text-[#1e1b3a]"
           >
             <X size={20} />
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto rounded-xl border border-border bg-card">
+        <div className="flex-1 overflow-y-auto rounded-xl border border-[#e4dccf] bg-white">
           <table className="w-full border-collapse text-left text-sm">
-            <thead className="sticky top-0 z-10 border-b border-border bg-muted/60">
+            <thead className="sticky top-0 z-10 border-b border-[#e4dccf] bg-[#f5f1e8]/80">
               <tr>
-                <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                <th className="px-4 py-2.5 text-xs font-bold uppercase tracking-wide text-[#4b4468]">
                   ID
                 </th>
-                <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                <th className="px-4 py-2.5 text-xs font-bold uppercase tracking-wide text-[#4b4468]">
                   Product Name
                 </th>
-                <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                <th className="px-4 py-2.5 text-xs font-bold uppercase tracking-wide text-[#4b4468]">
                   Generic Name
                 </th>
-                <th className="px-4 py-2.5 text-center text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                <th className="px-4 py-2.5 text-center text-xs font-bold uppercase tracking-wide text-[#4b4468]">
                   Quantity
                 </th>
-                <th className="px-4 py-2.5 text-right text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                <th className="px-4 py-2.5 text-right text-xs font-bold uppercase tracking-wide text-[#4b4468]">
                   Price
                 </th>
               </tr>
@@ -113,7 +113,7 @@ export default function ViewTransactionModal({
                 <tr>
                   <td
                     colSpan={5}
-                    className="px-4 py-8 text-center text-sm text-muted-foreground"
+                    className="px-4 py-8 text-center text-sm text-[#9c93b0]"
                   >
                     No items found for this transaction.
                   </td>
@@ -124,22 +124,22 @@ export default function ViewTransactionModal({
                   return (
                     <tr
                       key={item.id}
-                      className="border-t border-border odd:bg-card even:bg-muted/40 hover:bg-violet-50/60"
+                      className="border-t border-[#f0ece0] odd:bg-white even:bg-[#faf7f0] hover:bg-violet-50/60"
                     >
-                      <td className="px-4 py-3 font-mono text-xs text-muted-foreground">
+                      <td className="px-4 py-3 font-mono text-xs text-[#9c93b0]">
                         #{item.id}
                       </td>
-                      <td className="px-4 py-3 text-sm font-medium text-foreground">
+                      <td className="px-4 py-3 text-sm font-medium text-[#1e1b3a]">
                         {itemProduct?.name ?? "Unknown product"}
                       </td>
-                      <td className="px-4 py-3 text-xs text-muted-foreground">
+                      <td className="px-4 py-3 text-xs text-[#6f6787]">
                         {itemProduct?.genericName ?? "Unknown product"}
                       </td>
-                      <td className="px-4 py-3 text-center text-xs text-foreground">
+                      <td className="px-4 py-3 text-center text-xs text-[#1e1b3a]">
                         {item.quantity ?? "-"}
                       </td>
-                      <td className="px-4 py-3 text-right text-xs font-semibold text-foreground">
-                        ${(itemProduct?.price || 0) * item.quantity}
+                      <td className="px-4 py-3 text-right text-xs font-semibold text-[#1e1b3a]">
+                        ₱ {(itemProduct?.price || 0) * item.quantity}
                       </td>
                     </tr>
                   );
@@ -149,11 +149,11 @@ export default function ViewTransactionModal({
           </table>
         </div>
 
-        <div className="flex items-center justify-between pt-4 text-sm font-bold text-foreground">
+        <div className="flex items-center justify-between pt-4 text-sm font-bold text-[#1e1b3a]">
           <div className="flex items-center gap-4">
             <span>Handled By: {transaction?.handledBy || "N/A"}</span>
             <div className="flex items-center gap-1.5">
-              <span className="font-normal text-muted-foreground">Status:</span>
+              <span className="font-normal text-[#6f6787]">Status:</span>
               <select
                 value={status}
                 onChange={(e) => setStatus(e.target.value as TransactionStatus)}
@@ -169,8 +169,8 @@ export default function ViewTransactionModal({
             {error && <p className="mt-1 text-sm text-rose-600">{error}</p>}
           </div>
 
-          <span className="text-base font-bold text-foreground">
-            Total: ${transaction?.totalAmount || 0}
+          <span className="text-base font-bold text-[#1e1b3a]">
+            Total: ₱ {transaction?.totalAmount || 0}
           </span>
         </div>
       </div>

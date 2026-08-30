@@ -47,6 +47,7 @@ export default function ProductRow({
         </td>
         <td className="px-4 py-3">
           <div className="flex items-center gap-3 text-muted-foreground">
+            {/* If no changes made should cancel */}
             <button
               aria-label={`Edit product ${product.id}`}
               onClick={() => onEdit?.(product)}
@@ -55,6 +56,7 @@ export default function ProductRow({
               <PencilLine size={15} />
             </button>
 
+            {/* Confirmation text before deleting */}
             <button
               aria-label={`Delete product ${product.id}`}
               onClick={() => handleDelete(product.id)}
