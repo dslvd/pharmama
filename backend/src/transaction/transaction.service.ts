@@ -45,29 +45,8 @@ export class TransactionService {
     return result.value;
   }
 
-  async getTransactionList(filter: {
-    status?: TransactionStatus;
-    handledBy?: string;
-    order?: Prisma.SortOrder;
-  }): Promise<Transaction[]> {
-    const list = await this.prisma.transaction.findMany();
-
-    const filtered = list.filter((tx) => {
-      const statusMatch = !filter.status || tx.status === filter.status;
-      const handledByMatch =
-        !filter.handledBy ||
-        tx.handledBy
-          .toLowerCase()
-          .includes(filter.handledBy.toLowerCase().trim());
-
-      return statusMatch && handledByMatch;
-    });
-
-    return [...filtered].sort((a, b) =>
-      (filter.order ?? "desc") === "asc"
-        ? a.createdAt.getTime() - b.createdAt.getTime()
-        : b.createdAt.getTime() - a.createdAt.getTime(),
-    );
+  async getTransactionList(): Promise<Transaction[]> {
+    return await this.prisma.transaction.findMany();
   }
 
   async createTransaction(data: CreateTransactionDto): Promise<Transaction> {
@@ -179,27 +158,6 @@ export class TransactionService {
 
       return updated;
     });
-  }
-
-  async searchTransaction(query: string): Promise<Transaction[]> {
-    const list = await this.prisma.transaction.findMany();
-
-    if (!query) {
-      return list;
-    }
-
-    const q = query.toLowerCase();
-    const statusMatch = Object.values(TransactionStatus).includes(
-      query.toUpperCase() as TransactionStatus,
-    )
-      ? (query.toUpperCase() as TransactionStatus)
-      : undefined;
-
-    return list.filter(
-      (tx) =>
-        tx.handledBy.toLowerCase().includes(q) ||
-        (statusMatch ? tx.status === statusMatch : false),
-    );
   }
 
   async updateTransactionStatus(id: number, dto: UpdateTransactionStatusDto) {
