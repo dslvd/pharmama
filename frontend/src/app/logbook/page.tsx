@@ -4,7 +4,7 @@ import { getAuditList } from "@/lib/api/logbook";
 import { AuditAction, AuditEntity, AuditLog } from "@/lib/types/audit-log";
 import { SortOrder } from "@/lib/types/product";
 import { useEffect, useMemo, useState } from "react";
-import { BookOpen, Funnel, Search } from "lucide-react";
+import { BookOpen, Search, SlidersHorizontal } from "lucide-react";
 import AuditRow from "./components/AuditRow";
 import FilterBar, { FilterProps } from "@/components/FilterBar";
 import { ErrorStack } from "@/components/ErrorCard";
@@ -131,7 +131,7 @@ export default function LogbookPage() {
                     : "border-border bg-card text-muted-foreground hover:bg-muted"
                 }`}
               >
-                <Funnel size={18} />
+                <SlidersHorizontal size={18} strokeWidth={2.2} />
               </button>
 
               {filter && (

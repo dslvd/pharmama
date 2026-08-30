@@ -8,7 +8,7 @@ import FilterBar, { FilterProps } from "@/components/FilterBar";
 import StockRow from "@/app/stocks/components/StockRow";
 import AddStockModal from "@/app/stocks/components/AddStockModal";
 import Loading from "@/app/stocks/loading";
-import { Funnel, PackageOpen, Plus, Search } from "lucide-react";
+import { PackageOpen, Plus, Search, SlidersHorizontal } from "lucide-react";
 import { ErrorStack } from "@/components/ErrorCard";
 import { getProduct } from "@/lib/api/product";
 
@@ -171,7 +171,7 @@ export default function StockPage() {
                     : "border-border bg-card text-muted-foreground hover:bg-muted"
                 }`}
               >
-                <Funnel size={18} />
+                <SlidersHorizontal size={18} strokeWidth={2.2} />
               </button>
 
               {filter && (
