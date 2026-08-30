@@ -19,21 +19,18 @@ const PERIODS: Period[] = ["Today", "Week", "Month", "Year"];
 
 export default function SalesOverview({
   onError,
-  onLoadingChange,
 }: {
   onError?: (message: string) => void;
-  onLoadingChange?: (loading: boolean) => void;
 }) {
   const [period, setPeriod] = useState<Period>("Today");
   const [sales, setSales] = useState<{ label: string; value: number }[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
 
     async function fetchSales() {
       setLoading(true);
-      onLoadingChange?.(true);
 
       const result = await getSalesOverview(period);
 
@@ -46,16 +43,14 @@ export default function SalesOverview({
       }
 
       setLoading(false);
-      onLoadingChange?.(false);
     }
 
     fetchSales();
 
     return () => {
       cancelled = true;
-      onLoadingChange?.(false);
     };
-  }, [period, onError, onLoadingChange]);
+  }, [period, onError]);
 
   return (
     <section className="flex flex-1 flex-col rounded-xl border border-border bg-card p-5">
