@@ -17,11 +17,6 @@ import { CreateStockDto, UpdateStockDto } from "./validation";
 export class StockController {
   constructor(private stService: StockService) {}
 
-  @Get("search")
-  async searchSt(@Query("query") query: string): Promise<Stock[]> {
-    return this.stService.searchStock(query);
-  }
-
   @Get(":id")
   async getSt(
     @Param("id", ParseIntPipe) id: number,
@@ -34,7 +29,7 @@ export class StockController {
     @Query("sortBy") sortBy?: "quantity" | "expiryDate" | "createdAt",
     @Query("order") order?: Prisma.SortOrder,
   ): Promise<Stock[]> {
-    return this.stService.getStockList({ sortBy, order });
+    return this.stService.getStockList();
   }
 
   @Post()
