@@ -1,5 +1,3 @@
-import { SortOrder } from "./product";
-
 export interface AuditChange {
   old: string | number | null;
   new: string | number | null;
@@ -27,9 +25,3 @@ export type AuditEntity =
   | "PRODUCT"
   | "STOCK"
   | "TRANSACTIONITEM";
-
-export interface GetAuditListParams {
-  entity?: AuditEntity;
-  action?: AuditAction;
-  order?: SortOrder;
-}

@@ -1,4 +1,4 @@
-import { Product, SortOrder } from "./product";
+import { Product } from "./product";
 
 export interface Transaction {
   id: number;
@@ -34,12 +34,6 @@ export type CreateTransactionPayload = {
   handledBy: string;
   transactionItems: CreateTransactionItemPayload[];
 };
-
-export interface GetTrListParams {
-  status?: TransactionStatus;
-  handledBy?: string;
-  order?: SortOrder;
-}
 
 export interface UpdateTrStatusPayload {
   status: TransactionStatus;

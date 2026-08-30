@@ -25,3 +25,6 @@ Start nestjs:
 Developer:
 `Nelson Lago`
 lagonelson77@gmail.com
+
+`Trisha Jambaro`
+trisha.jambaro-25@cpu.edu.ph

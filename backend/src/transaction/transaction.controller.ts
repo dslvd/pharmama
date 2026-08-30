@@ -8,22 +8,26 @@ import {
   Post,
 } from "@nestjs/common";
 import { TransactionService } from "./transaction.service";
+import { Transaction } from "src/generated/prisma/client";
 import {
-  Transaction,
-} from "src/generated/prisma/client";
-import { CreateTransactionDto, UpdateTransactionStatusDto } from "./validation";
+  CreateTransactionDto,
+  TransactionWithItems,
+  UpdateTransactionStatusDto,
+} from "./validation";
 
 @Controller("transaction")
 export class TransactionController {
   constructor(private trService: TransactionService) {}
 
   @Get(":id")
-  async getTr(@Param("id", ParseIntPipe) id: number): Promise<Transaction> {
+  async getTr(
+    @Param("id", ParseIntPipe) id: number,
+  ): Promise<TransactionWithItems> {
     return this.trService.getTransaction(id);
   }
 
-    @Get()
-  async getTrList(): Promise<Transaction[]> {
+  @Get()
+  async getTrList(): Promise<TransactionWithItems[]> {
     return this.trService.getTransactionList();
   }
 

@@ -25,10 +25,7 @@ export class StockController {
   }
 
   @Get()
-  async getStList(
-    @Query("sortBy") sortBy?: "quantity" | "expiryDate" | "createdAt",
-    @Query("order") order?: Prisma.SortOrder,
-  ): Promise<Stock[]> {
+  async getStList(): Promise<Stock[]> {
     return this.stService.getStockList();
   }
 
