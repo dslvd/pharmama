@@ -19,14 +19,6 @@ export interface CreateProductPayload {
 
 export type UpdateProductPayload = Partial<CreateProductPayload>;
 
-export type SortOrder = "asc" | "desc";
-
-export interface GetPrListParams {
-  category?: string;
-  sortBy?: SortBy;
-  order?: SortOrder;
-}
-
 export type Category =
   | "ANALGESICS"
   | "ANTIBIOTICS"

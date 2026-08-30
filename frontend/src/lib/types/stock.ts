@@ -1,5 +1,3 @@
-import { SortOrder } from "./product";
-
 export interface Stock {
   id: number;
   productId: number;
@@ -17,11 +15,4 @@ export interface CreateStockPayload {
   batchNumber: string;
   quantity: number;
   expiryDate: Date;
-}
-
-export type SortBy = "quantity" | "expiryDate" | "createdAt";
-
-export interface GetStListParams {
-  sortBy?: SortBy;
-  order?: SortOrder;
 }

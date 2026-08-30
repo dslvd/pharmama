@@ -8,13 +8,13 @@ import {
   AuditEntity,
   Prisma,
   Transaction,
-  TransactionItem,
   TransactionStatus,
 } from "src/generated/prisma/client";
 import { PrismaService } from "src/prisma/prisma.service";
 import {
   CreateTransactionDto,
   TransactionItemDto,
+  TransactionWithItems,
   UpdateTransactionStatusDto,
   validateCancellable,
   validateStatusUpdatable,
@@ -27,14 +27,10 @@ import { createAuditLog } from "src/audit-log/audit-log.util";
 export class TransactionService {
   constructor(private prisma: PrismaService) {}
 
-  async getTransaction(id: number): Promise<
-    Prisma.TransactionGetPayload<{
-      include: { transactionItems: true };
-    }>
-  > {
+  async getTransaction(id: number): Promise<TransactionWithItems> {
     const found = await this.prisma.transaction.findUnique({
       where: { id },
-      include: { transactionItems: true },
+      include: { transactionItems: { include: { product: true } } },
     });
 
     const result = validateTransactionExists(found);
@@ -45,8 +41,10 @@ export class TransactionService {
     return result.value;
   }
 
-  async getTransactionList(): Promise<Transaction[]> {
-    return await this.prisma.transaction.findMany();
+  async getTransactionList(): Promise<TransactionWithItems[]> {
+    return await this.prisma.transaction.findMany({
+      include: { transactionItems: { include: { product: true } } },
+    });
   }
 
   async createTransaction(data: CreateTransactionDto): Promise<Transaction> {
