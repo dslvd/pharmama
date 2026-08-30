@@ -3,8 +3,7 @@
 import {
   CalendarDays,
   ChevronDown,
-  Minus,
-  Plus,
+  ChevronUp,
   X,
 } from "lucide-react";
 import { useState } from "react";
@@ -117,23 +116,23 @@ export default function AddStockModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-      <div className="flex max-h-[85vh] w-full max-w-lg flex-col overflow-y-auto rounded-2xl border border-border bg-[#fdf6ec] p-6 shadow-xl">
+      <div className="w-full max-w-130 rounded-[18px] border border-[#d9d0c6] bg-[#f3efe9] p-5 shadow-[0_12px_28px_rgba(26,22,35,0.12)]">
         <div className="flex items-center justify-between gap-3 pb-4">
-          <h2 className="text-2xl font-bold text-foreground">
+          <h2 className="text-[2rem] font-bold leading-none tracking-[-0.04em] text-[#2e2b4c]">
             {isEditing ? "Edit Stock" : "Add Stock"}
           </h2>
           <button
             type="button"
             onClick={onClose}
             aria-label="Close"
-            className="rounded-full p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+            className="rounded-full p-1.5 text-[#2e2b4c] transition-colors hover:bg-[#e5e0d8]"
           >
             <X className="h-5 w-5" />
           </button>
         </div>
 
         <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-          <label className={labelClasses}>
+          <label className="block text-sm font-medium text-[#2e2b4c]">
             Product
             <div className="relative mt-1">
               <button
@@ -175,80 +174,90 @@ export default function AddStockModal({
             )}
           </label>
 
-          <label className={labelClasses}>
-            Quantity
-            <div className="mt-1 flex overflow-hidden rounded-md border border-[#d9d0c6] bg-[#f8f8f5] shadow-[inset_0_0_0_1px_rgba(17,24,39,0.02)]">
-              <button
-                type="button"
-                onClick={() => adjustQuantity("decrement")}
-                aria-label="Decrease quantity"
-                className="flex h-11 w-11 items-center justify-center border-r border-[#d9d0c6] bg-transparent text-[#2e2b4c] transition-colors duration-200 hover:bg-[#efe7dc]"
-              >
-                <Minus className="h-4 w-4" />
-              </button>
+          <div className="grid grid-cols-2 gap-4">
+            <label className={labelClasses}>
+              Quantity
+              <div className="mt-1 flex h-10.5 overflow-hidden rounded-md border border-[#d9d0c6] bg-[#f8f8f5] shadow-[inset_0_0_0_1px_rgba(17,24,39,0.02)]">
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  value={quantity}
+                  placeholder="0"
+                  onChange={(e) => handleQuantityInput(e.target.value)}
+                  className="h-full w-full border-0 bg-transparent px-3 text-left text-base font-medium text-[#2e2b4c] outline-none placeholder:text-[#8f8d95]"
+                />
+                <div className="flex w-10 flex-col border-l border-[#d9d0c6]">
+                  <button
+                    type="button"
+                    onClick={() => adjustQuantity("increment")}
+                    aria-label="Increase quantity"
+                    className="flex h-1/2 items-center justify-center text-[#2e2b4c] transition-colors duration-200 hover:bg-[#efe7dc]"
+                  >
+                    <ChevronUp className="h-3.5 w-3.5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => adjustQuantity("decrement")}
+                    aria-label="Decrease quantity"
+                    className="flex h-1/2 items-center justify-center text-[#2e2b4c] transition-colors duration-200 hover:bg-[#efe7dc]"
+                  >
+                    <ChevronDown className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              </div>
+              {quantityError && (
+                <p className="mt-1 text-sm text-rose-600">{quantityError}</p>
+              )}
+            </label>
 
-              <input
-                type="text"
-                inputMode="numeric"
-                pattern="[0-9]*"
-                value={quantity}
-                placeholder="0"
-                onChange={(e) => handleQuantityInput(e.target.value)}
-                className="h-11 w-full border-0 bg-transparent px-3 text-center text-base font-medium text-[#2e2b4c] outline-none placeholder:text-[#8f8d95]"
-              />
-
-              <button
-                type="button"
-                onClick={() => adjustQuantity("increment")}
-                aria-label="Increase quantity"
-                className="flex h-11 w-11 items-center justify-center border-l border-[#d9d0c6] bg-transparent text-[#2e2b4c] transition-colors duration-200 hover:bg-[#efe7dc]"
-              >
-                <Plus className="h-4 w-4" />
-              </button>
-            </div>
-            {quantityError && (
-              <p className="mt-1 text-sm text-rose-600">{quantityError}</p>
-            )}
-          </label>
-
-          <label className={labelClasses}>
-            Expiry Date
-            <div className="relative mt-1">
-              <input
-                type="date"
-                value={expiryDate}
-                onChange={(e) => setExpiryDate(e.target.value)}
-                className="w-full appearance-none rounded-md border border-[#d9d0c6] bg-[#f8f8f5] px-3 py-2.5 pr-10 text-sm text-[#2e2b4c] outline-none transition-colors duration-200 placeholder:text-[#8f8d95] focus:border-violet-400 focus:ring-2 focus:ring-violet-100"
-                onClick={(e) => {
-                  const target = e.currentTarget as HTMLInputElement;
-                  if (target.showPicker) {
-                    target.showPicker();
-                  }
-                }}
-              />
-              <CalendarDays className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#2e2b4c]" />
-            </div>
-            {expiryDateError && (
-              <p className="mt-1 text-sm text-rose-600">{expiryDateError}</p>
-            )}
-          </label>
+            <label className={labelClasses}>
+              Expiry Date
+              <div className="relative mt-1">
+                <input
+                  type="date"
+                  value={expiryDate}
+                  onChange={(e) => setExpiryDate(e.target.value)}
+                  placeholder="mm/dd/yyyy"
+                  className="h-10.5 w-full appearance-none rounded-md border border-[#d9d0c6] bg-[#f8f8f5] px-3 pr-10 text-sm text-[#2e2b4c] outline-none transition-colors duration-200 placeholder:text-[#8f8d95] focus:border-violet-400 focus:ring-2 focus:ring-violet-100"
+                />
+                <button
+                  type="button"
+                  aria-label="Open calendar"
+                  className="absolute inset-y-0 right-0 flex w-10 items-center justify-center rounded-r-md text-[#2e2b4c]"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    const input = e.currentTarget.parentElement?.querySelector('input[type="date"]') as HTMLInputElement | null;
+                    if (input && input.showPicker) {
+                      input.showPicker();
+                    }
+                  }}
+                >
+                  <CalendarDays className="h-4 w-4" />
+                </button>
+              </div>
+              {expiryDateError && (
+                <p className="mt-1 text-sm text-rose-600">{expiryDateError}</p>
+              )}
+            </label>
+          </div>
 
           {generalError && (
             <p className="text-sm text-rose-600">{generalError}</p>
           )}
 
-          <div className="mt-2 flex justify-end gap-2">
+          <div className="mt-2 flex justify-end gap-3">
             <button
               type="button"
               onClick={onClose}
-              className="rounded-md border border-[#d9d0c6] bg-transparent px-4 py-2 text-sm font-medium text-[#2e2b4c] transition-colors duration-200 hover:bg-[#efe7dc]"
+              className="min-w-30 rounded-md border border-[#d9d0c6] bg-[#f8f8f5] px-4 py-2.5 text-base font-medium text-[#2e2b4c] transition-colors duration-200 hover:bg-[#efe7dc]"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={submitting}
-              className="rounded-md bg-[#4b3d6b] px-4 py-2 text-sm font-medium text-white transition-colors duration-200 hover:bg-[#433661] disabled:opacity-60"
+              className="min-w-30 rounded-md bg-[#4b3d6b] px-4 py-2.5 text-base font-medium text-white transition-colors duration-200 hover:bg-[#433661] disabled:opacity-60"
             >
               {submitting ? "Saving..." : isEditing ? "Save Changes" : "Create"}
             </button>
