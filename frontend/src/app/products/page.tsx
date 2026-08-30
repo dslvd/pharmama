@@ -7,7 +7,7 @@ import FilterBar, { FilterProps } from "@/components/FilterBar";
 import ProductRow from "@/app/products/components/ProductRow";
 import AddProductModal from "@/app/products/components/AddProductModal";
 import Loading from "./loading";
-import { Funnel, PackageOpen, Search, Plus } from "lucide-react";
+import { PackageOpen, Search, Plus, SlidersHorizontal } from "lucide-react";
 import { ErrorStack } from "@/components/ErrorCard";
 
 export default function ProductPage() {
@@ -146,7 +146,7 @@ export default function ProductPage() {
                     : "border-border bg-card text-muted-foreground hover:bg-muted"
                 }`}
               >
-                <Funnel size={18} />
+                <SlidersHorizontal size={18} strokeWidth={2.2} />
               </button>
 
               {filter && (
