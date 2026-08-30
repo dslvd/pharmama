@@ -86,7 +86,7 @@ export default function FilterBar({
 
         return (
           <div key={group.title} className="space-y-2.5">
-            <h3 className="text-left text-lg font-bold tracking-tight text-foreground">
+5            <h3 className="text-left text-lg font-bold tracking-tight text-foreground">
               {formatHeader(group.title)}
             </h3>
             <hr className="border-border" />

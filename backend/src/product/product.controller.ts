@@ -7,20 +7,14 @@ import {
   ParseIntPipe,
   Patch,
   Post,
-  Query,
 } from "@nestjs/common";
 import { ProductService } from "./product.service";
-import { Category, Prisma, Product } from "src/generated/prisma/client";
+import { Product } from "src/generated/prisma/client";
 import { CreateProductDto, UpdateProductDto } from "./validation";
 
 @Controller("product")
 export class ProductController {
   constructor(private prService: ProductService) {}
-
-  @Get("search")
-  async searchPr(@Query("query") query: string): Promise<Product[]> {
-    return this.prService.searchProducts(query);
-  }
 
   @Get(":id")
   async getPr(@Param("id", ParseIntPipe) id: number): Promise<Product> {
@@ -28,11 +22,8 @@ export class ProductController {
   }
 
   @Get()
-  async getPrList(
-    @Query("category") category?: Category,
-    @Query("order") order?: Prisma.SortOrder,
-  ): Promise<Product[]> {
-    return this.prService.getProductList({ category, order });
+  async getPrList(): Promise<Product[]> {
+    return this.prService.getProductList();
   }
 
   @Post()

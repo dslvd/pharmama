@@ -10,6 +10,7 @@ import {
   Min,
   ValidateNested,
 } from "class-validator";
+import { Prisma } from "src/generated/prisma/client";
 import { TransactionStatus } from "src/generated/prisma/enums";
 import { err, ok, Result } from "src/util/results";
 
@@ -89,3 +90,7 @@ export class CreateTransactionDto {
 export class UpdateTransactionStatusDto {
   @IsEnum(TransactionStatus) status!: TransactionStatus;
 }
+
+export type TransactionWithItems = Prisma.TransactionGetPayload<{
+  include: { transactionItems: { include: { product: true } } };
+}>;

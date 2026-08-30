@@ -38,20 +38,8 @@ export class StockService {
     return result.value;
   }
 
-  async getStockList(filter: {
-    sortBy?: "quantity" | "expiryDate" | "createdAt";
-    order?: Prisma.SortOrder;
-  }): Promise<Stock[]> {
-    const list = await this.prisma.stock.findMany();
-
-    const sortBy = filter.sortBy ?? "createdAt";
-    const order = filter.order ?? "desc";
-
-    return [...list].sort((a, b) => {
-      const aVal = sortBy === "quantity" ? a.quantity : a[sortBy].getTime();
-      const bVal = sortBy === "quantity" ? b.quantity : b[sortBy].getTime();
-      return order === "asc" ? aVal - bVal : bVal - aVal;
-    });
+  async getStockList(): Promise<Stock[]> {
+    return await this.prisma.stock.findMany()
   }
 
   async createStock(data: CreateStockDto): Promise<Stock> {
@@ -137,23 +125,6 @@ export class StockService {
     });
   }
 
-  async searchStock(query: string): Promise<Stock[]> {
-    const list = await this.prisma.stock.findMany({
-      include: { product: true },
-    });
-
-    if (!query) {
-      return list;
-    }
-
-    const q = query.toLowerCase();
-
-    return list.filter(
-      (stock) =>
-        stock.batchNumber.toLowerCase().includes(q) ||
-        stock.product.name.toLowerCase().includes(q),
-    );
-  }
 }
 
 function getChangedFields(

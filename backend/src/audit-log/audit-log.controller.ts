@@ -1,27 +1,13 @@
-import { Controller, Get, Query } from "@nestjs/common";
+import { Controller, Get } from "@nestjs/common";
 import { AuditLogService } from "./audit-log.service";
-import {
-  AuditAction,
-  AuditEntity,
-  AuditLog,
-  Prisma,
-} from "src/generated/prisma/client";
+import { AuditLog } from "src/generated/prisma/client";
 
 @Controller("audit-log")
 export class AuditLogController {
   constructor(private alService: AuditLogService) {}
 
-  @Get("search")
-  async searchPr(@Query("query") query: string): Promise<AuditLog[]> {
-    return this.alService.searchAuditLogs(query);
-  }
-
   @Get()
-  async getAuditList(
-    @Query("entity") entity?: AuditEntity,
-    @Query("action") action?: AuditAction,
-    @Query("order") order?: Prisma.SortOrder,
-  ): Promise<AuditLog[]> {
-    return this.alService.getAuditList({ entity, action, order });
+  async getAuditList(): Promise<AuditLog[]> {
+    return this.alService.getAuditList();
   }
 }

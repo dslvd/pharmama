@@ -8,13 +8,13 @@ import {
   AuditEntity,
   Prisma,
   Transaction,
-  TransactionItem,
   TransactionStatus,
 } from "src/generated/prisma/client";
 import { PrismaService } from "src/prisma/prisma.service";
 import {
   CreateTransactionDto,
   TransactionItemDto,
+  TransactionWithItems,
   UpdateTransactionStatusDto,
   validateCancellable,
   validateStatusUpdatable,
@@ -27,14 +27,10 @@ import { createAuditLog } from "src/audit-log/audit-log.util";
 export class TransactionService {
   constructor(private prisma: PrismaService) {}
 
-  async getTransaction(id: number): Promise<
-    Prisma.TransactionGetPayload<{
-      include: { transactionItems: true };
-    }>
-  > {
+  async getTransaction(id: number): Promise<TransactionWithItems> {
     const found = await this.prisma.transaction.findUnique({
       where: { id },
-      include: { transactionItems: true },
+      include: { transactionItems: { include: { product: true } } },
     });
 
     const result = validateTransactionExists(found);
@@ -45,29 +41,10 @@ export class TransactionService {
     return result.value;
   }
 
-  async getTransactionList(filter: {
-    status?: TransactionStatus;
-    handledBy?: string;
-    order?: Prisma.SortOrder;
-  }): Promise<Transaction[]> {
-    const list = await this.prisma.transaction.findMany();
-
-    const filtered = list.filter((tx) => {
-      const statusMatch = !filter.status || tx.status === filter.status;
-      const handledByMatch =
-        !filter.handledBy ||
-        tx.handledBy
-          .toLowerCase()
-          .includes(filter.handledBy.toLowerCase().trim());
-
-      return statusMatch && handledByMatch;
+  async getTransactionList(): Promise<TransactionWithItems[]> {
+    return await this.prisma.transaction.findMany({
+      include: { transactionItems: { include: { product: true } } },
     });
-
-    return [...filtered].sort((a, b) =>
-      (filter.order ?? "desc") === "asc"
-        ? a.createdAt.getTime() - b.createdAt.getTime()
-        : b.createdAt.getTime() - a.createdAt.getTime(),
-    );
   }
 
   async createTransaction(data: CreateTransactionDto): Promise<Transaction> {
@@ -179,27 +156,6 @@ export class TransactionService {
 
       return updated;
     });
-  }
-
-  async searchTransaction(query: string): Promise<Transaction[]> {
-    const list = await this.prisma.transaction.findMany();
-
-    if (!query) {
-      return list;
-    }
-
-    const q = query.toLowerCase();
-    const statusMatch = Object.values(TransactionStatus).includes(
-      query.toUpperCase() as TransactionStatus,
-    )
-      ? (query.toUpperCase() as TransactionStatus)
-      : undefined;
-
-    return list.filter(
-      (tx) =>
-        tx.handledBy.toLowerCase().includes(q) ||
-        (statusMatch ? tx.status === statusMatch : false),
-    );
   }
 
   async updateTransactionStatus(id: number, dto: UpdateTransactionStatusDto) {

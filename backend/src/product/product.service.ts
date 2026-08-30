@@ -29,27 +29,8 @@ export class ProductService {
     return result.value;
   }
 
-  async getProductList(filter: {
-    category?: Category;
-    order?: Prisma.SortOrder;
-  }): Promise<Product[]> {
-    return this.prisma.$transaction(async (pr) => {
-      const list = await pr.product.findMany();
-
-      const filtered = filter.category
-        ? list.filter((product) => product.category === filter.category)
-        : list;
-
-      if (!filter.order) {
-        return filtered;
-      }
-
-      return [...filtered].sort((a, b) =>
-        filter.order === "asc"
-          ? a.createdAt.getTime() - b.createdAt.getTime()
-          : b.createdAt.getTime() - a.createdAt.getTime(),
-      );
-    });
+  async getProductList(): Promise<Product[]> {
+    return await this.prisma.product.findMany();
   }
 
   async createProduct(data: CreateProductDto): Promise<Product> {
@@ -114,26 +95,6 @@ export class ProductService {
       });
       return pr.product.delete({ where: { id } });
     });
-  }
-
-  async searchProducts(query: string): Promise<Product[]> {
-    const list = await this.prisma.product.findMany();
-
-    if (!query) {
-      return list;
-    }
-
-    const q = query.toLowerCase();
-    const categoryMatch = Object.values(Category).includes(query as Category)
-      ? (query as Category)
-      : undefined;
-
-    return list.filter(
-      (product) =>
-        product.name.toLowerCase().includes(q) ||
-        product.genericName?.toLowerCase().includes(q) ||
-        (categoryMatch ? product.category === categoryMatch : false),
-    );
   }
 }
 
