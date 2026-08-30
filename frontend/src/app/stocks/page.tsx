@@ -87,14 +87,20 @@ export default function StockPage() {
     const activeOrder = order ?? "desc";
 
     list = [...list].sort((a, b) => {
-      const aVal =
-        activeSortBy === "quantity"
-          ? a.quantity
-          : new Date(a[activeSortBy]).getTime();
-      const bVal =
-        activeSortBy === "quantity"
-          ? b.quantity
-          : new Date(b[activeSortBy]).getTime();
+      let aVal: number;
+      let bVal: number;
+
+      if (activeSortBy === "quantity") {
+        aVal = a.quantity;
+        bVal = b.quantity;
+      } else if (activeSortBy === "expiryDate") {
+        aVal = new Date(a.expiryDate).getTime();
+        bVal = new Date(b.expiryDate).getTime();
+      } else {
+        aVal = new Date(a.createdAt).getTime();
+        bVal = new Date(b.createdAt).getTime();
+      }
+
       return activeOrder === "asc" ? aVal - bVal : bVal - aVal;
     });
 

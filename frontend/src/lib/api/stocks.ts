@@ -3,7 +3,7 @@ import { apiFetch } from "../utils/client";
 
 export const getStock = (id: string) => apiFetch<Stock>(`/stock/${id}`);
 
-export const getStockList = () => {
+export const getStockList = (_params?: Record<string, unknown>) => {
   return apiFetch<Stock[]>(`/stock`);
 };
 
