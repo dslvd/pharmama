@@ -7,7 +7,7 @@ import { Product } from "@/lib/types/product";
 import { AlertTriangle } from "lucide-react";
 import { useEffect, useState } from "react";
 
-const LOW_STOCK_THRESHOLD = 10;
+const LOW_STOCK_THRESHOLD = 20;
 
 export default function LowStocks({
   variant = "card",
@@ -48,7 +48,7 @@ export default function LowStocks({
 
   if (variant === "watchlist") {
     return (
-      <article className="flex h-full flex-col rounded-xl border border-border bg-card p-5">
+      <article className="flex h-[420px] flex-col overflow-hidden rounded-xl border border-border bg-card p-5">
         <div className="flex items-center gap-2">
           <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-100 text-amber-600">
             <AlertTriangle className="h-4 w-4" />
@@ -57,7 +57,7 @@ export default function LowStocks({
             Low stock watchlist
           </h3>
         </div>
-        <ul className="mt-4 flex-1 space-y-3 overflow-y-auto">
+        <ul className="mt-4 flex-1 space-y-3 overflow-y-auto pr-1">
           {stocks === null ? (
             <li className="text-sm text-muted-foreground">Loading stocks...</li>
           ) : stocks.length === 0 ? (
@@ -70,7 +70,7 @@ export default function LowStocks({
                   key={stock.id}
                   className="flex items-center justify-between gap-3 rounded-lg border border-border bg-muted/30 p-3"
                 >
-                  <div className="flex-1 min-w-0">
+                  <div className="min-w-0 flex-1">
                     <p className="text-sm font-medium text-foreground">
                       {product?.name || `Product #${stock.productId}`}
                     </p>
