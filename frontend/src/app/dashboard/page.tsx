@@ -77,10 +77,7 @@ export default function Dashboard() {
         {/* Charts and Watchlist */}
         <section className="grid grid-cols-1 gap-4 lg:grid-cols-3">
           <div className="lg:col-span-2">
-            <SalesOverview
-              onError={addError}
-              onLoadingChange={handleLoadingChange}
-            />
+            <SalesOverview onError={addError} />
           </div>
           <div>
             <LowStocks variant="watchlist" />
