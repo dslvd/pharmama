@@ -3,15 +3,12 @@
 import { useState } from "react";
 import TransactionTable from "./components/TransactionTable";
 import SalesTable from "./components/SalesTable";
-import AddTransactionModal, {
-  SubmittedItem,
-} from "./components/TransactionModal";
+import ProductPicker, { SubmittedItem } from "./components/ProductPicker";
 import ViewTransactionModal from "./components/ViewTransactionModal";
 import { ErrorStack } from "@/components/ErrorCard";
 import Loading from "./loading";
 
 export default function TransactionsPage() {
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [items, setItems] = useState<SubmittedItem[]>([]);
   const [errors, setErrors] = useState<{ id: string; message: string }[]>([]);
@@ -22,55 +19,51 @@ export default function TransactionsPage() {
   const addError = (message: string) =>
     setErrors((prev) => [...prev, { id: crypto.randomUUID(), message }]);
 
+  const handleAddItem = (entry: SubmittedItem) => {
+    setItems((prev) => {
+      const idx = prev.findIndex(
+        (m) => m.trItems.productId === entry.trItems.productId,
+      );
+      if (idx >= 0) {
+        const merged = [...prev];
+        merged[idx] = {
+          ...merged[idx],
+          trItems: {
+            ...merged[idx].trItems,
+            quantity: merged[idx].trItems.quantity + entry.trItems.quantity,
+          },
+        };
+        return merged;
+      }
+      return [...prev, entry];
+    });
+  };
+
   return (
     <>
-      <main className="space-y-6 p-6">
-        <div className="flex items-center gap-3">
-          <h2 className="text-4xl font-bold text-foreground">Transaction</h2>
-        </div>
+      <main className="min-h-screen space-y-6 bg-[#f5f1e8] p-6">
+        <h2 className="text-3xl font-bold text-[#1e1b3a]">Transaction</h2>
 
-        <div className="space-y-6">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+          <ProductPicker onAddItem={handleAddItem} onError={addError} />
           <TransactionTable
             items={items}
             setItems={setItems}
-            onOpenModal={() => setIsAddModalOpen(true)}
             onCancelTransaction={() => setItems([])}
             onError={addError}
             onSuccess={() => setRefreshKey((k) => k + 1)}
           />
-
-          <SalesTable
-  refreshKey={refreshKey}
-  onError={addError}
-  onLoadingChange={setLoading}
-  onViewClick={(id) => {
-    setTrId(id);
-    setIsViewModalOpen(true);
-  }}
-/>
         </div>
 
-        {isAddModalOpen && (
-          <AddTransactionModal
-            onClose={() => setIsAddModalOpen(false)}
-            onSubmit={(newItems) =>
-              setItems((prev) => {
-                const merged = [...prev];
-                newItems.forEach((entry) => {
-                  const idx = merged.findIndex(
-                    (m) => m.trItems.productId === entry.trItems.productId,
-                  );
-                  if (idx >= 0) {
-                    merged[idx] = entry;
-                  } else {
-                    merged.push(entry);
-                  }
-                });
-                return merged;
-              })
-            }
-          />
-        )}
+        <SalesTable
+          refreshKey={refreshKey}
+          onError={addError}
+          onLoadingChange={setLoading}
+          onViewClick={(id) => {
+            setTrId(id);
+            setIsViewModalOpen(true);
+          }}
+        />
 
         {isViewModalOpen && (
           <ViewTransactionModal

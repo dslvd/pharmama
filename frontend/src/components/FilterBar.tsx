@@ -14,6 +14,7 @@ interface FilterBarProps {
   selectedValues?: Record<string, string[] | string | undefined>;
   onFilterChange: (title: string, sub: string, checked: boolean) => void;
 }
+// Should have a reset button
 
 export default function FilterBar({
   filters,

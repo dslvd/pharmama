@@ -67,6 +67,7 @@ export default function ProductModal({ onSelect, onClose }: ProductModalProps) {
             <h2 id="product-picker-title" className="mt-1 text-xl font-bold text-foreground">
               Select a product
             </h2>
+            {/* Should like set the product locked when editing */}
           </div>
           <button
             type="button"
