@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Check, ChevronDown, Funnel, Search } from "lucide-react";
+import { Check, ChevronDown, Search, SlidersHorizontal } from "lucide-react";
 import { Transaction, TransactionStatus } from "@/lib/types/transaction";
 import {
   getTransactionList,
@@ -138,7 +138,7 @@ export default function SalesTable({
                 : "border-[#e4dccf] bg-white text-[#6f6787] hover:bg-[#efe9db]"
             }`}
           >
-            <Funnel size={16} />
+            <SlidersHorizontal size={16} strokeWidth={2.2} />
           </button>
 
           <div className="relative">
