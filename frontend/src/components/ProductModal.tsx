@@ -55,7 +55,7 @@ export default function ProductModal({ onSelect, onClose }: ProductModalProps) {
     >
       <section
         aria-labelledby="product-picker-title"
-        className="flex h-[600px] w-full max-w-md flex-col overflow-hidden rounded-2xl border border-border bg-[#fdf6ec] shadow-2xl"
+        className="flex h-150 w-full max-w-md flex-col overflow-hidden rounded-2xl border border-border bg-[#fdf6ec] shadow-2xl"
         role="dialog"
         aria-modal="true"
       >
