@@ -50,7 +50,7 @@ export default function TransactionTable({
   );
 
   return (
-    <div className="flex h-full flex-col rounded-2xl border border-[#e4dccf] bg-white p-5">
+    <div className="flex h-[520px] flex-col rounded-2xl border border-[#e4dccf] bg-white p-4 sm:h-[560px] sm:p-5 lg:h-[620px]">
       <h2 className="mb-4 text-lg font-bold text-[#1e1b3a]">Current sale</h2>
 
       <div className="flex-1 overflow-y-auto">
@@ -113,7 +113,7 @@ export default function TransactionTable({
         </span>
       </div>
 
-      <div className="mt-4 flex items-center gap-3">
+      <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:gap-3">
         {onCancelTransaction && (
           <button
             onClick={onCancelTransaction}
@@ -127,7 +127,7 @@ export default function TransactionTable({
         <button
           onClick={handleSubmit}
           disabled={items.length === 0 || loading}
-          className="rounded-full border border-[#d8cfbf] bg-white px-6 py-2.5 text-sm font-semibold text-[#1e1b3a] transition-colors hover:bg-[#f5f1e8] disabled:cursor-not-allowed disabled:opacity-50"
+          className="rounded-full border border-[#d8cfbf] bg-white px-6 py-2.5 text-sm font-semibold text-[#1e1b3a] transition-colors hover:bg-[#f5f1e8] disabled:cursor-not-allowed disabled:opacity-50 sm:flex-shrink-0"
         >
           {loading ? "Submitting..." : "Confirm sale"}
         </button>
