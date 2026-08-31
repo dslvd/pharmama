@@ -1,28 +1,11 @@
 "use client";
 
-import { getStockList } from "@/lib/api/stocks";
 import { Stock } from "@/lib/types/stock";
 import { Package } from "lucide-react";
-import { useEffect, useState } from "react";
 
-export default function CurrentStocks({onError}: {onError?: (message: string) => void;}) {
-  const [stocks, setStocks] = useState<Stock[] | null>(null);
-
-  useEffect(() => {
-    async function loadStocks() {
-      const result = await getStockList();
-
-      if (result.ok) {
-        setStocks(result.value);
-      } else {
-        onError?.(result.error);
-      }
-    }
-
-    loadStocks();
-  }, [onError]);
-
-  const totalItems = stocks?.reduce((sum, stock) => sum + stock.quantity, 0) || 0;
+export default function CurrentStocks({ stocks }: { stocks: Stock[] | null }) {
+  const totalItems =
+    stocks?.reduce((sum, stock) => sum + stock.quantity, 0) || 0;
   const skuCount = stocks?.length || 0;
 
   return (

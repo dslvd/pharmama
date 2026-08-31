@@ -1,42 +1,22 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { getTransactionList } from "@/lib/api/transaction";
+import { useMemo } from "react";
 import { Transaction } from "@/lib/types/transaction";
 
 export default function RecentTransactions({
-  onError,
+  transactions,
 }: {
-  onError?: (message: string) => void;
+  transactions: Transaction[] | null;
 }) {
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function loadTransactions() {
-      try {
-        const result = await getTransactionList();
-        if (result.ok) {
-          const sorted = result.value
-            .sort(
-              (a, b) =>
-                new Date(b.createdAt).getTime() -
-                new Date(a.createdAt).getTime(),
-            )
-            .slice(0, 5);
-          setTransactions(sorted);
-        }
-      } catch (error) {
-        const message =
-          error instanceof Error ? error.message : "Unknown error";
-        onError?.(message);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    loadTransactions();
-  }, [onError]);
+  const recent = useMemo(() => {
+    if (!transactions) return null;
+    return [...transactions]
+      .sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+      )
+      .slice(0, 5);
+  }, [transactions]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -66,13 +46,13 @@ export default function RecentTransactions({
         Recent transactions
       </h3>
 
-      {loading ? (
+      {recent === null ? (
         <div className="space-y-3">
           {[...Array(5)].map((_, i) => (
             <div key={i} className="skeleton h-12 w-full rounded-lg" />
           ))}
         </div>
-      ) : transactions.length === 0 ? (
+      ) : recent.length === 0 ? (
         <p className="text-center text-sm text-muted-foreground py-8">
           No transactions found
         </p>
@@ -99,7 +79,7 @@ export default function RecentTransactions({
               </tr>
             </thead>
             <tbody>
-              {transactions.map((transaction) => (
+              {recent.map((transaction) => (
                 <tr
                   key={transaction.id}
                   className="border-b border-border hover:bg-muted/30 transition-colors"

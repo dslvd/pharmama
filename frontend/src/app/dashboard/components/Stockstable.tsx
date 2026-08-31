@@ -1,24 +1,7 @@
-import { getStockList } from "@/lib/api/stocks";
 import { Stock } from "@/lib/types/stock";
 import { Plus, Pencil, Trash2 } from "lucide-react";
-import { useEffect, useState } from "react";
 
-export default function StocksTable() {
-  const [stock, setStock] = useState<Stock[] | null>(null);
-
-  useEffect(() => {
-    async function loadStock() {
-      const result = await getStockList();
-
-      if (result.ok) {
-        setStock(result.value);
-      } else {
-        console.log(result.error);
-      }
-    }
-    loadStock();
-  }, []);
-
+export default function StocksTable({ stocks }: { stocks: Stock[] | null }) {
   return (
     <section>
       <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
@@ -67,8 +50,8 @@ export default function StocksTable() {
             </tr>
           </thead>
           <tbody>
-            {stock ? (
-              stock.map((row) => (
+            {stocks ? (
+              stocks.map((row) => (
                 <tr
                   key={row.id}
                   className="border-b border-border bg-violet-50/60 last:border-0"
