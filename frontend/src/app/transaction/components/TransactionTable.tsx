@@ -70,13 +70,23 @@ export default function TransactionTable({
                     {item.product.name}
                   </p>
                   <p className="text-xs text-[#9c93b0]">
-                    {item.trItems.quantity} &times; ₱ {item.trItems.unitPrice}
+                    {item.trItems.quantity} &times; ₱{" "}
+                    {item.trItems.unitPrice.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
                   </p>
                 </div>
 
                 <div className="flex shrink-0 items-center gap-2">
                   <span className="text-sm font-semibold text-[#1e1b3a]">
-                    ₱ {item.trItems.unitPrice * item.trItems.quantity}
+                    ₱{" "}
+                    {(
+                      item.trItems.unitPrice * item.trItems.quantity
+                    ).toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
                   </span>
                   <button
                     onClick={() => removeItem(item.trItems.productId)}
@@ -95,7 +105,11 @@ export default function TransactionTable({
       <div className="mt-4 flex items-center justify-between border-t border-[#e4dccf] pt-3">
         <span className="text-sm font-bold text-[#1e1b3a]">Total</span>
         <span className="text-base font-bold text-[#1e1b3a]">
-          ₱ {grandTotal}
+          ₱{" "}
+          {grandTotal.toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}
         </span>
       </div>
 

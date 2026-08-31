@@ -173,7 +173,11 @@ export default function ProductPicker({
                   {product.name}
                 </p>
                 <p className="text-xs text-[#9c93b0]">
-                  {product.category} &middot; ₱ {product.price}
+                  {product.category} &middot; ₱{" "}
+                  {product.price.toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
                 </p>
               </div>
 

@@ -23,8 +23,6 @@ export default function LogbookPage() {
   const addError = (message: string) =>
     setErrors((prev) => [...prev, { id: crypto.randomUUID(), message }]);
 
-  // Fetch the full audit log once on mount. All filtering/search/sort
-  // afterwards happens client-side against this cached list.
   useEffect(() => {
     async function loadAudit() {
       setLoading(true);

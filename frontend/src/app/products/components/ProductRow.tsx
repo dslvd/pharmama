@@ -43,7 +43,11 @@ export default function ProductRow({
           </span>
         </td>
         <td className="px-4 py-3 font-medium text-foreground">
-          ₱{Number(product.price).toFixed(2)}
+          ₱{" "}
+          {product.price.toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}
         </td>
         <td className="px-4 py-3">
           <div className="flex items-center gap-3 text-muted-foreground">

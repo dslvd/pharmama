@@ -16,24 +16,20 @@ export default function TransactionsCard({
 
   useEffect(() => {
     async function loadTransactions() {
-      try {
-        // Get all transactions
-        const allResult = await getTransactionList();
-        if (allResult.ok) {
-          const transactions = allResult.value;
-          setTotal(transactions.length);
-          
-          // Count transactions that might need review (those not completed or refunded)
-          const pendingCount = transactions.filter(
-            (t: Transaction) => t.status !== "COMPLETED" && t.status !== "REFUNDED"
-          ).length;
-          setPending(pendingCount);
-        }
-      } catch (error) {
-        const message = error instanceof Error ? error.message : "Unknown error";
-        onError?.(message);
-      } finally {
+      const allResult = await getTransactionList();
+      if (allResult.ok) {
+        const transactions = allResult.value;
+        setTotal(transactions.length);
+
+        // Count transactions that might need review (those not completed or refunded)
+        const pendingCount = transactions.filter(
+          (t: Transaction) =>
+            t.status !== "COMPLETED" && t.status !== "REFUNDED",
+        ).length;
+        setPending(pendingCount);
         setLoading(false);
+      } else {
+        onError?.(allResult.error);
       }
     }
 

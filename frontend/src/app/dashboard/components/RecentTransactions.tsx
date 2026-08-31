@@ -17,18 +17,18 @@ export default function RecentTransactions({
       try {
         const result = await getTransactionList();
         if (result.ok) {
-          // Sort by created date descending and take first 5
           const sorted = result.value
             .sort(
               (a, b) =>
                 new Date(b.createdAt).getTime() -
-                new Date(a.createdAt).getTime()
+                new Date(a.createdAt).getTime(),
             )
             .slice(0, 5);
           setTransactions(sorted);
         }
       } catch (error) {
-        const message = error instanceof Error ? error.message : "Unknown error";
+        const message =
+          error instanceof Error ? error.message : "Unknown error";
         onError?.(message);
       } finally {
         setLoading(false);
@@ -100,12 +100,16 @@ export default function RecentTransactions({
             </thead>
             <tbody>
               {transactions.map((transaction) => (
-                <tr key={transaction.id} className="border-b border-border hover:bg-muted/30 transition-colors">
+                <tr
+                  key={transaction.id}
+                  className="border-b border-border hover:bg-muted/30 transition-colors"
+                >
                   <td className="py-3 px-4 text-foreground font-medium">
                     F{transaction.id.toString().padStart(4, "0")}
                   </td>
                   <td className="py-3 px-4 text-foreground">
-                    ₱ {transaction.totalAmount.toLocaleString("en-US", {
+                    ₱{" "}
+                    {transaction.totalAmount.toLocaleString(undefined, {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
                     })}
@@ -116,7 +120,7 @@ export default function RecentTransactions({
                   <td className="py-3 px-4">
                     <span
                       className={`inline-block rounded-full px-3 py-1 text-xs font-semibold ${getStatusColor(
-                        transaction.status
+                        transaction.status,
                       )}`}
                     >
                       {transaction.status}

@@ -23,11 +23,10 @@ export default function LowStocks({
 
       if (stockResult.ok) {
         const lowStocks = stockResult.value.filter(
-          (stock) => stock.quantity <= LOW_STOCK_THRESHOLD
+          (stock) => stock.quantity <= LOW_STOCK_THRESHOLD,
         );
         setStocks(lowStocks);
 
-        // Load products for watchlist variant
         if (variant === "watchlist") {
           const productResult = await getProductList();
           if (productResult.ok) {
@@ -48,7 +47,7 @@ export default function LowStocks({
 
   if (variant === "watchlist") {
     return (
-      <article className="flex h-[420px] flex-col overflow-hidden rounded-xl border border-border bg-card p-5">
+      <article className="flex h-105 flex-col overflow-hidden rounded-xl border border-border bg-card p-5">
         <div className="flex items-center gap-2">
           <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-100 text-amber-600">
             <AlertTriangle className="h-4 w-4" />

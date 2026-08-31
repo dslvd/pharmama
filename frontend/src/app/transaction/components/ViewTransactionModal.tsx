@@ -1,24 +1,18 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { X } from "lucide-react";
 import { Transaction, TransactionStatus } from "@/lib/types/transaction";
-import { getTransaction } from "@/lib/api/transaction";
-import { Product } from "@/lib/types/product";
-import { getProduct } from "@/lib/api/product";
 
 interface ViewTransactionModalProps {
-  transactionId: number;
+  transaction?: Transaction;
   onClose: () => void;
 }
 
 export default function ViewTransactionModal({
-  transactionId,
+  transaction,
   onClose,
 }: ViewTransactionModalProps) {
-  const [transaction, setTransaction] = useState<Transaction | null>(null);
-  const [products, setProducts] = useState<Record<number, Product>>({});
-  const [error, setError] = useState("");
   const [status, setStatus] = useState<TransactionStatus>(
     transaction?.status || "COMPLETED",
   );
@@ -27,36 +21,6 @@ export default function ViewTransactionModal({
     () => transaction?.transactionItems ?? [],
     [transaction?.transactionItems],
   );
-
-  useEffect(() => {
-    async function getTr() {
-      const result = await getTransaction(transactionId);
-      if (result.ok) {
-        setTransaction(result.value);
-        setStatus(result.value.status);
-      } else {
-        setError(result.error);
-      }
-    }
-    getTr();
-  }, [transactionId]);
-
-  useEffect(() => {
-    if (items.length === 0) return;
-
-    async function getPr() {
-      const productIds = items.map((item) => item.productId);
-      for (const id of productIds) {
-        const result = await getProduct(id);
-        if (result.ok) {
-          setProducts((prev) => ({ ...prev, [id]: result.value }));
-        } else {
-          setError(result.error);
-        }
-      }
-    }
-    getPr();
-  }, [items]);
 
   const getStatusColor = (currentStatus: TransactionStatus) => {
     switch (currentStatus) {
@@ -109,7 +73,7 @@ export default function ViewTransactionModal({
               </tr>
             </thead>
             <tbody>
-              {items.length === 0 && products === null ? (
+              {items.length === 0 ? (
                 <tr>
                   <td
                     colSpan={5}
@@ -120,7 +84,6 @@ export default function ViewTransactionModal({
                 </tr>
               ) : (
                 items.map((item) => {
-                  const itemProduct = products[item.productId];
                   return (
                     <tr
                       key={item.id}
@@ -130,16 +93,22 @@ export default function ViewTransactionModal({
                         #{item.id}
                       </td>
                       <td className="px-4 py-3 text-sm font-medium text-[#1e1b3a]">
-                        {itemProduct?.name ?? "Unknown product"}
+                        {item.product?.name ?? "Unknown product"}
                       </td>
                       <td className="px-4 py-3 text-xs text-[#6f6787]">
-                        {itemProduct?.genericName ?? "Unknown product"}
+                        {item.product?.genericName ?? "Unknown product"}
                       </td>
                       <td className="px-4 py-3 text-center text-xs text-[#1e1b3a]">
                         {item.quantity ?? "-"}
                       </td>
                       <td className="px-4 py-3 text-right text-xs font-semibold text-[#1e1b3a]">
-                        ₱ {(itemProduct?.price || 0) * item.quantity}
+                        ₱{" "}
+                        {(
+                          (item.product?.price || 0) * (item.quantity || 0)
+                        ).toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
                       </td>
                     </tr>
                   );
@@ -166,11 +135,14 @@ export default function ViewTransactionModal({
                 <option value="CANCELLED">CANCELLED</option>
               </select>
             </div>
-            {error && <p className="mt-1 text-sm text-rose-600">{error}</p>}
           </div>
 
           <span className="text-base font-bold text-[#1e1b3a]">
-            Total: ₱ {transaction?.totalAmount || 0}
+            Total: ₱{" "}
+            {(transaction?.totalAmount || 0).toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}
           </span>
         </div>
       </div>

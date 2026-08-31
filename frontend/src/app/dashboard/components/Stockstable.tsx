@@ -108,7 +108,6 @@ export default function StocksTable() {
             ) : (
               <div>No stock yet</div>
             )}
-            {/* empty row to match the wireframe's blank second row */}
             <tr>
               <td className="px-4 py-4" colSpan={8}>
                 &nbsp;
