@@ -13,7 +13,7 @@ import FilterBar, { FilterProps } from "../../../components/FilterBar";
 interface SalesTableProps {
   initialRecords?: Transaction[];
   refreshKey?: number;
-  onViewClick?: (id: number) => void;
+  onViewClick?: (tr: Transaction) => void;
   onError?: (message: string) => void;
   onLoadingChange?: (loading: boolean) => void;
 }
@@ -208,7 +208,11 @@ export default function SalesTable({
                     #{record.id}
                   </td>
                   <td className="px-5 py-3.5 font-bold text-[#1e1b3a]">
-                    ₱ {record.totalAmount}
+                    ₱{" "}
+                    {record.totalAmount.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
                   </td>
                   <td className="px-5 py-3.5 text-[#4b4468]">
                     {record.handledBy}
@@ -271,7 +275,7 @@ export default function SalesTable({
                   </td>
                   <td className="px-5 py-3.5 text-right">
                     <button
-                      onClick={() => onViewClick?.(record.id)}
+                      onClick={() => onViewClick?.(record)}
                       className="rounded-full border border-[#d8cfbf] bg-white px-4 py-1.5 text-xs font-semibold text-[#1e1b3a] transition-colors hover:bg-[#f5f1e8]"
                     >
                       View

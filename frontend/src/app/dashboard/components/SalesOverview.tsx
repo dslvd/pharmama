@@ -53,7 +53,7 @@ export default function SalesOverview({
   }, [period, onError]);
 
   return (
-    <section className="flex h-[420px] flex-col rounded-xl border border-border bg-card p-5">
+    <section className="flex h-105 flex-col rounded-xl border border-border bg-card p-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-violet-100 text-violet-800">
@@ -122,11 +122,7 @@ export default function SalesOverview({
                   fontSize: 12,
                 }}
               />
-              <Bar
-                dataKey="value"
-                fill="#c2185b"
-                radius={[8, 8, 0, 0]}
-              />
+              <Bar dataKey="value" fill="#c2185b" radius={[8, 8, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         )}

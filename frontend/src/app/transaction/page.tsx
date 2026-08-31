@@ -7,13 +7,14 @@ import ProductPicker, { SubmittedItem } from "./components/ProductPicker";
 import ViewTransactionModal from "./components/ViewTransactionModal";
 import { ErrorStack } from "@/components/ErrorCard";
 import Loading from "./loading";
+import { Transaction } from "@/lib/types/transaction";
 
 export default function TransactionsPage() {
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [items, setItems] = useState<SubmittedItem[]>([]);
   const [errors, setErrors] = useState<{ id: string; message: string }[]>([]);
   const [loading, setLoading] = useState(true);
-  const [trId, setTrId] = useState<number>(0);
+  const [tr, setTr] = useState<Transaction | undefined>(undefined);
   const [refreshKey, setRefreshKey] = useState(0);
 
   const addError = (message: string) =>
@@ -59,8 +60,8 @@ export default function TransactionsPage() {
           refreshKey={refreshKey}
           onError={addError}
           onLoadingChange={setLoading}
-          onViewClick={(id) => {
-            setTrId(id);
+          onViewClick={(tr) => {
+            setTr(tr);
             setIsViewModalOpen(true);
           }}
         />
@@ -68,7 +69,7 @@ export default function TransactionsPage() {
         {isViewModalOpen && (
           <ViewTransactionModal
             onClose={() => setIsViewModalOpen(false)}
-            transactionId={trId}
+            transaction={tr}
           />
         )}
         <ErrorStack errors={errors} />

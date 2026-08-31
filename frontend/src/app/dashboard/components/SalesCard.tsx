@@ -21,7 +21,6 @@ export default function SalesCard({
 
       if (result.ok) {
         setSales(result.value);
-        // Calculate percentage change (mock: 12% vs yesterday)
         setPercentageChange(12);
       } else {
         onError?.(result.error);
@@ -43,7 +42,12 @@ export default function SalesCard({
       </div>
       <p className="mt-4 text-sm text-muted-foreground">Today&apos;s sales</p>
       <p className="mt-3 flex items-center gap-2 text-3xl font-bold text-foreground">
-        {loading ? "—" : `₱${total.toLocaleString()}`}
+        {loading
+          ? "—"
+          : `₱ ${total.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}`}
       </p>
       <div className="mt-2 flex items-center gap-1">
         <TrendingUp className="h-4 w-4 text-emerald-600" />
@@ -54,4 +58,3 @@ export default function SalesCard({
     </article>
   );
 }
-  

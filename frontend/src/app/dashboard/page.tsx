@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState, useMemo } from "react";
+import { useCallback, useState, useMemo, useEffect } from "react";
 import CurrentStocks from "./components/CurrentStocks";
 import LowStocks from "./components/LowStocks";
 import SalesCard from "./components/SalesCard";
@@ -9,8 +9,14 @@ import TransactionsCard from "./components/TransactionsCard";
 import RecentTransactions from "./components/RecentTransactions";
 import Loading from "@/app/dashboard/loading";
 import { ErrorStack } from "@/components/ErrorCard";
+import { Stock } from "@/lib/types/stock";
+import { getStockList } from "@/lib/api/stocks";
+import { Transaction } from "@/lib/types/transaction";
+import { getTransactionList } from "@/lib/api/transaction";
 
 export default function Dashboard() {
+  const [stock, setStock] = useState<Stock[] | null>(null);
+  const [transaction, setTransaction] = useState<Transaction[] | null>(null);
   const [errors, setErrors] = useState<{ id: string; message: string }[]>([]);
   const [loadingCards, setLoadingCards] = useState(2);
 
@@ -19,13 +25,39 @@ export default function Dashboard() {
       setErrors((prev) => [...prev, { id: crypto.randomUUID(), message }]),
     [],
   );
+
+  useEffect(() => {
+    async function getStock() {
+      const result = await getStockList();
+      if (result.ok) {
+        setStock(result.value);
+      } else {
+        addError(result.error);
+      }
+    }
+
+    getStock();
+  }, [addError]);
+
+  useEffect(() => {
+    async function getTransaction() {
+      const result = await getTransactionList();
+      if (result.ok) {
+        setTransaction(result.value);
+      } else {
+        addError(result.error);
+      }
+    }
+
+    getTransaction();
+  }, [addError]);
+
   const handleLoadingChange = useCallback((loading: boolean) => {
     setLoadingCards((count) =>
       loading ? Math.max(count, 1) : Math.max(count - 1, 0),
     );
   }, []);
 
-  // Get current date in format: "Thursday, August 27"
   const dateString = useMemo(() => {
     const today = new Date();
     const dayFormatter = new Intl.DateTimeFormat("en-US", { weekday: "long" });
@@ -69,9 +101,9 @@ export default function Dashboard() {
         {/* Stats Grid */}
         <section className="grid grid-cols-1 gap-4 md:grid-cols-4">
           <SalesCard onError={addError} onLoadingChange={handleLoadingChange} />
-          <TransactionsCard onError={addError} />
-          <CurrentStocks onError={addError} />
-          <LowStocks />
+          <TransactionsCard transactions={transaction} />
+          <CurrentStocks stocks={stock} />
+          <LowStocks stock={stock} />
         </section>
 
         {/* Charts and Watchlist */}
@@ -80,12 +112,12 @@ export default function Dashboard() {
             <SalesOverview onError={addError} />
           </div>
           <div className="h-full">
-            <LowStocks variant="watchlist" />
+            <LowStocks stock={stock} variant="watchlist" />
           </div>
         </section>
 
         {/* Recent Transactions */}
-        <RecentTransactions onError={addError} />
+        <RecentTransactions transactions={transaction} />
 
         <ErrorStack errors={errors} />
       </main>
