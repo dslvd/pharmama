@@ -18,7 +18,24 @@ export default function Dashboard() {
   const [stock, setStock] = useState<Stock[] | null>(null);
   const [transaction, setTransaction] = useState<Transaction[] | null>(null);
   const [errors, setErrors] = useState<{ id: string; message: string }[]>([]);
-  const [loadingCards, setLoadingCards] = useState(2);
+  const [loading, setLoading] = useState({
+    sales: true,
+    stock: true,
+    transaction: true,
+  });
+
+  const setLoadingFor = useCallback(
+    (key: keyof typeof loading, isLoading: boolean) => {
+      setLoading((prev) => ({ ...prev, [key]: isLoading }));
+    },
+    [],
+  );
+
+  const isLoading = Object.values(loading).some(Boolean);
+  const handleSalesLoadingChange = useCallback(
+    (v: boolean) => setLoadingFor("sales", v),
+    [setLoadingFor],
+  );
 
   const addError = useCallback(
     (message: string) =>
@@ -29,34 +46,22 @@ export default function Dashboard() {
   useEffect(() => {
     async function getStock() {
       const result = await getStockList();
-      if (result.ok) {
-        setStock(result.value);
-      } else {
-        addError(result.error);
-      }
+      if (result.ok) setStock(result.value);
+      else addError(result.error);
+      setLoadingFor("stock", false);
     }
-
     getStock();
-  }, [addError]);
+  }, [addError, setLoadingFor]);
 
   useEffect(() => {
     async function getTransaction() {
       const result = await getTransactionList();
-      if (result.ok) {
-        setTransaction(result.value);
-      } else {
-        addError(result.error);
-      }
+      if (result.ok) setTransaction(result.value);
+      else addError(result.error);
+      setLoadingFor("transaction", false);
     }
-
     getTransaction();
-  }, [addError]);
-
-  const handleLoadingChange = useCallback((loading: boolean) => {
-    setLoadingCards((count) =>
-      loading ? Math.max(count, 1) : Math.max(count - 1, 0),
-    );
-  }, []);
+  }, [addError, setLoadingFor]);
 
   const dateString = useMemo(() => {
     const today = new Date();
@@ -100,7 +105,10 @@ export default function Dashboard() {
 
         {/* Stats Grid */}
         <section className="grid grid-cols-1 gap-4 md:grid-cols-4">
-          <SalesCard onError={addError} onLoadingChange={handleLoadingChange} />
+          <SalesCard
+            onError={addError}
+            onLoadingChange={handleSalesLoadingChange}
+          />
           <TransactionsCard transactions={transaction} />
           <CurrentStocks stocks={stock} />
           <LowStocks stock={stock} />
@@ -121,7 +129,7 @@ export default function Dashboard() {
 
         <ErrorStack errors={errors} />
       </main>
-      {loadingCards > 0 && (
+      {isLoading && (
         <div className="pointer-events-auto fixed inset-0 z-40 bg-background">
           <Loading />
         </div>

@@ -3,21 +3,13 @@ import "./globals.css";
 import Drawer from "../components/SideDrawer/Drawer";
 
 export const metadata: Metadata = {
-  title: "Pharmacy Database",
+  title: "Pharmama",
   description: "Pharmacy inventory and transaction management system",
   icons: {
     icon: [
       {
-        url: "/icon-light-32x32.png",
+        url: "/logo/pharlogo.png",
         media: "(prefers-color-scheme: light)",
-      },
-      {
-        url: "/icon-dark-32x32.png",
-        media: "(prefers-color-scheme: dark)",
-      },
-      {
-        url: "/icon.svg",
-        type: "image/svg+xml",
       },
     ],
     apple: "/apple-icon.png",
