@@ -1,6 +1,4 @@
 "use client";
-
-import { useMemo, useState } from "react";
 import { X } from "lucide-react";
 import { Transaction, TransactionStatus } from "@/lib/types/transaction";
 
@@ -13,16 +11,9 @@ export default function ViewTransactionModal({
   transaction,
   onClose,
 }: ViewTransactionModalProps) {
-  const [status, setStatus] = useState<TransactionStatus>(
-    transaction?.status || "COMPLETED",
-  );
+  const items = transaction?.transactionItems;
 
-  const items = useMemo(
-    () => transaction?.transactionItems ?? [],
-    [transaction?.transactionItems],
-  );
-
-  const getStatusColor = (currentStatus: TransactionStatus) => {
+  const getStatusColor = (currentStatus: TransactionStatus | undefined) => {
     switch (currentStatus) {
       case "COMPLETED":
         return "bg-emerald-100 text-emerald-800 border-emerald-300";
@@ -73,7 +64,7 @@ export default function ViewTransactionModal({
               </tr>
             </thead>
             <tbody>
-              {items.length === 0 ? (
+              {items?.length === 0 ? (
                 <tr>
                   <td
                     colSpan={5}
@@ -83,7 +74,7 @@ export default function ViewTransactionModal({
                   </td>
                 </tr>
               ) : (
-                items.map((item) => {
+                items?.map((item) => {
                   return (
                     <tr
                       key={item.id}
@@ -123,17 +114,13 @@ export default function ViewTransactionModal({
             <span>Handled By: {transaction?.handledBy || "N/A"}</span>
             <div className="flex items-center gap-1.5">
               <span className="font-normal text-[#6f6787]">Status:</span>
-              <select
-                value={status}
-                onChange={(e) => setStatus(e.target.value as TransactionStatus)}
+              <div
                 className={`rounded-full border px-2.5 py-1 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-violet-100 ${getStatusColor(
-                  status,
+                  transaction?.status,
                 )}`}
               >
-                <option value="COMPLETED">COMPLETED</option>
-                <option value="REFUNDED">REFUNDED</option>
-                <option value="CANCELLED">CANCELLED</option>
-              </select>
+                {transaction?.status}
+              </div>
             </div>
           </div>
 
