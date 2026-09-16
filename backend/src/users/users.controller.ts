@@ -2,10 +2,10 @@
 import { Controller, Post, Body, UseGuards } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { UsersService } from "./users.service";
-import { Roles } from "../auth/decorator/roles.decorator";
 import { Role } from "src/generated/prisma/enums";
 import { CreateUserDto } from "./users.validation";
 import { RolesGuard } from "src/auth/guard/roles.guard";
+import { Roles } from "src/auth/decorator/auth.decorator";
 
 @Controller("users")
 export class UsersController {

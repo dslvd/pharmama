@@ -6,7 +6,6 @@ import {
 import {
   AuditAction,
   AuditEntity,
-  Prisma,
   Transaction,
   TransactionStatus,
 } from "src/generated/prisma/client";
