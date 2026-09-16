@@ -7,43 +7,53 @@ import {
   ParseIntPipe,
   Patch,
   Post,
-  Query,
+  UseGuards,
 } from "@nestjs/common";
 import { StockService } from "./stock.service";
-import { Prisma, Stock } from "src/generated/prisma/client";
-import { CreateStockDto, UpdateStockDto } from "./validation";
+import { Role, Stock } from "src/generated/prisma/client";
+import { CreateStockDto, UpdateStockDto } from "./stock.validation";
+import { RolesGuard } from "src/auth/guard/roles.guard";
+import { AuthGuard } from "@nestjs/passport";
+import { Roles } from "src/auth/decorator/auth.decorator";
+import type { AuthenticatedUser } from "src/auth/types/jwt-payload.type";
+import { CurrentUser } from "src/auth/decorator/current-user.decorator";
 
 @Controller("stock")
+@UseGuards(AuthGuard("jwt"), RolesGuard)
 export class StockController {
   constructor(private stService: StockService) {}
 
-  @Get(":id")
-  async getSt(
-    @Param("id", ParseIntPipe) id: number,
-  ): Promise<Prisma.StockGetPayload<{ include: { product: true } }>> {
-    return this.stService.getStock(id);
-  }
-
   @Get()
+  @Roles(Role.STAFF, Role.OWNER, Role.ADMIN)
   async getStList(): Promise<Stock[]> {
     return this.stService.getStockList();
   }
 
   @Post()
-  async createSt(@Body() data: CreateStockDto): Promise<Stock> {
-    return this.stService.createStock(data);
+  @Roles(Role.STAFF, Role.OWNER, Role.ADMIN)
+  async createSt(
+    @Body() data: CreateStockDto,
+    @CurrentUser() user: AuthenticatedUser,
+  ): Promise<Stock> {
+    return this.stService.createStock(data, user.userId);
   }
 
   @Patch(":id")
+  @Roles(Role.STAFF, Role.OWNER, Role.ADMIN)
   async updateSt(
     @Param("id", ParseIntPipe) id: number,
     @Body() body: UpdateStockDto,
+    @CurrentUser() user: AuthenticatedUser,
   ): Promise<Stock> {
-    return this.stService.updateStock(id, body);
+    return this.stService.updateStock(id, body, user.userId);
   }
 
   @Delete(":id")
-  async deleteSt(@Param("id", ParseIntPipe) id: number): Promise<Stock> {
-    return this.stService.deleteStock(id);
+  @Roles(Role.OWNER, Role.ADMIN)
+  async deleteSt(
+    @Param("id", ParseIntPipe) id: number,
+    @CurrentUser() user: AuthenticatedUser,
+  ): Promise<Stock> {
+    return this.stService.deleteStock(id, user.userId);
   }
 }

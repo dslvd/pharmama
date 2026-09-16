@@ -1,4 +1,4 @@
-import { err, ok, Result } from "src/util/results";
+import { err, ok, Result } from "src/util/results.util";
 import {
   IsDateString,
   IsInt,
