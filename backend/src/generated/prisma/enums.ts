@@ -34,7 +34,8 @@ export const AuditEntity = {
   TRANSACTION: 'TRANSACTION',
   PRODUCT: 'PRODUCT',
   STOCK: 'STOCK',
-  TRANSACTIONITEM: 'TRANSACTIONITEM'
+  TRANSACTIONITEM: 'TRANSACTIONITEM',
+  USER: 'USER'
 } as const
 
 export type AuditEntity = (typeof AuditEntity)[keyof typeof AuditEntity]
@@ -47,8 +48,17 @@ export const Category = {
   VITAMINS: 'VITAMINS',
   SUPPLEMENTS: 'SUPPLEMENTS',
   ANTACIDS: 'ANTACIDS',
-  HYGIENNE: 'HYGIENNE',
+  HYGIENE: 'HYGIENE',
   OTHERS: 'OTHERS'
 } as const
 
 export type Category = (typeof Category)[keyof typeof Category]
+
+
+export const Role = {
+  STAFF: 'STAFF',
+  ADMIN: 'ADMIN',
+  OWNER: 'OWNER'
+} as const
+
+export type Role = (typeof Role)[keyof typeof Role]

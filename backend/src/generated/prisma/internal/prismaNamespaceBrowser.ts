@@ -55,7 +55,8 @@ export const ModelName = {
   TransactionItem: 'TransactionItem',
   Product: 'Product',
   Stock: 'Stock',
-  AuditLog: 'AuditLog'
+  AuditLog: 'AuditLog',
+  User: 'User'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -127,6 +128,7 @@ export type StockScalarFieldEnum = (typeof StockScalarFieldEnum)[keyof typeof St
 
 export const AuditLogScalarFieldEnum = {
   id: 'id',
+  userId: 'userId',
   entity: 'entity',
   entityId: 'entityId',
   action: 'action',
@@ -135,6 +137,20 @@ export const AuditLogScalarFieldEnum = {
 } as const
 
 export type AuditLogScalarFieldEnum = (typeof AuditLogScalarFieldEnum)[keyof typeof AuditLogScalarFieldEnum]
+
+
+export const UserScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  email: 'email',
+  hashedPassword: 'hashedPassword',
+  role: 'role',
+  isActive: 'isActive',
+  updatedAt: 'updatedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
 
 
 export const SortOrder = {

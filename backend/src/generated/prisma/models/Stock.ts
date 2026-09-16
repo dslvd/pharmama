@@ -258,6 +258,7 @@ export type StockOrderByWithRelationInput = {
 
 export type StockWhereUniqueInput = Prisma.AtLeast<{
   id?: number
+  productId_batchNumber?: Prisma.StockProductIdBatchNumberCompoundUniqueInput
   AND?: Prisma.StockWhereInput | Prisma.StockWhereInput[]
   OR?: Prisma.StockWhereInput[]
   NOT?: Prisma.StockWhereInput | Prisma.StockWhereInput[]
@@ -269,7 +270,7 @@ export type StockWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"Stock"> | Date | string
   product?: Prisma.XOR<Prisma.ProductScalarRelationFilter, Prisma.ProductWhereInput>
   transactionItems?: Prisma.TransactionItemListRelationFilter
-}, "id">
+}, "id" | "productId_batchNumber">
 
 export type StockOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -382,6 +383,11 @@ export type StockListRelationFilter = {
 
 export type StockOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
+}
+
+export type StockProductIdBatchNumberCompoundUniqueInput = {
+  productId: number
+  batchNumber: string
 }
 
 export type StockCountOrderByAggregateInput = {

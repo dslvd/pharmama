@@ -42,3 +42,8 @@ export type Stock = Prisma.StockModel
  * 
  */
 export type AuditLog = Prisma.AuditLogModel
+/**
+ * Model User
+ * 
+ */
+export type User = Prisma.UserModel
