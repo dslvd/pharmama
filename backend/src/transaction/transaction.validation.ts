@@ -6,13 +6,12 @@ import {
   IsNotEmpty,
   IsNumber,
   IsPositive,
-  IsString,
   Min,
   ValidateNested,
 } from "class-validator";
 import { Prisma } from "src/generated/prisma/client";
 import { TransactionStatus } from "src/generated/prisma/enums";
-import { err, ok, Result } from "src/util/results";
+import { err, ok, Result } from "src/util/results.util";
 
 export const validateStock = (
   stock: { quantity: number } | null,
@@ -77,10 +76,9 @@ export class CreateTransactionDto {
   @Transform(({ value }) => value?.trim())
   @IsEnum(TransactionStatus)
   status!: TransactionStatus;
-  @Transform(({ value }) => value?.trim())
-  @IsString()
+  @IsInt()
   @IsNotEmpty()
-  handledBy!: string;
+  handledBy!: number;
   @ValidateNested({ each: true })
   @Type(() => TransactionItemDto)
   @ArrayMinSize(1)
@@ -92,5 +90,5 @@ export class UpdateTransactionStatusDto {
 }
 
 export type TransactionWithItems = Prisma.TransactionGetPayload<{
-  include: { transactionItems: { include: { product: true } } };
+  include: { transactionItems: { include: { product: true } }; user: true };
 }>;

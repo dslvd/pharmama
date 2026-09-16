@@ -6,7 +6,6 @@ import {
 import {
   AuditAction,
   AuditEntity,
-  Prisma,
   Transaction,
   TransactionStatus,
 } from "src/generated/prisma/client";
@@ -20,34 +19,23 @@ import {
   validateStatusUpdatable,
   validateStock,
   validateTransactionExists,
-} from "./validation";
-import { createAuditLog } from "src/audit-log/audit-log.util";
+} from "./transaction.validation";
+import { createAuditLog } from "src/util/audit-log.util";
 
 @Injectable()
 export class TransactionService {
   constructor(private prisma: PrismaService) {}
 
-  async getTransaction(id: number): Promise<TransactionWithItems> {
-    const found = await this.prisma.transaction.findUnique({
-      where: { id },
-      include: { transactionItems: { include: { product: true } } },
-    });
-
-    const result = validateTransactionExists(found);
-    if (!result.ok) {
-      throw new NotFoundException(result.error);
-    }
-
-    return result.value;
-  }
-
   async getTransactionList(): Promise<TransactionWithItems[]> {
     return await this.prisma.transaction.findMany({
-      include: { transactionItems: { include: { product: true } } },
+      include: { transactionItems: { include: { product: true } }, user: true },
     });
   }
 
-  async createTransaction(data: CreateTransactionDto): Promise<Transaction> {
+  async createTransaction(
+    data: CreateTransactionDto,
+    handledBy: number,
+  ): Promise<Transaction> {
     return this.prisma.$transaction(async (tx) => {
       await Promise.all(
         data.transactionItems.map(async (item) => {
@@ -84,7 +72,7 @@ export class TransactionService {
         data: {
           totalAmount,
           status: data.status,
-          handledBy: data.handledBy.toUpperCase().trim(),
+          handledBy,
           transactionItems: {
             create: data.transactionItems.map((item) => ({
               productId: item.productId,
@@ -98,6 +86,7 @@ export class TransactionService {
       });
 
       await createAuditLog(tx, {
+        user: handledBy,
         entity: AuditEntity.TRANSACTION,
         entityId: transaction.id,
         action: AuditAction.CREATE,
@@ -107,7 +96,7 @@ export class TransactionService {
     });
   }
 
-  async cancelTransaction(id: number): Promise<Transaction> {
+  async cancelTransaction(id: number, handledBy: number): Promise<Transaction> {
     return this.prisma.$transaction(async (tx) => {
       const existing = await tx.transaction.findUnique({
         where: { id },
@@ -145,6 +134,7 @@ export class TransactionService {
       });
 
       await createAuditLog(tx, {
+        user: handledBy,
         entity: AuditEntity.TRANSACTION,
         entityId: id,
         action: AuditAction.CANCEL,
@@ -158,7 +148,11 @@ export class TransactionService {
     });
   }
 
-  async updateTransactionStatus(id: number, dto: UpdateTransactionStatusDto) {
+  async updateTransactionStatus(
+    id: number,
+    dto: UpdateTransactionStatusDto,
+    handledBy: number,
+  ) {
     return this.prisma.$transaction(async (tx) => {
       const existing = await tx.transaction.findUnique({
         where: { id },
@@ -188,6 +182,7 @@ export class TransactionService {
       });
 
       await createAuditLog(tx, {
+        user: handledBy,
         entity: AuditEntity.TRANSACTION,
         entityId: id,
         action:

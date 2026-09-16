@@ -15,34 +15,18 @@ import {
   UpdateStockDto,
   validateExpiryDate,
   validateStockExist,
-} from "./validation";
-import { createAuditLog } from "src/audit-log/audit-log.util";
+} from "./stock.validation";
+import { createAuditLog } from "src/util/audit-log.util";
 
 @Injectable()
 export class StockService {
   constructor(private prisma: PrismaService) {}
 
-  async getStock(
-    id: number,
-  ): Promise<Prisma.StockGetPayload<{ include: { product: true } }>> {
-    const found = await this.prisma.stock.findUnique({
-      where: { id },
-      include: { product: true },
-    });
-
-    const result = validateStockExist(found);
-    if (!result.ok) {
-      throw new NotFoundException(result.error);
-    }
-
-    return result.value;
-  }
-
   async getStockList(): Promise<Stock[]> {
-    return await this.prisma.stock.findMany()
+    return await this.prisma.stock.findMany();
   }
 
-  async createStock(data: CreateStockDto): Promise<Stock> {
+  async createStock(data: CreateStockDto, handledBy: number): Promise<Stock> {
     return this.prisma.$transaction(async (st) => {
       const result = validateExpiryDate(data.expiryDate);
       if (!result.ok) {
@@ -57,6 +41,7 @@ export class StockService {
       });
 
       await createAuditLog(st, {
+        user: handledBy,
         entity: AuditEntity.STOCK,
         entityId: stock.id,
         action: AuditAction.CREATE,
@@ -66,7 +51,11 @@ export class StockService {
     });
   }
 
-  async updateStock(id: number, body: UpdateStockDto): Promise<Stock> {
+  async updateStock(
+    id: number,
+    body: UpdateStockDto,
+    handledBy: number,
+  ): Promise<Stock> {
     return this.prisma.$transaction(async (st) => {
       const found = await st.stock.findUnique({ where: { id } });
       const result = validateStockExist(found);
@@ -95,6 +84,7 @@ export class StockService {
       const changes = getChangedFields(result.value, updated, changedKeys);
 
       await createAuditLog(st, {
+        user: handledBy,
         entity: AuditEntity.STOCK,
         entityId: id,
         action: AuditAction.UPDATE,
@@ -105,7 +95,7 @@ export class StockService {
     });
   }
 
-  async deleteStock(id: number): Promise<Stock> {
+  async deleteStock(id: number, handledBy: number): Promise<Stock> {
     return this.prisma.$transaction(async (st) => {
       const found = await st.stock.findUnique({ where: { id } });
       const result = validateStockExist(found);
@@ -114,6 +104,7 @@ export class StockService {
       }
 
       await createAuditLog(st, {
+        user: handledBy,
         entity: AuditEntity.STOCK,
         entityId: id,
         action: AuditAction.DELETE,
@@ -124,7 +115,6 @@ export class StockService {
       });
     });
   }
-
 }
 
 function getChangedFields(

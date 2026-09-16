@@ -1,7 +1,7 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { TransactionItemController } from './transaction-item.controller';
+import { Test, TestingModule } from "@nestjs/testing";
+import { TransactionItemController } from "./transaction-item.controller";
 
-describe('TransactionItemController', () => {
+describe("TransactionItemController", () => {
   let controller: TransactionItemController;
 
   beforeEach(async () => {
@@ -9,10 +9,12 @@ describe('TransactionItemController', () => {
       controllers: [TransactionItemController],
     }).compile();
 
-    controller = module.get<TransactionItemController>(TransactionItemController);
+    controller = module.get<TransactionItemController>(
+      TransactionItemController,
+    );
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(controller).toBeDefined();
   });
 });

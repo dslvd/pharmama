@@ -1,6 +1,7 @@
 import { Prisma, AuditAction, AuditEntity } from "src/generated/prisma/client";
 
 interface CreateAuditLogParams {
+  user: number;
   entity: AuditEntity;
   entityId: number;
   action: AuditAction;
@@ -13,6 +14,7 @@ export async function createAuditLog(
 ): Promise<void> {
   await tx.auditLog.create({
     data: {
+      userId: params.user,
       entity: params.entity,
       entityId: params.entityId,
       action: params.action,

@@ -11,33 +11,26 @@ import {
   CreateProductDto,
   UpdateProductDto,
   validateProductExists,
-} from "./validation";
-import { createAuditLog } from "src/audit-log/audit-log.util";
+} from "./product.validation";
+import { createAuditLog } from "src/util/audit-log.util";
 
 @Injectable()
 export class ProductService {
   constructor(private prisma: PrismaService) {}
 
-  async getProduct(id: number): Promise<Product> {
-    const found = await this.prisma.product.findUnique({ where: { id } });
-
-    const result = validateProductExists(found);
-    if (!result.ok) {
-      throw new NotFoundException(result.error);
-    }
-
-    return result.value;
-  }
-
   async getProductList(): Promise<Product[]> {
     return await this.prisma.product.findMany();
   }
 
-  async createProduct(data: CreateProductDto): Promise<Product> {
+  async createProduct(
+    data: CreateProductDto,
+    handledBy: number,
+  ): Promise<Product> {
     return this.prisma.$transaction(async (pr) => {
       const product = await pr.product.create({ data });
 
       await createAuditLog(pr, {
+        user: handledBy,
         entity: AuditEntity.PRODUCT,
         entityId: product.id,
         action: AuditAction.CREATE,
@@ -47,7 +40,11 @@ export class ProductService {
     });
   }
 
-  async updateProduct(id: number, body: UpdateProductDto): Promise<Product> {
+  async updateProduct(
+    id: number,
+    body: UpdateProductDto,
+    handledBy: number,
+  ): Promise<Product> {
     return this.prisma.$transaction(async (pr) => {
       const existing = await pr.product.findUnique({
         where: { id },
@@ -68,6 +65,7 @@ export class ProductService {
       const changes = getChangedFields(result.value, product, changedKeys);
 
       await createAuditLog(pr, {
+        user: handledBy,
         entity: AuditEntity.PRODUCT,
         entityId: id,
         action: AuditAction.UPDATE,
@@ -78,7 +76,7 @@ export class ProductService {
     });
   }
 
-  async deleteProduct(id: number): Promise<Product> {
+  async deleteProduct(id: number, handledBy: number): Promise<Product> {
     return this.prisma.$transaction(async (pr) => {
       const existing = await pr.product.findUnique({
         where: { id },
@@ -89,6 +87,7 @@ export class ProductService {
       }
 
       await createAuditLog(pr, {
+        user: handledBy,
         entity: AuditEntity.PRODUCT,
         entityId: id,
         action: AuditAction.DELETE,

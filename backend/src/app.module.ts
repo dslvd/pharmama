@@ -8,6 +8,8 @@ import { ProductModule } from "./product/product.module";
 import { PrismaModule } from "./prisma/prisma.module";
 import { AuditLogModule } from "./audit-log/audit-log.module";
 import { SalesModule } from "./sales/sales.module";
+import { AuthModule } from "./auth/auth.module";
+import { UsersModule } from "./users/users.module";
 
 @Module({
   imports: [
@@ -18,6 +20,8 @@ import { SalesModule } from "./sales/sales.module";
     ProductModule,
     AuditLogModule,
     SalesModule,
+    AuthModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -15,12 +15,15 @@ datasource db {
 
 model Transaction {
   id               Int               @id @default(autoincrement())
-  totalAmount      Int
+  totalAmount      Decimal           @db.Decimal(10, 2)
   status           TransactionStatus @default(COMPLETED)
-  handledBy        String
+  handledBy        Int
   updatedAt        DateTime          @updatedAt
   createdAt        DateTime          @default(now())
   transactionItems TransactionItem[]
+  user             User              @relation(fields: [handledBy], references: [id], onDelete: Restrict)
+
+  @@index([handledBy])
 }
 
 model TransactionItem {
@@ -29,11 +32,14 @@ model TransactionItem {
   productId     Int
   stockId       Int
   quantity      Int
-  unitPrice     Int
-  subtotal      Int
+  unitPrice     Decimal     @db.Decimal(10, 2)
+  subtotal      Decimal     @db.Decimal(10, 2)
   transaction   Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
   product       Product     @relation(fields: [productId], references: [id])
   stock         Stock       @relation(fields: [stockId], references: [id])
+
+  @@index([productId])
+  @@index([stockId])
 }
 
 model Product {
@@ -41,7 +47,7 @@ model Product {
   name             String
   genericName      String
   category         Category
-  price            Int
+  price            Decimal           @db.Decimal(10, 2)
   updatedAt        DateTime          @updatedAt
   createdAt        DateTime          @default(now())
   stocks           Stock[]
@@ -58,15 +64,33 @@ model Stock {
   createdAt        DateTime          @default(now())
   product          Product           @relation(fields: [productId], references: [id])
   transactionItems TransactionItem[]
+
+  @@unique([productId, batchNumber])
+  @@index([productId, expiryDate])
 }
 
 model AuditLog {
   id        Int         @id @default(autoincrement())
+  userId    Int
   entity    AuditEntity
   entityId  Int
   action    AuditAction
   changes   Json?
   createdAt DateTime    @default(now())
+  user      User        @relation(fields: [userId], references: [id])
+}
+
+model User {
+  id             Int           @id @default(autoincrement())
+  name           String
+  email          String        @unique
+  hashedPassword String
+  role           Role          @default(STAFF)
+  isActive       Boolean       @default(true)
+  updatedAt      DateTime      @updatedAt
+  createdAt      DateTime      @default(now())
+  transactions   Transaction[]
+  auditLog       AuditLog[]
 }
 
 enum TransactionStatus {
@@ -89,6 +113,7 @@ enum AuditEntity {
   PRODUCT
   STOCK
   TRANSACTIONITEM
+  USER
 }
 
 enum Category {
@@ -100,4 +125,10 @@ enum Category {
   ANTACIDS
   HYGIENE
   OTHERS
+}
+
+enum Role {
+  STAFF
+  ADMIN
+  OWNER
 }
