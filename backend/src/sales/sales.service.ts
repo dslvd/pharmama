@@ -1,7 +1,7 @@
 // sales.service.ts
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
-import { Period, SalesPoint } from "./validation";
+import { Period, SalesPoint } from "./sales.validation";
 
 @Injectable()
 export class SalesService {

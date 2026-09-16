@@ -5,7 +5,7 @@ import { UsersService } from "./users.service";
 import { Roles } from "../auth/decorator/roles.decorator";
 import { Role } from "src/generated/prisma/enums";
 import { CreateUserDto } from "./users.validation";
-import { RolesGuard } from "src/auth/roles.guard";
+import { RolesGuard } from "src/auth/guard/roles.guard";
 
 @Controller("users")
 export class UsersController {
