@@ -1,11 +1,16 @@
 'use client'
 
 import { useState } from 'react'
+import { usePathname } from 'next/navigation'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import Navigation from './Navigation'
 
 export default function Drawer({ children }: { children: React.ReactNode }) {
   const [isOpen, setIsOpen] = useState(true)
+  const pathname = usePathname()
+
+  // login page renders without the app shell
+  if (pathname.startsWith('/auth')) return <>{children}</>
 
   return (
     <div className="flex min-h-screen">
