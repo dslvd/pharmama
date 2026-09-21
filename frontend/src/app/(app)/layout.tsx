@@ -18,7 +18,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   console.log({ pathname, loading, user, blocked });
   useEffect(() => {
     if (loading) return;
-    if (!user) router.replace("/login");
+    if (!user) router.replace("/auth");
     else if (atRoot || blocked) router.replace(homeFor(user.role));
   }, [loading, user, atRoot, blocked, router]);
 
