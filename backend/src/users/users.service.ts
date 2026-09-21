@@ -26,6 +26,7 @@ export class UsersService {
         name: dto.name,
         email: dto.email,
         hashedPassword,
+        ...(dto.role && { role: dto.role }),
       },
     });
 
