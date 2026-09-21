@@ -8,7 +8,7 @@ import {
   updateTransactionStatus,
 } from "@/lib/api/transaction";
 import { SortOrder } from "@/lib/types/product";
-import FilterBar, { FilterProps } from "../../../components/FilterBar";
+import FilterBar, { FilterProps } from "../../../../components/FilterBar";
 
 interface SalesTableProps {
   initialRecords?: Transaction[];

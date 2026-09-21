@@ -1,8 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AlertTriangle, Loader2 } from "lucide-react";
+import { useAuth } from "@/lib/auth";
+import { homeFor } from "@/lib/roles";
 
 const inputClasses =
   "w-full rounded-lg border bg-card px-3.5 py-2.5 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground/60 focus:border-primary focus:ring-2 focus:ring-primary/15";
@@ -11,11 +13,16 @@ const inputClasses =
 // handleSubmit with the real POST /auth/login call when wiring it up.
 export default function LoginForm() {
   const router = useRouter();
+  const { login, user } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (user) router.replace(homeFor(user.role));
+  }, [user, router]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -27,8 +34,12 @@ export default function LoginForm() {
     }
 
     setSubmitting(true);
-    await new Promise((resolve) => setTimeout(resolve, 800));
-    router.push("/dashboard");
+    const msg = await login(email, password); // error message or null
+    if (msg) {
+      setError(msg);
+      setSubmitting(false); // re-enable the button on failure
+      return;
+    }
   }
 
   const borderClass = error ? "border-error" : "border-border";
@@ -61,7 +72,10 @@ export default function LoginForm() {
 
       <form onSubmit={handleSubmit} className="mt-6 grid gap-4">
         <div>
-          <label htmlFor="email" className="mb-1.5 block text-sm font-semibold text-foreground">
+          <label
+            htmlFor="email"
+            className="mb-1.5 block text-sm font-semibold text-foreground"
+          >
             Email
           </label>
           <input
@@ -77,7 +91,10 @@ export default function LoginForm() {
         </div>
 
         <div>
-          <label htmlFor="password" className="mb-1.5 block text-sm font-semibold text-foreground">
+          <label
+            htmlFor="password"
+            className="mb-1.5 block text-sm font-semibold text-foreground"
+          >
             Password
           </label>
           <div className="relative">

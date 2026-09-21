@@ -7,7 +7,7 @@ import SalesCard from "./components/SalesCard";
 import SalesOverview from "./components/SalesOverview";
 import TransactionsCard from "./components/TransactionsCard";
 import RecentTransactions from "./components/RecentTransactions";
-import Loading from "@/app/dashboard/loading";
+import Loading from "@/app/(app)/dashboard/loading";
 import { ErrorStack } from "@/components/ErrorCard";
 import { Stock } from "@/lib/types/stock";
 import { getStockList } from "@/lib/api/stocks";
