@@ -23,7 +23,7 @@ export async function apiFetch<T>(
     // expired/invalid token -> kick to login (the `token` check avoids a loop on bad login)
     if (res.status === 401 && token) {
       localStorage.removeItem("token");
-      window.location.href = "/login";
+      window.location.href = "/auth";
     }
 
     const data = await res.json().catch(() => null);
