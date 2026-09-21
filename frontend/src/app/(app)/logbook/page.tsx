@@ -8,7 +8,7 @@ import { BookOpen, Search, SlidersHorizontal } from "lucide-react";
 import AuditRow from "./components/AuditRow";
 import FilterBar, { FilterProps } from "@/components/FilterBar";
 import { ErrorStack } from "@/components/ErrorCard";
-import Loading from "@/app/logbook/loading";
+import Loading from "@/app/(app)/logbook/loading";
 
 export default function LogbookPage() {
   const [allAudit, setAllAudit] = useState<AuditLog[]>([]);
