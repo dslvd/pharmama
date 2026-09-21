@@ -15,7 +15,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     !!user &&
     !isManager(user.role) &&
     managerOnly.some((p) => pathname === p || pathname.startsWith(`${p}/`));
-  console.log({ pathname, loading, user, blocked });
   useEffect(() => {
     if (loading) return;
     if (!user) router.replace("/auth");
