@@ -13,7 +13,7 @@ export class AuthController {
     return this.authService.login(req.user);
   }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard("jwt"))
   @Get("me")
   me(@Request() req) {
     return req.user; // include id, email, role
