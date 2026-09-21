@@ -34,6 +34,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       },
     );
     if (!r.ok) return r.error; // <- whatever your err() field is called
+
+    // Guard the response shape: without both fields the caller would think the
+    // login succeeded while `user` stays empty, leaving the form stuck.
+    if (!r.value?.access_token || !r.value?.user) {
+      return "Unexpected response from the server";
+    }
+
     localStorage.setItem("token", r.value.access_token);
     setUser(r.value.user);
     return null;

@@ -38,7 +38,7 @@ export class TransactionController {
     @Param("id", ParseIntPipe) id: number,
     @CurrentUser() user: AuthenticatedUser,
   ): Promise<Transaction> {
-    return this.trService.cancelTransaction(id, user.userId);
+    return this.trService.cancelTransaction(id, user.id);
   }
 
   @Post()
@@ -47,7 +47,7 @@ export class TransactionController {
     @Body() trData: CreateTransactionDto,
     @CurrentUser() user: AuthenticatedUser,
   ): Promise<Transaction> {
-    return this.trService.createTransaction(trData, user.userId);
+    return this.trService.createTransaction(trData, user.id);
   }
 
   @Patch(":id/updateStatus")
@@ -57,6 +57,6 @@ export class TransactionController {
     @Body() dto: UpdateTransactionStatusDto,
     @CurrentUser() user: AuthenticatedUser,
   ): Promise<Transaction> {
-    return this.trService.updateTransactionStatus(id, dto, user.userId);
+    return this.trService.updateTransactionStatus(id, dto, user.id);
   }
 }
