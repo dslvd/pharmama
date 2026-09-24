@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import { cn } from "cn";
 import Dropdown from "@/components/ui/Dropdown";
@@ -84,14 +84,15 @@ export default function ProductDropdown({
       }
     >
       <div className="flex max-h-80 flex-col">
-        <div className="border-b border-border p-2">
+        <div className="flex items-center gap-2 border-b border-border px-3">
+          <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
           <input
-            type="search"
+            type="text"
             value={search}
             onChange={(event) => setSearch(event.target.value)}
             placeholder="Search by product or generic name"
             autoFocus
-            className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring/20"
+            className="w-full bg-transparent py-2.5 text-sm text-foreground outline-none placeholder:text-muted-foreground"
           />
         </div>
         <div className="min-h-0 flex-1 overflow-y-auto">
@@ -120,7 +121,7 @@ export default function ProductDropdown({
                       onChange(product);
                       onOpenChange(false);
                     }}
-                    className="w-full px-4 py-2.5 text-left transition-colors hover:bg-muted focus:bg-muted focus:outline-none"
+                    className="w-full px-4 py-2.5 text-left transition-colors hover:bg-background focus:bg-background focus:outline-none"
                   >
                     <span className="block text-sm font-semibold text-foreground">
                       {product.name}

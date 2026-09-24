@@ -15,7 +15,6 @@ import { useAuth } from "@/lib/auth";
 
 interface NavigationProps {
   isOpen: boolean;
-  onClose: () => void;
 }
 
 const sections = [
@@ -56,7 +55,7 @@ const sections = [
   },
 ];
 
-export default function Navigation({ isOpen, onClose }: NavigationProps) {
+export default function Navigation({ isOpen }: NavigationProps) {
   const pathname = usePathname();
   const { user, logout } = useAuth();
 
@@ -77,7 +76,6 @@ export default function Navigation({ isOpen, onClose }: NavigationProps) {
       <div className="flex flex-col px-4 pt-6">
         <Link
           href="/dashboard"
-          onClick={onClose}
           className="mb-10 flex items-center px-1"
         >
           <Image
@@ -105,7 +103,6 @@ export default function Navigation({ isOpen, onClose }: NavigationProps) {
                   <Link
                     key={page}
                     href={page}
-                    onClick={onClose}
                     className={`flex items-center gap-3 rounded-lg px-3 py-2 text-left text-sm transition-colors ${
                       isActive
                         ? "bg-violet-900 font-semibold text-white"
