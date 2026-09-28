@@ -6,13 +6,13 @@ import {
 import {
   AuditAction,
   AuditEntity,
+  Prisma,
   Transaction,
   TransactionStatus,
 } from "src/generated/prisma/client";
 import { PrismaService } from "src/prisma/prisma.service";
 import {
   CreateTransactionDto,
-  TransactionItemDto,
   TransactionWithItems,
   UpdateTransactionStatusDto,
   validateCancellable,
@@ -37,51 +37,58 @@ export class TransactionService {
     handledBy: number,
   ): Promise<Transaction> {
     return this.prisma.$transaction(async (tx) => {
-      await Promise.all(
-        data.transactionItems.map(async (item) => {
-          const stock = await tx.stock.findUnique({
-            where: { id: item.stockId },
-            select: { quantity: true },
-          });
+      const lineItems: Prisma.TransactionItemCreateManyTransactionInput[] = [];
 
-          const stockResult = validateStock(stock, item.quantity);
-          if (!stockResult.ok) {
-            throw new BadRequestException(stockResult.error);
-          }
+      // sequential on purpose: queries on one interactive transaction
+      // can't run in parallel, and duplicate stockIds must see prior decrements
+      for (const item of data.transactionItems) {
+        const stock = await tx.stock.findUnique({
+          where: { id: item.stockId },
+          select: { quantity: true, productId: true, product: true },
+        });
 
-          const updated = await tx.stock.updateMany({
-            where: {
-              id: item.stockId,
-              quantity: { gte: item.quantity },
-            },
-            data: {
-              quantity: { decrement: item.quantity },
-            },
-          });
+        const stockResult = validateStock(stock, item.quantity);
+        if (!stockResult.ok) {
+          throw new BadRequestException(stockResult.error);
+        }
 
-          if (updated.count !== 1) {
-            throw new BadRequestException(
-              `Could not reserve stock ${item.stockId}`,
-            );
-          }
-        }),
+        const updated = await tx.stock.updateMany({
+          where: {
+            id: item.stockId,
+            quantity: { gte: item.quantity },
+          },
+          data: {
+            quantity: { decrement: item.quantity },
+          },
+        });
+
+        if (updated.count !== 1) {
+          throw new BadRequestException(
+            `Could not reserve stock ${item.stockId}`,
+          );
+        }
+
+        // price always comes from the product, never from the client
+        const unitPrice = stock!.product.price;
+        lineItems.push({
+          productId: stock!.productId,
+          stockId: item.stockId,
+          quantity: item.quantity,
+          unitPrice,
+          subtotal: unitPrice.mul(item.quantity),
+        });
+      }
+
+      const totalAmount = lineItems.reduce(
+        (sum, item) => sum.add(item.subtotal as Prisma.Decimal),
+        new Prisma.Decimal(0),
       );
-
-      const totalAmount = getTotalAmount(data.transactionItems);
       const transaction = await tx.transaction.create({
         data: {
           totalAmount,
-          status: data.status,
+          status: TransactionStatus.COMPLETED,
           handledBy,
-          transactionItems: {
-            create: data.transactionItems.map((item) => ({
-              productId: item.productId,
-              stockId: item.stockId,
-              quantity: item.quantity,
-              unitPrice: item.unitPrice,
-              subtotal: item.unitPrice * item.quantity,
-            })),
-          },
+          transactionItems: { createMany: { data: lineItems } },
         },
       });
 
@@ -119,14 +126,12 @@ export class TransactionService {
         throw new BadRequestException(check.error);
       }
 
-      await Promise.all(
-        transaction.transactionItems.map((item) =>
-          tx.stock.update({
-            where: { id: item.stockId },
-            data: { quantity: { increment: item.quantity } },
-          }),
-        ),
-      );
+      for (const item of transaction.transactionItems) {
+        await tx.stock.update({
+          where: { id: item.stockId },
+          data: { quantity: { increment: item.quantity } },
+        });
+      }
 
       const updated = await tx.transaction.update({
         where: { id },
@@ -167,14 +172,12 @@ export class TransactionService {
       const check = validateStatusUpdatable(transaction, dto.status);
       if (!check.ok) throw new BadRequestException(check.error);
 
-      await Promise.all(
-        transaction.transactionItems.map((item) =>
-          tx.stock.update({
-            where: { id: item.stockId },
-            data: { quantity: { increment: item.quantity } },
-          }),
-        ),
-      );
+      for (const item of transaction.transactionItems) {
+        await tx.stock.update({
+          where: { id: item.stockId },
+          data: { quantity: { increment: item.quantity } },
+        });
+      }
 
       const updated = await tx.transaction.update({
         where: { id },
@@ -198,6 +201,3 @@ export class TransactionService {
   }
 }
 
-function getTotalAmount(items: TransactionItemDto[]) {
-  return items.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0);
-}
