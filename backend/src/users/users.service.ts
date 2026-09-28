@@ -1,44 +1,52 @@
-import { Injectable, ConflictException } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import * as bcrypt from "bcrypt";
 import { CreateUserDto } from "./users.validation";
 import { safeUserSelect } from "./users.select";
+import { ensureEmailFree, toSafeUser } from "./users.domain";
+import { DomainError } from "src/util/domain-error";
+import { andThenAsync, AsyncResult, ok } from "src/util/results.util";
+import { User } from "src/generated/prisma/client";
+
+type SafeUser = Omit<User, "hashedPassword">;
 
 @Injectable()
 export class UsersService {
   constructor(private prisma: PrismaService) {}
 
-  async findByEmail(email: string) {
+  findByEmail(email: string) {
     return this.prisma.user.findUnique({ where: { email } });
   }
 
-  async findById(id: number) {
+  findById(id: number) {
     return this.prisma.user.findUnique({ where: { id } });
   }
 
-  async findActiveSafeById(id: number) {
+  findActiveSafeById(id: number) {
     return this.prisma.user.findFirst({
       where: { id, isActive: true },
       select: safeUserSelect,
     });
   }
 
-  async create(dto: CreateUserDto) {
-    const existing = await this.findByEmail(dto.email);
-    if (existing) throw new ConflictException("Email already in use");
-
-    const hashedPassword = await bcrypt.hash(dto.password, 10);
-
-    const user = await this.prisma.user.create({
-      data: {
-        name: dto.name,
-        email: dto.email,
-        hashedPassword,
-        ...(dto.role && { role: dto.role }),
-      },
-    });
-
-    const { hashedPassword: _, ...safeUser } = user;
-    return safeUser;
+  create(dto: CreateUserDto): AsyncResult<SafeUser, DomainError> {
+    return this.findByEmail(dto.email)
+      .then(ensureEmailFree)
+      .then(andThenAsync(() => bcrypt.hash(dto.password, 10).then(ok)))
+      .then(
+        andThenAsync((hashedPassword) =>
+          this.prisma.user
+            .create({
+              data: {
+                name: dto.name,
+                email: dto.email,
+                hashedPassword,
+                ...(dto.role && { role: dto.role }),
+              },
+            })
+            .then(toSafeUser)
+            .then(ok),
+        ),
+      );
   }
 }

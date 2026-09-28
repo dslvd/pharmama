@@ -1,5 +1,4 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { ConflictException } from "@nestjs/common";
 import { UsersService } from "./users.service";
 import { PrismaService } from "../prisma/prisma.service";
 import { Role } from "src/generated/prisma/enums";
@@ -46,26 +45,31 @@ describe("UsersService", () => {
   };
 
   it("creates the user with the requested role", async () => {
-    const user = await service.create({ ...dto, role: Role.ADMIN });
+    const r = await service.create({ ...dto, role: Role.ADMIN });
 
-    expect(user.role).toBe("ADMIN");
+    expect(r.ok && r.value.role).toBe("ADMIN");
   });
 
   it("falls back to STAFF when no role is requested", async () => {
-    const user = await service.create(dto);
+    const r = await service.create(dto);
 
-    expect(user.role).toBe("STAFF");
+    expect(r.ok && r.value.role).toBe("STAFF");
   });
 
   it("never returns the password hash", async () => {
-    const user = await service.create({ ...dto, role: Role.OWNER });
+    const r = await service.create({ ...dto, role: Role.OWNER });
 
-    expect(user).not.toHaveProperty("hashedPassword");
+    expect(r.ok).toBe(true);
+    expect(r.ok && r.value).not.toHaveProperty("hashedPassword");
   });
 
   it("rejects an email that is already taken", async () => {
     prismaMock.user.findUnique.mockResolvedValue({ id: 1, ...dto });
 
-    await expect(service.create(dto)).rejects.toThrow(ConflictException);
+    await expect(service.create(dto)).resolves.toEqual({
+      ok: false,
+      error: { kind: "Conflict", message: "Email already in use." },
+    });
+    expect(prismaMock.user.create).not.toHaveBeenCalled();
   });
 });

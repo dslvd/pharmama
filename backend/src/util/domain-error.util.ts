@@ -3,6 +3,7 @@ import {
   ConflictException,
   HttpException,
   NotFoundException,
+  UnauthorizedException,
 } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
 import { Prisma } from "src/generated/prisma/client";
@@ -19,6 +20,8 @@ const toHttpException = (e: DomainError): HttpException => {
       return new BadRequestException(e.message);
     case "Conflict":
       return new ConflictException(e.message);
+    case "Unauthorized":
+      return new UnauthorizedException(e.message);
   }
 };
 

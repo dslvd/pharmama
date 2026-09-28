@@ -2,6 +2,7 @@
 import { Controller, Post, UseGuards, Request, Get } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { AuthService } from "./auth.service";
+import { unwrap } from "src/util/domain-error.util";
 import { CurrentUser } from "./decorator/current-user.decorator";
 import type { AuthenticatedUser } from "./types/jwt-payload.type";
 
@@ -17,7 +18,7 @@ export class AuthController {
 
   @UseGuards(AuthGuard("jwt"))
   @Get("me")
-  me(@CurrentUser() user: AuthenticatedUser) {
-    return this.authService.me(user.id);
+  async me(@CurrentUser() user: AuthenticatedUser) {
+    return unwrap(await this.authService.me(user.id));
   }
 }
