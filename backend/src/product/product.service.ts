@@ -1,128 +1,133 @@
-import {
-  ConflictException,
-  Injectable,
-  NotFoundException,
-} from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import {
   AuditAction,
   AuditEntity,
-  Category,
   Prisma,
   Product,
 } from "src/generated/prisma/client";
 import { PrismaService } from "src/prisma/prisma.service";
-import {
-  CreateProductDto,
-  UpdateProductDto,
-  validateProductExists,
-} from "./product.validation";
+import { CreateProductDto, UpdateProductDto } from "./product.validation";
+import { ensureDeletable } from "./product.domain";
 import { createAuditLog } from "src/util/audit-log.util";
+import { diffFields } from "src/util/audit-diff.util";
+import {
+  DomainError,
+  notFound,
+  runInTransaction,
+} from "src/util/domain-error.util";
+import {
+  andThenAsync,
+  AsyncResult,
+  fromNullable,
+  map,
+  ok,
+  tapAsync,
+} from "src/util/results.util";
+
+type Tx = Prisma.TransactionClient;
+
+// ---- effects ---------------------------------------------------------------
+
+const loadProduct = (tx: Tx, id: number) =>
+  tx.product
+    .findUnique({ where: { id } })
+    .then(fromNullable(notFound("Product not found.")));
+
+const loadUsage = async (tx: Tx, id: number) => ({
+  soldCount: await tx.transactionItem.count({ where: { productId: id } }),
+  stockCount: await tx.stock.count({ where: { productId: id } }),
+});
+
+const audit = (
+  tx: Tx,
+  user: number,
+  entityId: number,
+  action: AuditAction,
+  changes?: { old: unknown; new: unknown },
+) =>
+  createAuditLog(tx, {
+    user,
+    entity: AuditEntity.PRODUCT,
+    entityId,
+    action,
+    changes,
+  });
+
+// ---- service ---------------------------------------------------------------
 
 @Injectable()
 export class ProductService {
   constructor(private prisma: PrismaService) {}
 
-  async getProductList(): Promise<Product[]> {
-    return await this.prisma.product.findMany();
+  getProductList(): Promise<Product[]> {
+    return this.prisma.product.findMany();
   }
 
-  async createProduct(
+  createProduct(
     data: CreateProductDto,
     handledBy: number,
-  ): Promise<Product> {
-    return this.prisma.$transaction(async (pr) => {
-      const product = await pr.product.create({ data });
-
-      await createAuditLog(pr, {
-        user: handledBy,
-        entity: AuditEntity.PRODUCT,
-        entityId: product.id,
-        action: AuditAction.CREATE,
-      });
-
-      return product;
-    });
+  ): AsyncResult<Product, DomainError> {
+    return runInTransaction(this.prisma, (tx) =>
+      tx.product
+        .create({ data })
+        .then(
+          tapAsync((product) =>
+            audit(tx, handledBy, product.id, AuditAction.CREATE),
+          ),
+        ),
+    );
   }
 
-  async updateProduct(
+  updateProduct(
     id: number,
     body: UpdateProductDto,
     handledBy: number,
-  ): Promise<Product> {
-    return this.prisma.$transaction(async (pr) => {
-      const existing = await pr.product.findUnique({
-        where: { id },
-      });
-      const result = validateProductExists(existing);
-      if (!result.ok) {
-        throw new NotFoundException(result.error);
-      }
-
-      const product = await pr.product.update({
-        where: { id },
-        data: {
-          ...body,
-        },
-      });
-
-      const changedKeys = Object.keys(body) as (keyof UpdateProductDto)[];
-      const changes = getChangedFields(result.value, product, changedKeys);
-
-      await createAuditLog(pr, {
-        user: handledBy,
-        entity: AuditEntity.PRODUCT,
-        entityId: id,
-        action: AuditAction.UPDATE,
-        changes: changes,
-      });
-
-      return product;
-    });
+  ): AsyncResult<Product, DomainError> {
+    return runInTransaction(this.prisma, (tx) =>
+      loadProduct(tx, id).then(
+        andThenAsync((existing) =>
+          tx.product
+            .update({ where: { id }, data: body })
+            .then(
+              tapAsync((updated) =>
+                audit(
+                  tx,
+                  handledBy,
+                  id,
+                  AuditAction.UPDATE,
+                  diffFields(Object.keys(body) as (keyof UpdateProductDto)[])(
+                    existing,
+                    updated,
+                  ),
+                ),
+              ),
+            ),
+        ),
+      ),
+    );
   }
 
-  async deleteProduct(id: number, handledBy: number): Promise<Product> {
-    return this.prisma.$transaction(async (pr) => {
-      const existing = await pr.product.findUnique({
-        where: { id },
-      });
-      const result = validateProductExists(existing);
-      if (!result.ok) {
-        throw new NotFoundException(result.error);
-      }
-
-      const soldCount = await pr.transactionItem.count({
-        where: { productId: id },
-      });
-      const stockCount = await pr.stock.count({ where: { productId: id } });
-      if (soldCount > 0) {
-        throw new ConflictException(
-          "This product has sales records and can't be deleted.",
-        );
-      }
-      if (stockCount > 0) {
-        throw new ConflictException(
-          "This product still has stock batches. Delete them first.",
-        );
-      }
-
-      await createAuditLog(pr, {
-        user: handledBy,
-        entity: AuditEntity.PRODUCT,
-        entityId: id,
-        action: AuditAction.DELETE,
-      });
-      return pr.product.delete({ where: { id } });
-    });
+  deleteProduct(
+    id: number,
+    handledBy: number,
+  ): AsyncResult<Product, DomainError> {
+    return runInTransaction(this.prisma, (tx) =>
+      loadProduct(tx, id)
+        .then(
+          andThenAsync((existing) =>
+            loadUsage(tx, id)
+              .then(ensureDeletable)
+              .then(map(() => existing)),
+          ),
+        )
+        .then(
+          andThenAsync(
+            tapAsync(() => audit(tx, handledBy, id, AuditAction.DELETE)),
+          ),
+        )
+        .then(
+          andThenAsync(() => tx.product.delete({ where: { id } }).then(ok)),
+        ),
+    );
   }
-}
-
-function getChangedFields(
-  existing: Product,
-  updated: Product,
-  changedKeys: (keyof UpdateProductDto)[],
-): { old: Record<string, unknown>; new: Record<string, unknown> } {
-  return {
-    old: Object.fromEntries(changedKeys.map((key) => [key, existing[key]])),
-    new: Object.fromEntries(changedKeys.map((key) => [key, updated[key]])),
-  };
 }

@@ -17,6 +17,7 @@ import { RolesGuard } from "src/auth/guard/roles.guard";
 import { Roles } from "src/auth/decorator/auth.decorator";
 import { CurrentUser } from "src/auth/decorator/current-user.decorator";
 import type { AuthenticatedUser } from "src/auth/types/jwt-payload.type";
+import { unwrap } from "src/util/domain-error.util";
 
 @Controller("product")
 @UseGuards(AuthGuard("jwt"), RolesGuard)
@@ -35,7 +36,7 @@ export class ProductController {
     @Body() data: CreateProductDto,
     @CurrentUser() user: AuthenticatedUser,
   ): Promise<Product> {
-    return this.prService.createProduct(data, user.id);
+    return unwrap(await this.prService.createProduct(data, user.id));
   }
 
   @Patch(":id")
@@ -45,7 +46,7 @@ export class ProductController {
     @Body() body: UpdateProductDto,
     @CurrentUser() user: AuthenticatedUser,
   ): Promise<Product> {
-    return this.prService.updateProduct(id, body, user.id);
+    return unwrap(await this.prService.updateProduct(id, body, user.id));
   }
 
   @Delete(":id")
@@ -54,6 +55,6 @@ export class ProductController {
     @Param("id", ParseIntPipe) id: number,
     @CurrentUser() user: AuthenticatedUser,
   ): Promise<Product> {
-    return this.prService.deleteProduct(id, user.id);
+    return unwrap(await this.prService.deleteProduct(id, user.id));
   }
 }

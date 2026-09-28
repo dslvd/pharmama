@@ -8,11 +8,6 @@ import {
   IsString,
 } from "class-validator";
 import { Category } from "src/generated/prisma/enums";
-import { Result, ok, err } from "src/util/results.util";
-
-export const validateProductExists = <T>(pr: T | null): Result<T> => {
-  return pr ? ok(pr) : err("Product not found.");
-};
 
 export class CreateProductDto {
   @Transform(({ value }) => value?.trim())
