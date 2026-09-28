@@ -4,7 +4,7 @@ import {
   IsNotEmpty,
   MinLength,
   IsOptional,
-  IsEnum,
+  IsIn,
 } from "class-validator";
 import { Role } from "src/generated/prisma/enums";
 
@@ -20,7 +20,8 @@ export class CreateUserDto {
   @MinLength(8)
   password!: string;
 
+  // ADMIN is a dev-only account and can't be created through the API
   @IsOptional()
-  @IsEnum(Role)
+  @IsIn([Role.STAFF, Role.OWNER], { message: "role must be STAFF or OWNER" })
   role?: Role;
 }
