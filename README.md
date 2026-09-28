@@ -64,10 +64,23 @@ PharMaMa is a web-based inventory and sales management system for pharmacies. It
 
 3. Set up environment variables
 
-   Create a `.env` file in the backend directory with your database connection string and other required variables:
+   Create a `.env` file in the `backend` directory:
 
    ```env
+   # direct connection, used by Prisma migrations
    DATABASE_URL="postgresql://user:password@host:port/database"
+   # pooled connection, used by the running app
+   DATABASE_POOLED_URL="postgresql://user:password@host:port/database"
+   # secret used to sign login tokens
+   JWT_SECRET="a-long-random-string"
+   # the frontend dev server already uses 3000
+   PORT=3001
+   ```
+
+   And a `.env` file in the `frontend` directory pointing at the backend:
+
+   ```env
+   NEXT_PUBLIC_API_URL="http://localhost:3001"
    ```
 
 4. Run database migrations
