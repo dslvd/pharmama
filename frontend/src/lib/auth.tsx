@@ -26,23 +26,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const login: AuthCtx["login"] = async (email, password) => {
-    const r = await apiFetch<{ access_token: string; user: User }>(
-      "/auth/login",
-      {
-        method: "POST",
-        body: JSON.stringify({ email, password }),
-      },
-    );
-    if (!r.ok) return r.error; // <- whatever your err() field is called
-
-    // Guard the response shape: without both fields the caller would think the
-    // login succeeded while `user` stays empty, leaving the form stuck.
-    if (!r.value?.access_token || !r.value?.user) {
-      return "Unexpected response from the server";
-    }
+    const r = await apiFetch<{ access_token: string }>("/auth/login", {
+      signal: AbortSignal.timeout(60000),
+      method: "POST",
+      body: JSON.stringify({ email, password }),
+    });
+    if (!r.ok) return r.error;
 
     localStorage.setItem("token", r.value.access_token);
-    setUser(r.value.user);
+
+    const me = await apiFetch<User>("/auth/me");
+    if (!me.ok) {
+      localStorage.removeItem("token");
+      return me.error;
+    }
+    setUser(me.value);
     return null;
   };
 
