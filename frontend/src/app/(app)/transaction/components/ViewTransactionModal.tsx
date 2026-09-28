@@ -86,9 +86,7 @@ export default function ViewTransactionModal({
                     </td>
                     <td className="px-4 py-3 text-right text-xs font-semibold text-foreground">
                       ₱{" "}
-                      {(
-                        (item.product?.price || 0) * (item.quantity || 0)
-                      ).toLocaleString(undefined, {
+                      {(item.subtotal || 0).toLocaleString(undefined, {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
                       })}
