@@ -95,7 +95,7 @@ export default function RecentTransactions({
                     })}
                   </td>
                   <td className="py-3 px-4 text-foreground">
-                    {transaction.handledBy}
+                    {transaction.user?.name ?? transaction.handledBy}
                   </td>
                   <td className="py-3 px-4">
                     <span

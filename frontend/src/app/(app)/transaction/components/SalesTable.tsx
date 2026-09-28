@@ -64,7 +64,7 @@ export default function SalesTable({
       const statusFilterMatch = !status || tx.status === status;
       const searchMatch =
         !q ||
-        tx.handledBy.toLowerCase().includes(q) ||
+        tx.user?.name.toLowerCase().includes(q) ||
         tx.status.toLowerCase().includes(q);
 
       return statusFilterMatch && searchMatch;
@@ -215,7 +215,7 @@ export default function SalesTable({
                     })}
                   </td>
                   <td className="px-5 py-3.5 text-[#4b4468]">
-                    {record.handledBy}
+                    {record.user?.name ?? record.handledBy}
                   </td>
                   <td className="px-5 py-3.5">
                     <div className="relative w-fit">
