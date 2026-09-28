@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   Injectable,
   NotFoundException,
 } from "@nestjs/common";
@@ -12,6 +13,7 @@ import {
 import { PrismaService } from "src/prisma/prisma.service";
 import {
   CreateStockDto,
+  StockWithProduct,
   UpdateStockDto,
   validateExpiryDate,
   validateStockExist,
@@ -22,8 +24,8 @@ import { createAuditLog } from "src/util/audit-log.util";
 export class StockService {
   constructor(private prisma: PrismaService) {}
 
-  async getStockList(): Promise<Stock[]> {
-    return await this.prisma.stock.findMany();
+  async getStockList(): Promise<StockWithProduct[]> {
+    return await this.prisma.stock.findMany({ include: { product: true } });
   }
 
   async createStock(data: CreateStockDto, handledBy: number): Promise<Stock> {
@@ -101,6 +103,15 @@ export class StockService {
       const result = validateStockExist(found);
       if (!result.ok) {
         throw new NotFoundException(result.error);
+      }
+
+      const soldCount = await st.transactionItem.count({
+        where: { stockId: id },
+      });
+      if (soldCount > 0) {
+        throw new ConflictException(
+          "This stock batch has sales records and can't be deleted.",
+        );
       }
 
       await createAuditLog(st, {

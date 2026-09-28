@@ -4,13 +4,14 @@ import {
   UpdateTrStatusPayload,
 } from "../types/transaction";
 import { apiFetch } from "../utils/client";
+import { mapResult, toTransaction } from "../utils/decimal";
 
-export const getTransaction = (id: number) =>
-  apiFetch<Transaction>(`/transaction/${id}`);
-
-export const getTransactionList = (_params?: Record<string, unknown>) => {
-  return apiFetch<Transaction[]>(`/transaction`);
-};
+export const getTransactionList = async (
+  _params?: Record<string, unknown>,
+) =>
+  mapResult(await apiFetch<Transaction[]>(`/transaction`), (list) =>
+    list.map(toTransaction),
+  );
 
 export const cancelTransaction = (id: number) =>
   apiFetch<Transaction>(`/transaction/${id}`, {

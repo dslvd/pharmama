@@ -86,9 +86,7 @@ export default function ViewTransactionModal({
                     </td>
                     <td className="px-4 py-3 text-right text-xs font-semibold text-foreground">
                       ₱{" "}
-                      {(
-                        (item.product?.price || 0) * (item.quantity || 0)
-                      ).toLocaleString(undefined, {
+                      {(item.subtotal || 0).toLocaleString(undefined, {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
                       })}
@@ -103,7 +101,7 @@ export default function ViewTransactionModal({
 
       <div className="flex items-center justify-between pt-4 text-sm font-bold text-foreground">
         <div className="flex items-center gap-4">
-          <span>Handled By: {transaction?.handledBy || "N/A"}</span>
+          <span>Handled By: {transaction?.user?.name ?? "N/A"}</span>
           <div className="flex items-center gap-1.5">
             <span className="font-normal text-muted-foreground">Status:</span>
             <div

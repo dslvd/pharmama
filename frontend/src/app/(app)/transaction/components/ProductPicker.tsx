@@ -27,11 +27,19 @@ export interface SubmittedItem {
 interface ProductPickerProps {
   onAddItem: (item: SubmittedItem) => void;
   onError?: (message: string) => void;
+  // items already in the cart, so their quantities aren't sold twice
+  cartItems?: SubmittedItem[];
+  // bump to reload stock (e.g. after a sale)
+  refreshKey?: number;
 }
+
+const isExpired = (s: Stock) => new Date(s.expiryDate).getTime() <= Date.now();
 
 export default function ProductPicker({
   onAddItem,
   onError,
+  cartItems = [],
+  refreshKey,
 }: ProductPickerProps) {
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [stock, setStock] = useState<Stock[]>([]);
@@ -64,7 +72,7 @@ export default function ProductPicker({
     }
 
     loadItems();
-  }, []);
+  }, [refreshKey]);
 
   const products = useMemo(() => {
     const q = searchTerm.trim().toLowerCase();
@@ -82,11 +90,17 @@ export default function ProductPicker({
   }, [allProducts, category, searchTerm]);
 
   const availableProducts = products.filter((product) =>
-    stock.some((s) => s.productId === product.id && s.quantity > 0),
+    stock.some(
+      (s) => s.productId === product.id && s.quantity > 0 && !isExpired(s),
+    ),
   );
 
-  function findStockId(productId: number): number | undefined {
-    return stock.find((s) => s.productId === productId)?.id;
+  // quantity left in a batch after what's already in the cart
+  function remainingInBatch(s: Stock): number {
+    const inCart = cartItems
+      .filter((item) => item.trItems.stockId === s.id)
+      .reduce((sum, item) => sum + item.trItems.quantity, 0);
+    return s.quantity - inCart;
   }
 
   const getQty = (id: number) => pendingQty[id] ?? 1;
@@ -100,15 +114,36 @@ export default function ProductPicker({
 
   const handleAdd = (product: Product) => {
     const qty = getQty(product.id);
-    onAddItem({
-      trItems: {
-        quantity: qty,
-        productId: product.id,
-        stockId: findStockId(product.id) ?? 0,
-        unitPrice: product.price,
-      },
-      product,
-    });
+
+    // sell from the earliest-expiring batches first, splitting across batches
+    const batches = stock
+      .filter((s) => s.productId === product.id && !isExpired(s))
+      .sort(
+        (a, b) =>
+          new Date(a.expiryDate).getTime() - new Date(b.expiryDate).getTime(),
+      );
+
+    const allocations: SubmittedItem[] = [];
+    let needed = qty;
+    for (const batch of batches) {
+      if (needed === 0) break;
+      const take = Math.min(remainingInBatch(batch), needed);
+      if (take <= 0) continue;
+      allocations.push({
+        trItems: { stockId: batch.id, quantity: take },
+        product,
+      });
+      needed -= take;
+    }
+
+    if (needed > 0) {
+      onError?.(
+        `Not enough stock for ${product.name}: only ${qty - needed} left.`,
+      );
+      return;
+    }
+
+    allocations.forEach(onAddItem);
     setPendingQty((prev) => ({ ...prev, [product.id]: 1 }));
   };
 

@@ -3,17 +3,16 @@
 import { useEffect, useMemo, useState } from "react";
 import { getStockList } from "@/lib/api/stocks";
 import { Stock, SortBy } from "@/lib/types/stock";
-import { Product, SortOrder } from "@/lib/types/product";
+import { SortOrder } from "@/lib/types/product";
 import FilterBar, { FilterProps } from "@/components/FilterBar";
 import StockRow from "@/app/(app)/stocks/components/StockRow";
 import AddStockModal from "@/app/(app)/stocks/components/AddStockModal";
 import Loading from "@/app/(app)/stocks/loading";
 import { PackageOpen, Plus, Search, SlidersHorizontal } from "lucide-react";
 import { ErrorStack } from "@/components/ErrorCard";
-import { getProduct } from "@/lib/api/product";
 
-// Stock rows enriched with their resolved product info.
-export type StockWithProduct = Stock & { product?: Product };
+// GET /stock already includes each batch's product.
+export type StockWithProduct = Stock;
 
 export default function StockPage() {
   const [allStock, setAllStock] = useState<StockWithProduct[]>([]);
@@ -43,31 +42,7 @@ export default function StockPage() {
         return;
       }
 
-      const stockList = result.value;
-
-      const uniqueProductIds = Array.from(
-        new Set(stockList.map((s) => s.productId)),
-      );
-
-      const productEntries = await Promise.all(
-        uniqueProductIds.map(async (id) => {
-          const productResult = await getProduct(id);
-          if (!productResult.ok) {
-            addError(productResult.error);
-            return [id, undefined] as const;
-          }
-          return [id, productResult.value] as const;
-        }),
-      );
-
-      const productMap = new Map(productEntries);
-
-      const enriched: StockWithProduct[] = stockList.map((s) => ({
-        ...s,
-        product: productMap.get(s.productId),
-      }));
-
-      setAllStock(enriched);
+      setAllStock(result.value);
       setLoading(false);
     }
     loadStock();

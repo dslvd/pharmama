@@ -1,10 +1,8 @@
-import { Transform, Type } from "class-transformer";
+import { Type } from "class-transformer";
 import {
   ArrayMinSize,
   IsEnum,
   IsInt,
-  IsNotEmpty,
-  IsNumber,
   IsPositive,
   Min,
   ValidateNested,
@@ -12,15 +10,28 @@ import {
 import { Prisma } from "src/generated/prisma/client";
 import { TransactionStatus } from "src/generated/prisma/enums";
 import { err, ok, Result } from "src/util/results.util";
+import type { safeUserSelect } from "src/users/users.select";
 
 export const validateStock = (
-  stock: { quantity: number } | null,
+  stock: {
+    quantity: number;
+    expiryDate: Date;
+    batchNumber: string;
+    product: { name: string };
+  } | null,
   requested: number,
 ): Result<true> => {
   if (!stock) {
-    return err("Stock not found");
+    return err("Stock batch not found.");
+  }
+
+  const label = `${stock.product.name} (batch ${stock.batchNumber})`;
+  if (stock.expiryDate <= new Date()) {
+    return err(`${label} is expired and can't be sold.`);
   } else if (stock.quantity < requested) {
-    return err(`Insufficient stock: have ${stock.quantity}`);
+    return err(
+      `Not enough stock for ${label}: requested ${requested}, only ${stock.quantity} left.`,
+    );
   } else {
     return ok(true);
   }
@@ -60,25 +71,11 @@ export class TransactionItemDto {
   @Type(() => Number)
   @IsInt()
   @IsPositive()
-  productId!: number;
-  @Type(() => Number)
-  @IsInt()
-  @IsPositive()
   stockId!: number;
   @Type(() => Number) @IsInt() @Min(1) quantity!: number;
-  @Type(() => Number)
-  @IsNumber()
-  @IsPositive()
-  unitPrice!: number;
 }
 
 export class CreateTransactionDto {
-  @Transform(({ value }) => value?.trim())
-  @IsEnum(TransactionStatus)
-  status!: TransactionStatus;
-  @IsInt()
-  @IsNotEmpty()
-  handledBy!: number;
   @ValidateNested({ each: true })
   @Type(() => TransactionItemDto)
   @ArrayMinSize(1)
@@ -90,5 +87,8 @@ export class UpdateTransactionStatusDto {
 }
 
 export type TransactionWithItems = Prisma.TransactionGetPayload<{
-  include: { transactionItems: { include: { product: true } }; user: true };
+  include: {
+    transactionItems: { include: { product: true } };
+    user: { select: typeof safeUserSelect };
+  };
 }>;

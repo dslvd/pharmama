@@ -1,6 +1,20 @@
-import { IsInt, IsNotEmpty, IsPositive, IsString } from "class-validator";
+import {
+  IsIn,
+  IsInt,
+  IsNotEmpty,
+  IsOptional,
+  IsPositive,
+  IsString,
+} from "class-validator";
 
-export type Period = "Today" | "Week" | "Month" | "Year";
+export const PERIODS = ["Today", "Week", "Month", "Year"] as const;
+export type Period = (typeof PERIODS)[number];
+
+export class SalesOverviewQuery {
+  @IsOptional()
+  @IsIn(PERIODS, { message: `period must be one of: ${PERIODS.join(", ")}` })
+  period: Period = "Today";
+}
 
 export class SalesPoint {
   @IsString() @IsNotEmpty() label!: string;

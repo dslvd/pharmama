@@ -85,7 +85,7 @@ export default function LogbookPage() {
     },
     {
       title: "ENTITY",
-      sub: ["TRANSACTION", "PRODUCT", "STOCK", "TRANSACTIONITEM"],
+      sub: ["TRANSACTION", "PRODUCT", "STOCK", "TRANSACTIONITEM", "USER"],
     },
     {
       title: "ORDER",

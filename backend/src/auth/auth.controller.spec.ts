@@ -6,7 +6,7 @@ import { Role } from "src/generated/prisma/enums";
 describe("AuthController", () => {
   let controller: AuthController;
 
-  const authServiceMock = { login: jest.fn() };
+  const authServiceMock = { login: jest.fn(), me: jest.fn() };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -17,15 +17,18 @@ describe("AuthController", () => {
     controller = module.get<AuthController>(AuthController);
   });
 
-  it("exposes the authenticated user as id, email and role", () => {
-    const req = {
-      user: { id: 7, email: "owner@pharmama.com", role: Role.OWNER },
-    };
-
-    expect(controller.me(req)).toEqual({
+  it("looks up the authenticated user by id for /auth/me", async () => {
+    const safeUser = {
       id: 7,
+      name: "Owner",
       email: "owner@pharmama.com",
-      role: "OWNER",
-    });
+      role: Role.OWNER,
+    };
+    authServiceMock.me.mockResolvedValue(safeUser);
+
+    await expect(
+      controller.me({ id: 7, email: "owner@pharmama.com", role: Role.OWNER }),
+    ).resolves.toEqual(safeUser);
+    expect(authServiceMock.me).toHaveBeenCalledWith(7);
   });
 });

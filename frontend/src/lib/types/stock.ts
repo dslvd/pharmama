@@ -1,3 +1,5 @@
+import { Product } from "./product";
+
 export type SortBy = "quantity" | "expiryDate" | "createdAt";
 
 export interface Stock {
@@ -8,6 +10,7 @@ export interface Stock {
   expiryDate: Date;
   createdAt: Date;
   updatedAt: Date;
+  product: Product;
 }
 
 export type UpdateStockPayload = Partial<CreateStockPayload>;
