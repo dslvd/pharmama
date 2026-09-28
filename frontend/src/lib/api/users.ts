@@ -1,8 +1,8 @@
-import { CreateUserInput, UserDto } from "../types/users";
+import { CreateUserInput, User } from "../types/users";
 import { apiFetch } from "../utils/client";
 
 export const createUser = (input: CreateUserInput) =>
-  apiFetch<UserDto>("/users", {
+  apiFetch<User>("/users", {
     method: "POST",
     body: JSON.stringify(input),
   });

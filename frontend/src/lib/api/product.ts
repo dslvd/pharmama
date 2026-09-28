@@ -5,8 +5,6 @@ import {
 } from "../types/product";
 import { apiFetch } from "../utils/client";
 
-export const getProduct = (id: number) => apiFetch<Product>(`/product/${id}`);
-
 export const getProductList = (_params?: Record<string, unknown>) => {
   return apiFetch<Product[]>(`/product`);
 };

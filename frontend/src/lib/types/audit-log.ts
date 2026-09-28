@@ -1,6 +1,9 @@
+import { User } from "./users";
+
+// changed fields before/after, e.g. { old: { quantity: 5 }, new: { quantity: 3 } }
 export interface AuditChange {
-  old: string | number | null;
-  new: string | number | null;
+  old: Record<string, unknown> | null;
+  new: Record<string, unknown> | null;
 }
 
 export interface AuditLog {
@@ -10,6 +13,7 @@ export interface AuditLog {
   entityId: number;
   changes?: AuditChange;
   createdAt: Date;
+  user: User;
 }
 
 export type AuditAction =
@@ -24,4 +28,5 @@ export type AuditEntity =
   | "TRANSACTION"
   | "PRODUCT"
   | "STOCK"
-  | "TRANSACTIONITEM";
+  | "TRANSACTIONITEM"
+  | "USER";

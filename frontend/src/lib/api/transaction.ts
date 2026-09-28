@@ -5,9 +5,6 @@ import {
 } from "../types/transaction";
 import { apiFetch } from "../utils/client";
 
-export const getTransaction = (id: number) =>
-  apiFetch<Transaction>(`/transaction/${id}`);
-
 export const getTransactionList = (_params?: Record<string, unknown>) => {
   return apiFetch<Transaction[]>(`/transaction`);
 };
