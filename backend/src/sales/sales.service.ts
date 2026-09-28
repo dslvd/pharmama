@@ -69,7 +69,7 @@ export class SalesService {
     const rows = await this.prisma.$queryRaw<{ month: Date; total: number }[]>`
             SELECT DATE_TRUNC('month', "createdAt") AS month, SUM("totalAmount") AS total
             FROM "Transaction"
-            WHERE "createdAt" >= CURRENT_DATE - INTERVAL '6 months'
+            WHERE "createdAt" >= DATE_TRUNC('month', CURRENT_DATE) - INTERVAL '11 months'
               AND status = 'COMPLETED'
             GROUP BY month
             ORDER BY month
