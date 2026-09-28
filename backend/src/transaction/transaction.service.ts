@@ -1,34 +1,112 @@
+import { Injectable } from "@nestjs/common";
 import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from "@nestjs/common";
-import {
-  AuditAction,
   AuditEntity,
   Prisma,
   Transaction,
   TransactionStatus,
 } from "src/generated/prisma/client";
+import { AuditAction } from "src/generated/prisma/enums";
 import { PrismaService } from "src/prisma/prisma.service";
 import {
   CreateTransactionDto,
   TransactionWithItems,
-  UpdateTransactionStatusDto,
-  validateCancellable,
-  validateStatusUpdatable,
-  validateStock,
-  validateTransactionExists,
 } from "./transaction.validation";
+import {
+  auditActionFor,
+  ItemInput,
+  LineItem,
+  priceItems,
+  restockPlan,
+  totalOf,
+  transitionStatus,
+} from "./transaction.domain";
 import { createAuditLog } from "src/util/audit-log.util";
 import { safeUserSelect } from "src/users/users.select";
+import {
+  conflict,
+  DomainError,
+  notFound,
+  runInTransaction,
+} from "src/util/domain-error.util";
+import {
+  andThen,
+  andThenAsync,
+  AsyncResult,
+  err,
+  fromNullable,
+  map,
+  ok,
+  traverseAsync,
+} from "src/util/results.util";
+
+type Tx = Prisma.TransactionClient;
+
+// ---- effects: small single-purpose DB steps -------------------------------
+
+const loadStocks = (tx: Tx, items: readonly ItemInput[]) =>
+  tx.stock.findMany({
+    where: { id: { in: items.map((i) => i.stockId) } },
+    select: {
+      id: true,
+      quantity: true,
+      expiryDate: true,
+      batchNumber: true,
+      productId: true,
+      product: { select: { name: true, price: true } },
+    },
+  });
+
+// conditional decrement guards against a concurrent sale taking the stock
+const reserveLine =
+  (tx: Tx) =>
+  async (line: LineItem): AsyncResult<LineItem, DomainError> => {
+    const { count } = await tx.stock.updateMany({
+      where: { id: line.stockId, quantity: { gte: line.quantity } },
+      data: { quantity: { decrement: line.quantity } },
+    });
+    return count === 1
+      ? ok(line)
+      : err(conflict("Stock changed during checkout. Please try again."));
+  };
+
+const restock =
+  (tx: Tx) =>
+  async (item: ItemInput): AsyncResult<ItemInput, DomainError> => {
+    await tx.stock.update({
+      where: { id: item.stockId },
+      data: { quantity: { increment: item.quantity } },
+    });
+    return ok(item);
+  };
+
+const insertTransaction =
+  (tx: Tx, handledBy: number) =>
+  (lines: readonly LineItem[]): Promise<Transaction> =>
+    tx.transaction.create({
+      data: {
+        totalAmount: totalOf(lines),
+        status: TransactionStatus.COMPLETED,
+        handledBy,
+        transactionItems: { createMany: { data: [...lines] } },
+      },
+    });
+
+const loadTransaction = (tx: Tx, id: number) =>
+  tx.transaction
+    .findUnique({
+      where: { id },
+      select: { id: true, status: true, transactionItems: true },
+    })
+    .then(fromNullable(notFound("Transaction not found.")));
+
+// ---- service: pipelines of pure steps and effects --------------------------
 
 @Injectable()
 export class TransactionService {
   constructor(private prisma: PrismaService) {}
 
-  async getTransactionList(): Promise<TransactionWithItems[]> {
-    return await this.prisma.transaction.findMany({
+  getTransactionList(): Promise<TransactionWithItems[]> {
+    return this.prisma.transaction.findMany({
       include: {
         transactionItems: { include: { product: true } },
         user: { select: safeUserSelect },
@@ -36,177 +114,85 @@ export class TransactionService {
     });
   }
 
-  async createTransaction(
+  createTransaction(
     data: CreateTransactionDto,
     handledBy: number,
-  ): Promise<Transaction> {
-    return this.prisma.$transaction(async (tx) => {
-      const lineItems: Prisma.TransactionItemCreateManyTransactionInput[] = [];
-
-      // sequential on purpose: queries on one interactive transaction
-      // can't run in parallel, and duplicate stockIds must see prior decrements
-      for (const item of data.transactionItems) {
-        const stock = await tx.stock.findUnique({
-          where: { id: item.stockId },
-          select: {
-            quantity: true,
-            expiryDate: true,
-            batchNumber: true,
-            productId: true,
-            product: true,
-          },
-        });
-
-        const stockResult = validateStock(stock, item.quantity);
-        if (!stockResult.ok) {
-          throw new BadRequestException(stockResult.error);
-        }
-
-        const updated = await tx.stock.updateMany({
-          where: {
-            id: item.stockId,
-            quantity: { gte: item.quantity },
-          },
-          data: {
-            quantity: { decrement: item.quantity },
-          },
-        });
-
-        if (updated.count !== 1) {
-          throw new BadRequestException(
-            `Stock for batch ${stock!.batchNumber} changed during checkout. Please try again.`,
-          );
-        }
-
-        // price always comes from the product, never from the client
-        const unitPrice = stock!.product.price;
-        lineItems.push({
-          productId: stock!.productId,
-          stockId: item.stockId,
-          quantity: item.quantity,
-          unitPrice,
-          subtotal: unitPrice.mul(item.quantity),
-        });
-      }
-
-      const totalAmount = lineItems.reduce(
-        (sum, item) => sum.add(item.subtotal as Prisma.Decimal),
-        new Prisma.Decimal(0),
-      );
-      const transaction = await tx.transaction.create({
-        data: {
-          totalAmount,
-          status: TransactionStatus.COMPLETED,
-          handledBy,
-          transactionItems: { createMany: { data: lineItems } },
-        },
-      });
-
-      await createAuditLog(tx, {
-        user: handledBy,
-        entity: AuditEntity.TRANSACTION,
-        entityId: transaction.id,
-        action: AuditAction.CREATE,
-      });
-
-      return transaction;
-    });
+    now: Date = new Date(),
+  ): AsyncResult<Transaction, DomainError> {
+    return runInTransaction(this.prisma, (tx) =>
+      loadStocks(tx, data.transactionItems)
+        .then((stocks) => priceItems(now)(stocks, data.transactionItems))
+        .then(andThenAsync(traverseAsync(reserveLine(tx))))
+        .then(
+          andThenAsync(async (lines) => {
+            const transaction = await insertTransaction(tx, handledBy)(lines);
+            await createAuditLog(tx, {
+              user: handledBy,
+              entity: AuditEntity.TRANSACTION,
+              entityId: transaction.id,
+              action: AuditAction.CREATE,
+            });
+            return ok(transaction);
+          }),
+        ),
+    );
   }
 
-  async cancelTransaction(id: number, handledBy: number): Promise<Transaction> {
-    return this.prisma.$transaction(async (tx) => {
-      const existing = await tx.transaction.findUnique({
-        where: { id },
-        select: {
-          id: true,
-          status: true,
-          transactionItems: true,
-        },
-      });
-
-      const result = validateTransactionExists(existing);
-      if (!result.ok) {
-        throw new NotFoundException(result.error);
-      }
-
-      const transaction = result.value;
-
-      const check = validateCancellable(transaction);
-      if (!check.ok) {
-        throw new BadRequestException(check.error);
-      }
-
-      for (const item of transaction.transactionItems) {
-        await tx.stock.update({
-          where: { id: item.stockId },
-          data: { quantity: { increment: item.quantity } },
-        });
-      }
-
-      const updated = await tx.transaction.update({
-        where: { id },
-        data: { status: TransactionStatus.CANCELLED },
-      });
-
-      await createAuditLog(tx, {
-        user: handledBy,
-        entity: AuditEntity.TRANSACTION,
-        entityId: id,
-        action: AuditAction.CANCEL,
-        changes: {
-          old: { status: transaction.status },
-          new: { status: updated.status },
-        },
-      });
-
-      return updated;
-    });
-  }
-
-  async updateTransactionStatus(
+  cancelTransaction(
     id: number,
-    dto: UpdateTransactionStatusDto,
     handledBy: number,
-  ) {
-    return this.prisma.$transaction(async (tx) => {
-      const existing = await tx.transaction.findUnique({
-        where: { id },
-        select: { id: true, status: true, transactionItems: true },
-      });
+  ): AsyncResult<Transaction, DomainError> {
+    return this.changeStatus(id, TransactionStatus.CANCELLED, handledBy);
+  }
 
-      const result = validateTransactionExists(existing);
-      if (!result.ok) throw new NotFoundException(result.error);
+  updateTransactionStatus(
+    id: number,
+    to: TransactionStatus,
+    handledBy: number,
+  ): AsyncResult<Transaction, DomainError> {
+    return this.changeStatus(id, to, handledBy);
+  }
 
-      const transaction = result.value;
-
-      const check = validateStatusUpdatable(transaction, dto.status);
-      if (!check.ok) throw new BadRequestException(check.error);
-
-      for (const item of transaction.transactionItems) {
-        await tx.stock.update({
-          where: { id: item.stockId },
-          data: { quantity: { increment: item.quantity } },
-        });
-      }
-
-      const updated = await tx.transaction.update({
-        where: { id },
-        data: { status: dto.status },
-      });
-
-      await createAuditLog(tx, {
-        user: handledBy,
-        entity: AuditEntity.TRANSACTION,
-        entityId: id,
-        action:
-          dto.status === "CANCELLED" ? AuditAction.CANCEL : AuditAction.UPDATE,
-        changes: {
-          old: { status: transaction.status },
-          new: { status: updated.status },
-        },
-      });
-
-      return updated;
-    });
+  // cancel/refund: validate the transition, put stock back, record it
+  private changeStatus(
+    id: number,
+    to: TransactionStatus,
+    handledBy: number,
+  ): AsyncResult<Transaction, DomainError> {
+    return runInTransaction(this.prisma, (tx) =>
+      loadTransaction(tx, id)
+        .then(
+          andThen((existing) =>
+            map((status: TransactionStatus) => ({ existing, status }))(
+              transitionStatus(existing.status, to),
+            ),
+          ),
+        )
+        .then(
+          andThenAsync(({ existing, status }) =>
+            traverseAsync(restock(tx))(
+              restockPlan(existing.transactionItems),
+            ).then(
+              andThenAsync(async () => {
+                const updated = await tx.transaction.update({
+                  where: { id },
+                  data: { status },
+                });
+                await createAuditLog(tx, {
+                  user: handledBy,
+                  entity: AuditEntity.TRANSACTION,
+                  entityId: id,
+                  action: auditActionFor(status),
+                  changes: {
+                    old: { status: existing.status },
+                    new: { status: updated.status },
+                  },
+                });
+                return ok(updated);
+              }),
+            ),
+          ),
+        ),
+    );
   }
 }

@@ -6,6 +6,7 @@ import { Role } from "src/generated/prisma/enums";
 import { CreateUserDto } from "./users.validation";
 import { RolesGuard } from "src/auth/guard/roles.guard";
 import { Roles } from "src/auth/decorator/auth.decorator";
+import { unwrap } from "src/util/domain-error.util";
 
 @Controller("users")
 export class UsersController {
@@ -14,7 +15,7 @@ export class UsersController {
   @UseGuards(AuthGuard("jwt"), RolesGuard)
   @Roles(Role.ADMIN, Role.OWNER)
   @Post()
-  create(@Body() dto: CreateUserDto) {
-    return this.usersService.create(dto);
+  async create(@Body() dto: CreateUserDto) {
+    return unwrap(await this.usersService.create(dto));
   }
 }

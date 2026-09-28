@@ -1,5 +1,8 @@
 // auth/auth.service.ts
-import { Injectable, UnauthorizedException } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
+import { toSafeUser } from "../users/users.domain";
+import { unauthorized } from "src/util/domain-error";
+import { fromNullable } from "src/util/results.util";
 import * as bcrypt from "bcrypt";
 import { UsersService } from "../users/users.service";
 import { JwtService } from "@nestjs/jwt";
@@ -18,14 +21,13 @@ export class AuthService {
     const passwordMatches = await bcrypt.compare(password, user.hashedPassword);
     if (!passwordMatches) return null;
 
-    const { hashedPassword, ...safeUser } = user;
-    return safeUser;
+    return toSafeUser(user);
   }
 
-  async me(userId: number) {
-    const user = await this.usersService.findActiveSafeById(userId);
-    if (!user) throw new UnauthorizedException();
-    return user;
+  me(userId: number) {
+    return this.usersService
+      .findActiveSafeById(userId)
+      .then(fromNullable(unauthorized("Account not found or deactivated.")));
   }
 
   async login(user: { id: number; email: string; role: string }) {

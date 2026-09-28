@@ -2,6 +2,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { AuthController } from "./auth.controller";
 import { AuthService } from "./auth.service";
 import { Role } from "src/generated/prisma/enums";
+import { ok } from "src/util/results.util";
 
 describe("AuthController", () => {
   let controller: AuthController;
@@ -24,7 +25,7 @@ describe("AuthController", () => {
       email: "owner@pharmama.com",
       role: Role.OWNER,
     };
-    authServiceMock.me.mockResolvedValue(safeUser);
+    authServiceMock.me.mockResolvedValue(ok(safeUser));
 
     await expect(
       controller.me({ id: 7, email: "owner@pharmama.com", role: Role.OWNER }),

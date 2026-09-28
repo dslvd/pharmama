@@ -21,6 +21,7 @@ import { AuthGuard } from "@nestjs/passport";
 import { Roles } from "src/auth/decorator/auth.decorator";
 import type { AuthenticatedUser } from "src/auth/types/jwt-payload.type";
 import { CurrentUser } from "src/auth/decorator/current-user.decorator";
+import { unwrap } from "src/util/domain-error.util";
 
 @Controller("stock")
 @UseGuards(AuthGuard("jwt"), RolesGuard)
@@ -39,7 +40,7 @@ export class StockController {
     @Body() data: CreateStockDto,
     @CurrentUser() user: AuthenticatedUser,
   ): Promise<Stock> {
-    return this.stService.createStock(data, user.id);
+    return unwrap(await this.stService.createStock(data, user.id));
   }
 
   @Patch(":id")
@@ -49,7 +50,7 @@ export class StockController {
     @Body() body: UpdateStockDto,
     @CurrentUser() user: AuthenticatedUser,
   ): Promise<Stock> {
-    return this.stService.updateStock(id, body, user.id);
+    return unwrap(await this.stService.updateStock(id, body, user.id));
   }
 
   @Delete(":id")
@@ -58,6 +59,6 @@ export class StockController {
     @Param("id", ParseIntPipe) id: number,
     @CurrentUser() user: AuthenticatedUser,
   ): Promise<Stock> {
-    return this.stService.deleteStock(id, user.id);
+    return unwrap(await this.stService.deleteStock(id, user.id));
   }
 }

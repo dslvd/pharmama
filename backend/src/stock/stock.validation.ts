@@ -1,4 +1,3 @@
-import { err, ok, Result } from "src/util/results.util";
 import {
   IsDateString,
   IsInt,
@@ -10,9 +9,6 @@ import { PartialType } from "@nestjs/mapped-types";
 import { Transform, Type } from "class-transformer";
 import { Prisma } from "src/generated/prisma/client";
 
-export const validateStockExist = <T>(st: T | null): Result<T> => {
-  return st ? ok(st) : err("Stock not found.");
-};
 export class CreateStockDto {
   @Type(() => Number)
   @IsInt()
@@ -30,18 +26,6 @@ export class CreateStockDto {
 }
 
 export class UpdateStockDto extends PartialType(CreateStockDto) {}
-
-export const validateExpiryDate = (expiryDate: string): Result<Date> => {
-  const parsed = new Date(expiryDate);
-
-  if (isNaN(parsed.getTime())) {
-    return err("Invalid expiry date.");
-  } else if (parsed <= new Date()) {
-    return err("Expiry date must be in the future.");
-  } else {
-    return ok(parsed);
-  }
-};
 
 export type StockWithProduct = Prisma.StockGetPayload<{
   include: { product: true };

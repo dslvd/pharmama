@@ -20,6 +20,7 @@ import { AuthGuard } from "@nestjs/passport";
 import { RolesGuard } from "src/auth/guard/roles.guard";
 import { Roles } from "src/auth/decorator/auth.decorator";
 import type { AuthenticatedUser } from "src/auth/types/jwt-payload.type";
+import { unwrap } from "src/util/domain-error.util";
 
 @Controller("transaction")
 @UseGuards(AuthGuard("jwt"), RolesGuard)
@@ -38,7 +39,7 @@ export class TransactionController {
     @Param("id", ParseIntPipe) id: number,
     @CurrentUser() user: AuthenticatedUser,
   ): Promise<Transaction> {
-    return this.trService.cancelTransaction(id, user.id);
+    return unwrap(await this.trService.cancelTransaction(id, user.id));
   }
 
   @Post()
@@ -47,7 +48,7 @@ export class TransactionController {
     @Body() trData: CreateTransactionDto,
     @CurrentUser() user: AuthenticatedUser,
   ): Promise<Transaction> {
-    return this.trService.createTransaction(trData, user.id);
+    return unwrap(await this.trService.createTransaction(trData, user.id));
   }
 
   @Patch(":id/updateStatus")
@@ -57,6 +58,8 @@ export class TransactionController {
     @Body() dto: UpdateTransactionStatusDto,
     @CurrentUser() user: AuthenticatedUser,
   ): Promise<Transaction> {
-    return this.trService.updateTransactionStatus(id, dto, user.id);
+    return unwrap(
+      await this.trService.updateTransactionStatus(id, dto.status, user.id),
+    );
   }
 }
