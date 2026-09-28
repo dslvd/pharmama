@@ -1,5 +1,5 @@
 export interface User {
-  id: string;
+  id: number;
   email: string;
   role: Roles;
 }
@@ -12,4 +12,4 @@ export type CreateUserInput = {
   role: Roles;
   name: string;
 };
-export type UserDto = { id: string; email: string; role: Roles };
+export type UserDto = { id: number; email: string; role: Roles };

@@ -9,8 +9,6 @@ import { homeFor } from "@/lib/roles";
 const inputClasses =
   "w-full rounded-lg border bg-card px-3.5 py-2.5 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground/60 focus:border-primary focus:ring-2 focus:ring-primary/15";
 
-// UI only: not connected to the backend yet. Replace the timeout in
-// handleSubmit with the real POST /auth/login call when wiring it up.
 export default function LoginForm() {
   const router = useRouter();
   const { login, user } = useAuth();

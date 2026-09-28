@@ -35,7 +35,7 @@ export class ProductController {
     @Body() data: CreateProductDto,
     @CurrentUser() user: AuthenticatedUser,
   ): Promise<Product> {
-    return this.prService.createProduct(data, user.userId);
+    return this.prService.createProduct(data, user.id);
   }
 
   @Patch(":id")
@@ -45,7 +45,7 @@ export class ProductController {
     @Body() body: UpdateProductDto,
     @CurrentUser() user: AuthenticatedUser,
   ): Promise<Product> {
-    return this.prService.updateProduct(id, body, user.userId);
+    return this.prService.updateProduct(id, body, user.id);
   }
 
   @Delete(":id")
@@ -54,6 +54,6 @@ export class ProductController {
     @Param("id", ParseIntPipe) id: number,
     @CurrentUser() user: AuthenticatedUser,
   ): Promise<Product> {
-    return this.prService.deleteProduct(id, user.userId);
+    return this.prService.deleteProduct(id, user.id);
   }
 }

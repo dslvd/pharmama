@@ -35,7 +35,7 @@ export class StockController {
     @Body() data: CreateStockDto,
     @CurrentUser() user: AuthenticatedUser,
   ): Promise<Stock> {
-    return this.stService.createStock(data, user.userId);
+    return this.stService.createStock(data, user.id);
   }
 
   @Patch(":id")
@@ -45,7 +45,7 @@ export class StockController {
     @Body() body: UpdateStockDto,
     @CurrentUser() user: AuthenticatedUser,
   ): Promise<Stock> {
-    return this.stService.updateStock(id, body, user.userId);
+    return this.stService.updateStock(id, body, user.id);
   }
 
   @Delete(":id")
@@ -54,6 +54,6 @@ export class StockController {
     @Param("id", ParseIntPipe) id: number,
     @CurrentUser() user: AuthenticatedUser,
   ): Promise<Stock> {
-    return this.stService.deleteStock(id, user.userId);
+    return this.stService.deleteStock(id, user.id);
   }
 }

@@ -34,7 +34,7 @@ export class UsersService {
         name: dto.name,
         email: dto.email,
         hashedPassword,
-        role: dto.role,
+        ...(dto.role && { role: dto.role }),
       },
     });
 

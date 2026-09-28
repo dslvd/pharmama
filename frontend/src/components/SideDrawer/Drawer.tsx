@@ -14,7 +14,7 @@ export default function Drawer({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex min-h-screen">
-      <Navigation isOpen={isOpen} onClose={() => setIsOpen(false)} />
+      <Navigation isOpen={isOpen} />
 
       <div className="relative min-w-0 flex-1">
         <button

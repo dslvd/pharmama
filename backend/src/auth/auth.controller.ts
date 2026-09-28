@@ -18,6 +18,6 @@ export class AuthController {
   @UseGuards(AuthGuard("jwt"))
   @Get("me")
   me(@CurrentUser() user: AuthenticatedUser) {
-    return this.authService.me(user.userId);
+    return this.authService.me(user.id);
   }
 }

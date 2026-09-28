@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { X } from "lucide-react";
 import { createProduct } from "@/lib/api/product";
 import { Category } from "@/lib/types/product";
+import Modal from "@/components/ui/Modal";
+import CategoryDropdown from "@/components/CategoryDropdown";
 
 interface AddItemModalProps {
   onClose: () => void;
@@ -17,11 +18,16 @@ interface FormErrors {
   category?: string;
 }
 
+const inputClasses =
+  "mt-1.5 w-full rounded-md border border-border bg-input px-3 py-2 text-sm text-foreground focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring/20";
+const labelClasses = "block text-sm font-medium text-foreground";
+
 export default function AddItemModal({ onClose, onSaved }: AddItemModalProps) {
   const [name, setName] = useState("");
   const [genericName, setGenericName] = useState("");
   const [price, setPrice] = useState("");
   const [category, setCategory] = useState<Category>("OTHERS");
+  const [isCategoryOpen, setIsCategoryOpen] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
   const [saving, setSaving] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
@@ -48,107 +54,81 @@ export default function AddItemModal({ onClose, onSaved }: AddItemModalProps) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-      <div className="w-full max-w-md rounded-2xl bg-[#fdf6ec] p-6 shadow-xl">
-        <div className="flex items-center justify-between pb-4">
-          <h2 className="text-2xl font-bold text-primary">Add Item</h2>
+    <Modal open onClose={onClose} title="Add Item" size="md">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <label className={labelClasses}>
+          Product Name
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className={`${inputClasses} ${errors.name ? "border-destructive" : ""}`}
+          />
+          {errors.name && (
+            <span className="mt-1.5 block text-xs text-destructive">{errors.name}</span>
+          )}
+        </label>
+
+        <label className={labelClasses}>
+          Generic Name
+          <input
+            type="text"
+            value={genericName}
+            onChange={(e) => setGenericName(e.target.value)}
+            className={`${inputClasses} ${errors.genericName ? "border-destructive" : ""}`}
+          />
+          {errors.genericName && (
+            <span className="mt-1.5 block text-xs text-destructive">{errors.genericName}</span>
+          )}
+        </label>
+
+        <label className={labelClasses}>
+          Category
+          <CategoryDropdown
+            value={category}
+            onChange={setCategory}
+            open={isCategoryOpen}
+            onOpenChange={setIsCategoryOpen}
+            error={errors.category}
+          />
+          {errors.category && (
+            <span className="mt-1.5 block text-xs text-destructive">{errors.category}</span>
+          )}
+        </label>
+
+        <label className={labelClasses}>
+          Price
+          <input
+            type="number"
+            step="0.01"
+            value={price}
+            onChange={(e) => setPrice(e.target.value)}
+            className={`${inputClasses} ${errors.price ? "border-destructive" : ""}`}
+          />
+          {errors.price && (
+            <span className="mt-1.5 block text-xs text-destructive">{errors.price}</span>
+          )}
+        </label>
+
+        {serverError && <p className="text-sm text-destructive">{serverError}</p>}
+
+        <div className="flex justify-end gap-2 pt-2">
           <button
+            type="button"
             onClick={onClose}
-            aria-label="Close"
-            className="rounded-full p-1.5 hover:bg-slate-200"
+            className="rounded px-4 py-2 text-sm text-muted-foreground hover:bg-muted"
           >
-            <X size={18} />
+            Cancel
+          </button>
+          <button
+            type="submit"
+            disabled={saving}
+            className="rounded bg-primary px-4 py-2 text-sm text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+          >
+            {saving ? "Saving..." : "Save"}
           </button>
         </div>
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="text-sm font-medium">Product Name</label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className={`w-full rounded border px-3 py-2 text-sm ${errors.name ? "border-red-500" : "border-slate-300"}`}
-            />
-            {errors.name && (
-              <span className="text-xs text-red-600">{errors.name}</span>
-            )}
-          </div>
-
-          <div>
-            <label className="text-sm font-medium">Generic Name</label>
-            <input
-              type="text"
-              value={genericName}
-              onChange={(e) => setGenericName(e.target.value)}
-              className={`w-full rounded border px-3 py-2 text-sm ${errors.genericName ? "border-red-500" : "border-slate-300"}`}
-            />
-            {errors.genericName && (
-              <span className="text-xs text-red-600">{errors.genericName}</span>
-            )}
-          </div>
-
-          <div>
-            <label className="text-sm font-medium">Category</label>
-            <select
-              value={category}
-              onChange={(e) => setCategory(e.target.value as Category)}
-              className={`w-full rounded border px-3 py-2 text-sm ${errors.category ? "border-red-500" : "border-slate-300"}`}
-            >
-              {[
-                "ANALGESICS",
-                "ANTIBIOTICS",
-                "ANTIHISTAMINES",
-                "VITAMINS",
-                "SUPPLEMENTS",
-                "ANTACIDS",
-                "HYGIENNE",
-                "OTHERS",
-              ].map((option) => (
-                <option key={option} value={option}>
-                  {option}
-                </option>
-              ))}
-            </select>
-            {errors.category && (
-              <span className="text-xs text-red-600">{errors.category}</span>
-            )}
-          </div>
-
-          <div>
-            <label className="text-sm font-medium">Price</label>
-            <input
-              type="number"
-              step="0.01"
-              value={price}
-              onChange={(e) => setPrice(e.target.value)}
-              className={`w-full rounded border px-3 py-2 text-sm ${errors.price ? "border-red-500" : "border-slate-300"}`}
-            />
-            {errors.price && (
-              <span className="text-xs text-red-600">{errors.price}</span>
-            )}
-          </div>
-
-          {serverError && <p className="text-sm text-red-600">{serverError}</p>}
-
-          <div className="flex justify-end gap-2 pt-2">
-            <button
-              type="button"
-              onClick={onClose}
-              className="rounded px-4 py-2 text-sm text-slate-600 hover:bg-slate-100"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={saving}
-              className="rounded bg-primary px-4 py-2 text-sm text-white hover:bg-primary/90 disabled:opacity-50"
-            >
-              {saving ? "Saving..." : "Save"}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+      </form>
+    </Modal>
   );
 }
