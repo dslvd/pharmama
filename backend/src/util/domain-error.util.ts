@@ -7,25 +7,9 @@ import {
 import { PrismaService } from "src/prisma/prisma.service";
 import { Prisma } from "src/generated/prisma/client";
 import { AsyncResult, err, fold, Result } from "./results.util";
+import { DomainError } from "./domain-error";
 
-// errors the domain can return, instead of throwing HTTP exceptions
-export type DomainError =
-  | { readonly kind: "NotFound"; readonly message: string }
-  | { readonly kind: "Invalid"; readonly message: string }
-  | { readonly kind: "Conflict"; readonly message: string };
-
-export const notFound = (message: string): DomainError => ({
-  kind: "NotFound",
-  message,
-});
-export const invalid = (message: string): DomainError => ({
-  kind: "Invalid",
-  message,
-});
-export const conflict = (message: string): DomainError => ({
-  kind: "Conflict",
-  message,
-});
+export * from "./domain-error";
 
 const toHttpException = (e: DomainError): HttpException => {
   switch (e.kind) {
