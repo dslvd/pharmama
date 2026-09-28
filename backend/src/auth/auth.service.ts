@@ -1,5 +1,5 @@
 // auth/auth.service.ts
-import { Injectable } from "@nestjs/common";
+import { Injectable, UnauthorizedException } from "@nestjs/common";
 import * as bcrypt from "bcrypt";
 import { UsersService } from "../users/users.service";
 import { JwtService } from "@nestjs/jwt";
@@ -20,6 +20,12 @@ export class AuthService {
 
     const { hashedPassword, ...safeUser } = user;
     return safeUser;
+  }
+
+  async me(userId: number) {
+    const user = await this.usersService.findActiveSafeById(userId);
+    if (!user) throw new UnauthorizedException();
+    return user;
   }
 
   async login(user: { id: number; email: string; role: string }) {

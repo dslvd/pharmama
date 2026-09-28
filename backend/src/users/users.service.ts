@@ -2,6 +2,7 @@ import { Injectable, ConflictException } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import * as bcrypt from "bcrypt";
 import { CreateUserDto } from "./users.validation";
+import { safeUserSelect } from "./users.select";
 
 @Injectable()
 export class UsersService {
@@ -13,6 +14,13 @@ export class UsersService {
 
   async findById(id: number) {
     return this.prisma.user.findUnique({ where: { id } });
+  }
+
+  async findActiveSafeById(id: number) {
+    return this.prisma.user.findFirst({
+      where: { id, isActive: true },
+      select: safeUserSelect,
+    });
   }
 
   async create(dto: CreateUserDto) {
