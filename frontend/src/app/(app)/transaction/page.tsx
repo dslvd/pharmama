@@ -23,7 +23,7 @@ export default function TransactionsPage() {
   const handleAddItem = (entry: SubmittedItem) => {
     setItems((prev) => {
       const idx = prev.findIndex(
-        (m) => m.trItems.productId === entry.trItems.productId,
+        (m) => m.trItems.stockId === entry.trItems.stockId,
       );
       if (idx >= 0) {
         const merged = [...prev];
@@ -46,7 +46,12 @@ export default function TransactionsPage() {
         <h2 className="text-3xl font-bold text-[#1e1b3a]">Transaction</h2>
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-          <ProductPicker onAddItem={handleAddItem} onError={addError} />
+          <ProductPicker
+            onAddItem={handleAddItem}
+            onError={addError}
+            cartItems={items}
+            refreshKey={refreshKey}
+          />
           <TransactionTable
             items={items}
             setItems={setItems}

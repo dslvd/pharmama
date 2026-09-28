@@ -25,9 +25,7 @@ export default function TransactionTable({
   const handleSubmit = async () => {
     setLoading(true);
     const result = await createTransaction({
-      handledBy: "cashier1",
       transactionItems: items.map((entry) => entry.trItems),
-      status: "COMPLETED",
     });
 
     if (result.ok) {
@@ -41,11 +39,11 @@ export default function TransactionTable({
   };
 
   const removeItem = (id: number) => {
-    setItems((prev) => prev.filter((item) => item.trItems.productId !== id));
+    setItems((prev) => prev.filter((item) => item.trItems.stockId !== id));
   };
 
   const grandTotal = items.reduce(
-    (acc, curr) => acc + curr.trItems.unitPrice * curr.trItems.quantity,
+    (acc, curr) => acc + curr.product.price * curr.trItems.quantity,
     0,
   );
 
@@ -62,7 +60,7 @@ export default function TransactionTable({
           <ul className="divide-y divide-[#f0ece0]">
             {items.map((item) => (
               <li
-                key={item.trItems.productId}
+                key={item.trItems.stockId}
                 className="flex items-start justify-between gap-3 py-3"
               >
                 <div className="min-w-0">
@@ -71,7 +69,7 @@ export default function TransactionTable({
                   </p>
                   <p className="text-xs text-[#9c93b0]">
                     {item.trItems.quantity} &times; ₱{" "}
-                    {item.trItems.unitPrice.toLocaleString(undefined, {
+                    {item.product.price.toLocaleString(undefined, {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
                     })}
@@ -82,14 +80,14 @@ export default function TransactionTable({
                   <span className="text-sm font-semibold text-[#1e1b3a]">
                     ₱{" "}
                     {(
-                      item.trItems.unitPrice * item.trItems.quantity
+                      item.product.price * item.trItems.quantity
                     ).toLocaleString(undefined, {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
                     })}
                   </span>
                   <button
-                    onClick={() => removeItem(item.trItems.productId)}
+                    onClick={() => removeItem(item.trItems.stockId)}
                     aria-label="Remove item"
                     className="text-rose-500 hover:text-rose-700"
                   >
