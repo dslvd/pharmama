@@ -8,6 +8,7 @@ import {
 } from "class-validator";
 import { PartialType } from "@nestjs/mapped-types";
 import { Transform, Type } from "class-transformer";
+import { Prisma } from "src/generated/prisma/client";
 
 export const validateStockExist = <T>(st: T | null): Result<T> => {
   return st ? ok(st) : err("Stock not found.");
@@ -41,3 +42,7 @@ export const validateExpiryDate = (expiryDate: string): Result<Date> => {
     return ok(parsed);
   }
 };
+
+export type StockWithProduct = Prisma.StockGetPayload<{
+  include: { product: true };
+}>;

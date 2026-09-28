@@ -11,7 +11,11 @@ import {
 } from "@nestjs/common";
 import { StockService } from "./stock.service";
 import { Role, Stock } from "src/generated/prisma/client";
-import { CreateStockDto, UpdateStockDto } from "./stock.validation";
+import {
+  CreateStockDto,
+  StockWithProduct,
+  UpdateStockDto,
+} from "./stock.validation";
 import { RolesGuard } from "src/auth/guard/roles.guard";
 import { AuthGuard } from "@nestjs/passport";
 import { Roles } from "src/auth/decorator/auth.decorator";
@@ -25,7 +29,7 @@ export class StockController {
 
   @Get()
   @Roles(Role.STAFF, Role.OWNER, Role.ADMIN)
-  async getStList(): Promise<Stock[]> {
+  async getStList(): Promise<StockWithProduct[]> {
     return this.stService.getStockList();
   }
 

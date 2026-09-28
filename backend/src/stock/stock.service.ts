@@ -13,6 +13,7 @@ import {
 import { PrismaService } from "src/prisma/prisma.service";
 import {
   CreateStockDto,
+  StockWithProduct,
   UpdateStockDto,
   validateExpiryDate,
   validateStockExist,
@@ -23,8 +24,8 @@ import { createAuditLog } from "src/util/audit-log.util";
 export class StockService {
   constructor(private prisma: PrismaService) {}
 
-  async getStockList(): Promise<Stock[]> {
-    return await this.prisma.stock.findMany();
+  async getStockList(): Promise<StockWithProduct[]> {
+    return await this.prisma.stock.findMany({ include: { product: true } });
   }
 
   async createStock(data: CreateStockDto, handledBy: number): Promise<Stock> {
