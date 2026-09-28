@@ -48,7 +48,13 @@ export class TransactionService {
       for (const item of data.transactionItems) {
         const stock = await tx.stock.findUnique({
           where: { id: item.stockId },
-          select: { quantity: true, productId: true, product: true },
+          select: {
+            quantity: true,
+            expiryDate: true,
+            batchNumber: true,
+            productId: true,
+            product: true,
+          },
         });
 
         const stockResult = validateStock(stock, item.quantity);
@@ -68,7 +74,7 @@ export class TransactionService {
 
         if (updated.count !== 1) {
           throw new BadRequestException(
-            `Could not reserve stock ${item.stockId}`,
+            `Stock for batch ${stock!.batchNumber} changed during checkout. Please try again.`,
           );
         }
 
