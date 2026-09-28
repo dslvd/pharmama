@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { AuditLog } from "src/generated/prisma/client";
 import { PrismaService } from "src/prisma/prisma.service";
+import { safeUserSelect } from "src/users/users.select";
 
 @Injectable()
 export class AuditLogService {
@@ -8,7 +9,7 @@ export class AuditLogService {
 
   async getAuditList(): Promise<AuditLog[]> {
     return await this.prisma.auditLog.findMany({
-      include: { user: true },
+      include: { user: { select: safeUserSelect } },
     });
   }
 }

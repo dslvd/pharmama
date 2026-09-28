@@ -10,6 +10,7 @@ import {
 import { Prisma } from "src/generated/prisma/client";
 import { TransactionStatus } from "src/generated/prisma/enums";
 import { err, ok, Result } from "src/util/results.util";
+import type { safeUserSelect } from "src/users/users.select";
 
 export const validateStock = (
   stock: { quantity: number } | null,
@@ -74,5 +75,8 @@ export class UpdateTransactionStatusDto {
 }
 
 export type TransactionWithItems = Prisma.TransactionGetPayload<{
-  include: { transactionItems: { include: { product: true } }; user: true };
+  include: {
+    transactionItems: { include: { product: true } };
+    user: { select: typeof safeUserSelect };
+  };
 }>;

@@ -21,6 +21,7 @@ import {
   validateTransactionExists,
 } from "./transaction.validation";
 import { createAuditLog } from "src/util/audit-log.util";
+import { safeUserSelect } from "src/users/users.select";
 
 @Injectable()
 export class TransactionService {
@@ -28,7 +29,10 @@ export class TransactionService {
 
   async getTransactionList(): Promise<TransactionWithItems[]> {
     return await this.prisma.transaction.findMany({
-      include: { transactionItems: { include: { product: true } }, user: true },
+      include: {
+        transactionItems: { include: { product: true } },
+        user: { select: safeUserSelect },
+      },
     });
   }
 
@@ -200,4 +204,3 @@ export class TransactionService {
     });
   }
 }
-
