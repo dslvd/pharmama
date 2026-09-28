@@ -63,3 +63,11 @@ export const fold =
   <T, E, R>(onOk: (value: T) => R, onErr: (error: E) => R) =>
   (r: Result<T, E>): R =>
     r.ok ? onOk(r.value) : onErr(r.error);
+
+// run a side effect (e.g. an audit log) and pass the value through unchanged
+export const tapAsync =
+  <T>(fn: (value: T) => Promise<unknown>) =>
+  async <E = never>(value: T): AsyncResult<T, E> => {
+    await fn(value);
+    return ok(value);
+  };

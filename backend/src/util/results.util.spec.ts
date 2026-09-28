@@ -9,6 +9,7 @@ import {
   ok,
   Result,
   sequence,
+  tapAsync,
   traverseAsync,
 } from "./results.util";
 
@@ -74,5 +75,13 @@ describe("results.util", () => {
     );
     expect(show(ok(1))).toBe("ok 1");
     expect(show(err("x"))).toBe("err x");
+  });
+
+  it("tapAsync runs a side effect and keeps the value", async () => {
+    const log: number[] = [];
+    await expect(
+      tapAsync(async (n: number) => log.push(n))(5),
+    ).resolves.toEqual(ok(5));
+    expect(log).toEqual([5]);
   });
 });
