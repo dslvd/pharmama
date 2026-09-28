@@ -1,9 +1,9 @@
 import { CreateStockPayload, Stock, UpdateStockPayload } from "../types/stock";
 import { apiFetch } from "../utils/client";
+import { mapResult, toStock } from "../utils/decimal";
 
-export const getStockList = (_params?: Record<string, unknown>) => {
-  return apiFetch<Stock[]>(`/stock`);
-};
+export const getStockList = async (_params?: Record<string, unknown>) =>
+  mapResult(await apiFetch<Stock[]>(`/stock`), (list) => list.map(toStock));
 
 export const createStock = (data: CreateStockPayload) =>
   apiFetch<Stock>("/stock", {

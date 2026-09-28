@@ -4,10 +4,12 @@ import {
   UpdateProductPayload,
 } from "../types/product";
 import { apiFetch } from "../utils/client";
+import { mapResult, toProduct } from "../utils/decimal";
 
-export const getProductList = (_params?: Record<string, unknown>) => {
-  return apiFetch<Product[]>(`/product`);
-};
+export const getProductList = async (_params?: Record<string, unknown>) =>
+  mapResult(await apiFetch<Product[]>(`/product`), (list) =>
+    list.map(toProduct),
+  );
 
 export const createProduct = (data: CreateProductPayload) =>
   apiFetch<Product>("/product", {
