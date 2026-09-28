@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   Injectable,
   NotFoundException,
 } from "@nestjs/common";
@@ -101,6 +102,15 @@ export class StockService {
       const result = validateStockExist(found);
       if (!result.ok) {
         throw new NotFoundException(result.error);
+      }
+
+      const soldCount = await st.transactionItem.count({
+        where: { stockId: id },
+      });
+      if (soldCount > 0) {
+        throw new ConflictException(
+          "This stock batch has sales records and can't be deleted.",
+        );
       }
 
       await createAuditLog(st, {

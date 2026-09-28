@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from "@nestjs/common";
 import {
   AuditAction,
   AuditEntity,
@@ -84,6 +88,21 @@ export class ProductService {
       const result = validateProductExists(existing);
       if (!result.ok) {
         throw new NotFoundException(result.error);
+      }
+
+      const soldCount = await pr.transactionItem.count({
+        where: { productId: id },
+      });
+      const stockCount = await pr.stock.count({ where: { productId: id } });
+      if (soldCount > 0) {
+        throw new ConflictException(
+          "This product has sales records and can't be deleted.",
+        );
+      }
+      if (stockCount > 0) {
+        throw new ConflictException(
+          "This product still has stock batches. Delete them first.",
+        );
       }
 
       await createAuditLog(pr, {
