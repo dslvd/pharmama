@@ -40,7 +40,7 @@ export default function Loading() {
         <div className="flex min-h-32.5 items-center justify-center rounded-2xl border border-border bg-card">
           <Skeleton className="h-10 w-10 rounded-full" />
         </div>
-        <TableSkeleton columns={5} />
+        <TableSkeleton columns={7} />
       </div>
     </main>
   );
