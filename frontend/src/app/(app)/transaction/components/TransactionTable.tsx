@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { X, XCircle } from "lucide-react";
 import { createTransaction } from "@/lib/api/transaction";
 import { SubmittedItem } from "./ProductPicker";
@@ -40,8 +40,31 @@ export default function TransactionTable({
     setLoading(false);
   };
 
-  const removeItem = (id: number) => {
-    setItems((prev) => prev.filter((item) => item.trItems.stockId !== id));
+  // one row per product; a big quantity can be split across several stock
+  // batches (earliest expiry first), but the cashier only needs the total
+  const lines = useMemo(() => {
+    const byProduct = new Map<
+      number,
+      { product: SubmittedItem["product"]; quantity: number; batches: number }
+    >();
+    for (const item of items) {
+      const line = byProduct.get(item.product.id);
+      if (line) {
+        line.quantity += item.trItems.quantity;
+        line.batches += 1;
+      } else {
+        byProduct.set(item.product.id, {
+          product: item.product,
+          quantity: item.trItems.quantity,
+          batches: 1,
+        });
+      }
+    }
+    return [...byProduct.values()];
+  }, [items]);
+
+  const removeProduct = (productId: number) => {
+    setItems((prev) => prev.filter((item) => item.product.id !== productId));
   };
 
   const grandTotal = items.reduce(
@@ -60,27 +83,30 @@ export default function TransactionTable({
           </div>
         ) : (
           <ul className="divide-y divide-border/60">
-            {items.map((item) => (
+            {lines.map((line) => (
               <li
-                key={item.trItems.stockId}
-                className="flex items-start justify-between gap-3 py-3"
+                key={line.product.id}
+                className="flex items-center justify-between gap-3 py-3"
               >
                 <div className="min-w-0">
                   <p className="truncate text-sm font-semibold text-foreground">
-                    {item.product.name}
+                    {line.product.name}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    {item.trItems.quantity} &times; {peso(item.product.price)}
+                    {line.quantity} &times; {peso(line.product.price)}
+                    {line.batches > 1 && (
+                      <> &middot; from {line.batches} batches</>
+                    )}
                   </p>
                 </div>
 
                 <div className="flex shrink-0 items-center gap-2">
                   <span className="text-sm font-semibold text-foreground">
-                    {peso(item.product.price * item.trItems.quantity)}
+                    {peso(line.product.price * line.quantity)}
                   </span>
                   <button
-                    onClick={() => removeItem(item.trItems.stockId)}
-                    aria-label="Remove item"
+                    onClick={() => removeProduct(line.product.id)}
+                    aria-label={`Remove ${line.product.name}`}
                     className="rounded-md p-1 text-danger/80 transition-colors hover:bg-danger-soft hover:text-danger"
                   >
                     <X size={16} />
