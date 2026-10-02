@@ -6,20 +6,20 @@ import { homeFor, isManager, managerOnly } from "@/lib/roles";
 import Drawer from "@/components/SideDrawer/Drawer";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
-  const { user, loading } = useAuth();
+  const { user, role, loading } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
 
   const atRoot = pathname === "/";
   const blocked =
     !!user &&
-    !isManager(user.role) &&
+    !isManager(role) &&
     managerOnly.some((p) => pathname === p || pathname.startsWith(`${p}/`));
   useEffect(() => {
     if (loading) return;
     if (!user) router.replace("/auth");
-    else if (atRoot || blocked) router.replace(homeFor(user.role));
-  }, [loading, user, atRoot, blocked, router]);
+    else if (atRoot || blocked) router.replace(homeFor(role));
+  }, [loading, user, role, atRoot, blocked, router]);
 
   if (loading || !user || atRoot || blocked) return null;
   return <Drawer>{children}</Drawer>;

@@ -20,8 +20,9 @@ export async function apiFetch<T>(
       },
     });
 
-    // expired/invalid token -> kick to login (the `token` check avoids a loop on bad login)
-    if (res.status === 401 && token) {
+    // expired/invalid token -> kick to login. A wrong password on /auth/login
+    // is also a 401, so skip it (bad login, or re-checking the password)
+    if (res.status === 401 && token && endpoint !== "/auth/login") {
       localStorage.removeItem("token");
       window.location.href = "/auth";
     }

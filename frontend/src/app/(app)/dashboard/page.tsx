@@ -13,8 +13,11 @@ import { Stock } from "@/lib/types/stock";
 import { getStockList } from "@/lib/api/stocks";
 import { Transaction } from "@/lib/types/transaction";
 import { getTransactionList } from "@/lib/api/transaction";
+import { useAuth } from "@/lib/auth";
+import { UserRound } from "lucide-react";
 
 export default function Dashboard() {
+  const { enterStaffView } = useAuth();
   const [stock, setStock] = useState<Stock[] | null>(null);
   const [transaction, setTransaction] = useState<Transaction[] | null>(null);
   const [errors, setErrors] = useState<{ id: string; message: string }[]>([]);
@@ -79,21 +82,10 @@ export default function Dashboard() {
           </div>
           <button
             type="button"
+            onClick={enterStaffView}
             className="flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
           >
-            <svg
-              className="h-4 w-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-              />
-            </svg>
+            <UserRound className="h-4 w-4" />
             Pharmacist view
           </button>
         </div>

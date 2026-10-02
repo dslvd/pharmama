@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { usePathname } from "next/navigation";
 import {
   PanelsTopLeft,
@@ -8,10 +9,13 @@ import {
   FolderBookmark,
   ClipboardList,
   LogOut,
+  UserRoundCheck,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { useAuth } from "@/lib/auth";
+import { homeFor } from "@/lib/roles";
+import ExitStaffViewDialog from "@/components/ExitStaffViewDialog";
 
 interface NavigationProps {
   isOpen: boolean;
@@ -57,10 +61,11 @@ const sections = [
 
 export default function Navigation({ isOpen }: NavigationProps) {
   const pathname = usePathname();
-  const { user, logout } = useAuth();
+  const { user, role, staffView, logout } = useAuth();
+  const [exitOpen, setExitOpen] = useState(false);
 
   const canSee = (roles?: string[]) =>
-    !roles || (!!user && roles.includes(user.role));
+    !roles || (!!role && roles.includes(role));
 
   const visible = sections
     .map((s) => ({ ...s, items: s.items.filter((i) => canSee(i.roles)) }))
@@ -74,10 +79,7 @@ export default function Navigation({ isOpen }: NavigationProps) {
       aria-label="Main Navigation"
     >
       <div className="flex flex-col px-4 pt-6">
-        <Link
-          href="/dashboard"
-          className="mb-10 flex items-center px-1"
-        >
+        <Link href={homeFor(role)} className="mb-10 flex items-center px-1">
           <Image
             src="/logo/pharlogo.png"
             alt="PharMaMa"
@@ -120,6 +122,20 @@ export default function Navigation({ isOpen }: NavigationProps) {
       </div>
 
       <div className="border-t border-violet-900/60 p-4">
+        {staffView && (
+          <div className="mb-3 rounded-lg bg-violet-900/60 p-3">
+            <p className="flex items-center gap-2 text-xs font-semibold text-white">
+              <UserRoundCheck className="h-4 w-4 shrink-0" />
+              Pharmacist view
+            </p>
+            <button
+              onClick={() => setExitOpen(true)}
+              className="mt-2 w-full rounded-md bg-white/10 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-white/20"
+            >
+              Exit pharmacist view
+            </button>
+          </div>
+        )}
         <div className="flex items-center gap-3 px-1">
           <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-violet-900 text-sm font-bold uppercase text-white">
             {user?.email[0]}
@@ -129,7 +145,7 @@ export default function Navigation({ isOpen }: NavigationProps) {
               {user?.email}
             </p>
             <p className="truncate text-[11px] capitalize text-violet-300/80">
-              {user?.role.toLowerCase()}
+              {staffView ? "staff view" : user?.role.toLowerCase()}
             </p>
           </div>
           <button
@@ -141,6 +157,7 @@ export default function Navigation({ isOpen }: NavigationProps) {
           </button>
         </div>
       </div>
+      <ExitStaffViewDialog open={exitOpen} onClose={() => setExitOpen(false)} />
     </aside>
   );
 }

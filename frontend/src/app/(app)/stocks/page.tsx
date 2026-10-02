@@ -14,7 +14,7 @@ import { useAuth } from "@/lib/auth";
 import { isManager } from "@/lib/roles";
 
 export default function StockPage() {
-  const { user } = useAuth();
+  const { role } = useAuth();
   const [allStock, setAllStock] = useState<Stock[]>([]);
   const [order, setOrder] = useState<SortOrder | undefined>(undefined);
   const [sortBy, setSortBy] = useState<SortBy[]>([]);
@@ -233,7 +233,7 @@ export default function StockPage() {
                     onDeleted={() => setRefreshKey((k) => k + 1)}
                     onEdit={openEditModal}
                     onError={addError}
-                    canDelete={isManager(user?.role)}
+                    canDelete={isManager(role)}
                   />
                 ))
               )}
