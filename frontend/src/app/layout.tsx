@@ -12,7 +12,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className="light">
+    <html lang="en">
       <body className="antialiased bg-background text-foreground">
         <AuthProvider>{children}</AuthProvider>
       </body>

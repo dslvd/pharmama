@@ -1,12 +1,12 @@
 import { AuditLog } from "@/lib/types/audit-log";
 
 const ACTION_STYLES: Record<string, string> = {
-  CREATE: "bg-emerald-100 text-emerald-700",
-  UPDATE: "bg-blue-100 text-blue-700",
-  DELETE: "bg-rose-100 text-rose-700",
-  CANCEL: "bg-amber-100 text-amber-700",
-  STOCK_ADJUSTMENT: "bg-violet-100 text-violet-700",
-  RESTORE_STOCK: "bg-teal-100 text-teal-700",
+  CREATE: "bg-success-soft text-success",
+  UPDATE: "bg-info-soft text-info",
+  DELETE: "bg-danger-soft text-danger",
+  CANCEL: "bg-warning-soft text-warning",
+  STOCK_ADJUSTMENT: "bg-primary-soft text-primary",
+  RESTORE_STOCK: "bg-success-soft text-success",
 };
 
 export default function AuditRow({ audit }: { audit: AuditLog }) {
@@ -20,7 +20,7 @@ export default function AuditRow({ audit }: { audit: AuditLog }) {
     ACTION_STYLES[audit.action] ?? "bg-muted text-muted-foreground";
 
   return (
-    <tr className="border-b border-border last:border-0 odd:bg-card even:bg-violet-50/60">
+    <tr className="border-b border-border last:border-0 odd:bg-card even:bg-primary-soft/30">
       <td className="px-4 py-3 text-center text-muted-foreground">{date}</td>
       <td className="px-4 py-3 text-center text-muted-foreground">{time}</td>
       <td className="px-4 py-3 text-center text-muted-foreground">

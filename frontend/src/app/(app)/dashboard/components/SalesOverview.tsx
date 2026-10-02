@@ -12,10 +12,13 @@ import {
 } from "recharts";
 import { TrendingUp } from "lucide-react";
 import { getSalesOverview } from "@/lib/api/sales";
+import { peso } from "@/lib/utils/format";
 
 type Period = "Today" | "Week" | "Month" | "Year";
 
 const PERIODS: Period[] = ["Today", "Week", "Month", "Year"];
+
+const compact = new Intl.NumberFormat("en-PH", { notation: "compact" });
 
 export default function SalesOverview({
   onError,
@@ -56,7 +59,7 @@ export default function SalesOverview({
     <section className="flex h-105 flex-col rounded-xl border border-border bg-card p-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-violet-100 text-violet-800">
+          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-soft text-primary">
             <TrendingUp className="h-4 w-4" />
           </span>
           <h3 className="text-lg font-semibold text-foreground">
@@ -92,37 +95,37 @@ export default function SalesOverview({
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
               data={sales}
-              margin={{ top: 5, right: 10, left: -10, bottom: 0 }}
+              margin={{ top: 5, right: 10, left: 0, bottom: 0 }}
             >
-              <CartesianGrid
-                strokeDasharray="3 3"
-                vertical={false}
-                stroke="hsl(var(--border))"
-              />
+              <CartesianGrid vertical={false} stroke="var(--border)" />
               <XAxis
                 dataKey="label"
                 axisLine={false}
                 tickLine={false}
-                tick={{ fontSize: 12, fill: "hsl(var(--muted-foreground))" }}
+                tick={{ fontSize: 12, fill: "var(--muted-foreground)" }}
               />
               <YAxis
                 axisLine={false}
                 tickLine={false}
-                tick={{ fontSize: 12, fill: "hsl(var(--muted-foreground))" }}
-                tickFormatter={(v: number) => `₱${(v / 1000).toFixed(0)}k`}
+                tick={{ fontSize: 12, fill: "var(--muted-foreground)" }}
+                tickFormatter={(v: number) => `₱${compact.format(v)}`}
               />
               <Tooltip
-                formatter={(value: number) => [
-                  `₱${value.toLocaleString()}`,
-                  "Sales",
-                ]}
+                cursor={{ fill: "var(--muted)", opacity: 0.3 }}
+                formatter={(value: number) => [peso(value), "Sales"]}
                 contentStyle={{
                   borderRadius: 8,
-                  border: "1px solid hsl(var(--border))",
+                  border: "1px solid var(--border)",
                   fontSize: 12,
+                  color: "var(--foreground)",
                 }}
               />
-              <Bar dataKey="value" fill="#c2185b" radius={[8, 8, 0, 0]} />
+              <Bar
+                dataKey="value"
+                fill="var(--accent)"
+                maxBarSize={24}
+                radius={[4, 4, 0, 0]}
+              />
             </BarChart>
           </ResponsiveContainer>
         )}

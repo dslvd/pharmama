@@ -1,13 +1,4 @@
-import type { HTMLAttributes } from "react";
-
-function Skeleton({
-  className = "",
-  ...props
-}: HTMLAttributes<HTMLDivElement>) {
-  return (
-    <div aria-hidden="true" className={`skeleton ${className}`} {...props} />
-  );
-}
+import Skeleton from "@/components/ui/Skeleton";
 
 export default function Loading() {
   return (
@@ -24,7 +15,7 @@ export default function Loading() {
         </div>
       </div>
       <div className="min-h-128 flex-1 overflow-hidden rounded-xl border border-border bg-card shadow-sm">
-        <div className="grid grid-cols-6 gap-4 border-b border-border bg-[#fdfbf7] px-4 py-3">
+        <div className="grid grid-cols-6 gap-4 border-b border-border bg-surface-subtle px-4 py-3">
           {Array.from({ length: 6 }).map((_, index) => (
             <Skeleton key={index} className="h-3 w-20 rounded" />
           ))}

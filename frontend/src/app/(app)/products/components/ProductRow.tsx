@@ -2,6 +2,8 @@ import { Trash, PencilLine } from "lucide-react";
 import { Product } from "@/lib/types/product";
 import { useState } from "react";
 import { deleteProduct } from "@/lib/api/product";
+import ConfirmDialog from "@/components/ConfirmDialog";
+import { peso } from "@/lib/utils/format";
 
 interface ProductRowProps {
   product: Product;
@@ -17,11 +19,13 @@ export default function ProductRow({
   onError,
 }: ProductRowProps) {
   const [deleting, setDeleting] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   async function handleDelete(id: number) {
     setDeleting(true);
     const result = await deleteProduct(id);
     setDeleting(false);
+    setConfirmOpen(false);
 
     if (result.ok) {
       onDeleted?.(id);
@@ -32,7 +36,7 @@ export default function ProductRow({
 
   return (
     <>
-      <tr className="border-t border-border odd:bg-card even:bg-violet-50/60">
+      <tr className="border-t border-border odd:bg-card even:bg-primary-soft/30">
         <td className="px-4 py-3 text-foreground">{product.name}</td>
         <td className="px-4 py-3 text-muted-foreground">
           {product.genericName}
@@ -43,35 +47,37 @@ export default function ProductRow({
           </span>
         </td>
         <td className="px-4 py-3 font-medium text-foreground">
-          ₱{" "}
-          {product.price.toLocaleString(undefined, {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          })}
+          {peso(product.price)}
         </td>
         <td className="px-4 py-3">
-          <div className="flex items-center gap-3 text-muted-foreground">
-            {/* If no changes made should cancel */}
+          <div className="flex items-center gap-1 text-muted-foreground">
             <button
               aria-label={`Edit product ${product.id}`}
               onClick={() => onEdit?.(product)}
-              className="transition-colors hover:text-violet-700"
+              className="rounded-md p-1.5 transition-colors hover:bg-muted/40 hover:text-primary"
             >
               <PencilLine size={15} />
             </button>
 
-            {/* Confirmation text before deleting */}
             <button
               aria-label={`Delete product ${product.id}`}
-              onClick={() => handleDelete(product.id)}
+              onClick={() => setConfirmOpen(true)}
               disabled={deleting}
-              className="transition-colors hover:text-rose-600 disabled:opacity-50"
+              className="rounded-md p-1.5 transition-colors hover:bg-danger-soft hover:text-danger disabled:opacity-50"
             >
               <Trash size={15} />
             </button>
           </div>
         </td>
       </tr>
+      <ConfirmDialog
+        open={confirmOpen}
+        title="Delete product?"
+        message={`${product.name} will be removed from the catalog. This can't be undone.`}
+        busy={deleting}
+        onConfirm={() => handleDelete(product.id)}
+        onClose={() => setConfirmOpen(false)}
+      />
     </>
   );
 }

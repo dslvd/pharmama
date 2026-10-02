@@ -3,18 +3,7 @@
 import { ChevronDown } from "lucide-react";
 import { cn } from "cn";
 import Dropdown from "@/components/ui/Dropdown";
-import { Category } from "@/lib/types/product";
-
-export const CATEGORY_OPTIONS: Category[] = [
-  "ANALGESICS",
-  "ANTIBIOTICS",
-  "ANTIHISTAMINES",
-  "VITAMINS",
-  "SUPPLEMENTS",
-  "ANTACIDS",
-  "HYGIENE",
-  "OTHERS",
-];
+import { CATEGORIES, Category } from "@/lib/types/product";
 
 interface CategoryDropdownProps {
   value: Category;
@@ -56,7 +45,7 @@ export default function CategoryDropdown({
       }
     >
       <div className="max-h-56 overflow-y-auto py-1.5">
-        {CATEGORY_OPTIONS.map((option) => {
+        {CATEGORIES.map((option) => {
           const isSelected = value === option;
 
           return (

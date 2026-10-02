@@ -2,13 +2,14 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { getProductList } from "@/lib/api/product";
-import { Category, Product, SortOrder } from "@/lib/types/product";
+import { CATEGORIES, Category, Product, SortOrder } from "@/lib/types/product";
 import FilterBar, { FilterProps } from "@/components/FilterBar";
 import ProductRow from "@/app/(app)/products/components/ProductRow";
 import AddProductModal from "@/app/(app)/products/components/AddProductModal";
 import Loading from "./loading";
 import { PackageOpen, Search, Plus, SlidersHorizontal } from "lucide-react";
 import { ErrorStack } from "@/components/ErrorCard";
+import Dropdown from "@/components/ui/Dropdown";
 
 export default function ProductPage() {
   const [allProducts, setAllProducts] = useState<Product[]>([]);
@@ -29,8 +30,7 @@ export default function ProductPage() {
 
   useEffect(() => {
     async function loadProducts() {
-      setLoading(true);
-      const result = await getProductList({});
+      const result = await getProductList();
 
       if (result.ok) {
         setAllProducts(result.value);
@@ -79,16 +79,7 @@ export default function ProductPage() {
   const FilterOptions: FilterProps[] = [
     {
       title: "CATEGORY",
-      sub: [
-        "ANALGESICS",
-        "ANTIBIOTICS",
-        "ANTIHISTAMINES",
-        "VITAMINS",
-        "SUPPLEMENTS",
-        "ANTACIDS",
-        "HYGIENE",
-        "OTHERS",
-      ],
+      sub: CATEGORIES,
     },
     { title: "ORDER", sub: ["asc", "desc"] },
   ];
@@ -131,41 +122,42 @@ export default function ProductPage() {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search products..."
-                className="w-full rounded-lg border border-border bg-card py-2.5 pl-9 pr-3 text-sm text-foreground shadow-sm focus:border-violet-300 focus:outline-none focus:ring-2 focus:ring-violet-100"
+                className="w-full rounded-lg border border-border bg-card py-2.5 pl-9 pr-3 text-sm text-foreground shadow-sm focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring/20"
               />
             </div>
 
-            <div className="relative">
-              <button
-                onClick={() => setFilter(!filter)}
-                aria-label="Toggle filters"
-                aria-pressed={filter}
-                className={`rounded-lg border p-2.5 transition-colors ${
-                  filter
-                    ? "border-primary bg-violet-100 text-violet-700"
-                    : "border-border bg-card text-muted-foreground hover:bg-muted"
-                }`}
-              >
-                <SlidersHorizontal size={18} strokeWidth={2.2} />
-              </button>
-
-              {filter && (
-                <div className="absolute right-0 z-10 mt-2 w-80 rounded-2xl border-2 border-foreground bg-card p-5 shadow-2xl">
-                  <FilterBar
-                    filters={FilterOptions}
-                    onFilterChange={handleFilterChange}
-                    selectedValues={{
-                      CATEGORY: category,
-                      ORDER: order,
-                    }}
-                  />
-                </div>
-              )}
-            </div>
+            <Dropdown
+              open={filter}
+              onOpenChange={setFilter}
+              align="end"
+              className="w-80 max-h-none overflow-visible rounded-2xl border-2 border-foreground bg-card p-5 shadow-2xl"
+              trigger={
+                <button
+                  aria-label="Toggle filters"
+                  aria-pressed={filter}
+                  className={`rounded-lg border p-2.5 transition-colors ${
+                    filter
+                      ? "border-primary bg-primary-soft text-primary"
+                      : "border-border bg-card text-muted-foreground hover:bg-muted"
+                  }`}
+                >
+                  <SlidersHorizontal size={18} strokeWidth={2.2} />
+                </button>
+              }
+            >
+              <FilterBar
+                filters={FilterOptions}
+                onFilterChange={handleFilterChange}
+                selectedValues={{
+                  CATEGORY: category,
+                  ORDER: order,
+                }}
+              />
+            </Dropdown>
 
             <button
               onClick={openAddModal}
-              className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-violet-950"
+              className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary-hover"
             >
               <Plus className="h-4 w-4" />
               Add product
@@ -176,7 +168,7 @@ export default function ProductPage() {
         <div className="min-h-122 flex-1 overflow-x-auto rounded-xl border border-border bg-card shadow-sm">
           <table className="w-full text-left text-sm">
             <thead>
-              <tr className="border-b border-border bg-[#fdfbf7]">
+              <tr className="border-b border-border bg-surface-subtle">
                 <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                   Name
                 </th>
@@ -203,7 +195,7 @@ export default function ProductPage() {
                     className="h-112 px-4 py-8 text-center text-sm text-muted-foreground"
                   >
                     <div className="flex flex-col items-center justify-center gap-3">
-                      <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-violet-100 text-primary">
+                      <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary-soft text-primary">
                         <PackageOpen className="h-7 w-7" />
                       </span>
                       <p className="text-base font-semibold text-foreground">
@@ -215,7 +207,7 @@ export default function ProductPage() {
                       </p>
                       <button
                         onClick={openAddModal}
-                        className="mt-2 flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-violet-950"
+                        className="mt-2 flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary-hover"
                       >
                         <Plus className="h-4 w-4" />
                         Add your first product

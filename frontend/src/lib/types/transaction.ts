@@ -11,7 +11,9 @@ export interface Transaction {
   transactionItems: TransactionItem[];
 }
 
-export type TransactionStatus = "REFUNDED" | "COMPLETED" | "CANCELLED";
+export const STATUS_VALUES = ["COMPLETED", "REFUNDED", "CANCELLED"] as const;
+
+export type TransactionStatus = (typeof STATUS_VALUES)[number];
 
 export interface TransactionItem {
   id: number;

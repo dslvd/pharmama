@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import TransactionTable from "./components/TransactionTable";
 import SalesTable from "./components/SalesTable";
 import ProductPicker, { SubmittedItem } from "./components/ProductPicker";
@@ -17,8 +17,11 @@ export default function TransactionsPage() {
   const [tr, setTr] = useState<Transaction | undefined>(undefined);
   const [refreshKey, setRefreshKey] = useState(0);
 
-  const addError = (message: string) =>
-    setErrors((prev) => [...prev, { id: crypto.randomUUID(), message }]);
+  const addError = useCallback(
+    (message: string) =>
+      setErrors((prev) => [...prev, { id: crypto.randomUUID(), message }]),
+    [],
+  );
 
   const handleAddItem = (entry: SubmittedItem) => {
     setItems((prev) => {
@@ -42,8 +45,8 @@ export default function TransactionsPage() {
 
   return (
     <>
-      <main className="min-h-screen space-y-6 bg-[#f5f1e8] p-6">
-        <h2 className="text-3xl font-bold text-[#1e1b3a]">Transaction</h2>
+      <main className="min-h-screen space-y-6 p-6">
+        <h2 className="text-3xl font-bold text-foreground">Transaction</h2>
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           <ProductPicker

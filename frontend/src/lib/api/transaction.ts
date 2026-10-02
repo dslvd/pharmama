@@ -6,17 +6,10 @@ import {
 import { apiFetch } from "../utils/client";
 import { mapResult, toTransaction } from "../utils/decimal";
 
-export const getTransactionList = async (
-  _params?: Record<string, unknown>,
-) =>
+export const getTransactionList = async () =>
   mapResult(await apiFetch<Transaction[]>(`/transaction`), (list) =>
     list.map(toTransaction),
   );
-
-export const cancelTransaction = (id: number) =>
-  apiFetch<Transaction>(`/transaction/${id}`, {
-    method: "PATCH",
-  });
 
 export const createTransaction = (data: CreateTransactionPayload) =>
   apiFetch<Transaction>("/transaction", {

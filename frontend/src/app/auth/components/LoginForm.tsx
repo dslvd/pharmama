@@ -7,7 +7,7 @@ import { useAuth } from "@/lib/auth";
 import { homeFor } from "@/lib/roles";
 
 const inputClasses =
-  "w-full rounded-lg border bg-card px-3.5 py-2.5 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground/60 focus:border-primary focus:ring-2 focus:ring-primary/15";
+  "w-full rounded-lg border bg-card px-3.5 py-2.5 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/15";
 
 export default function LoginForm() {
   const router = useRouter();
@@ -45,7 +45,7 @@ export default function LoginForm() {
   return (
     <div className="w-full max-w-sm">
       <div className="mb-8 flex items-center gap-3 lg:hidden">
-        <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-sm font-extrabold text-white">
+        <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-sm font-extrabold text-primary-foreground">
           Rx
         </span>
         <span className="text-xl font-bold text-foreground">PharMaMa</span>
@@ -119,19 +119,12 @@ export default function LoginForm() {
         <button
           type="submit"
           disabled={submitting || !email || !password}
-          className="mt-1 flex w-full items-center justify-center gap-2 rounded-lg bg-primary py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-violet-950 disabled:opacity-60"
+          className="mt-1 flex w-full items-center justify-center gap-2 rounded-lg bg-primary py-2.5 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary-hover disabled:opacity-60"
         >
           {submitting && <Loader2 className="h-4 w-4 animate-spin" />}
           {submitting ? "Signing in…" : "Sign in"}
         </button>
       </form>
-
-      <p className="mt-7 border-t border-border pt-5 text-center text-sm text-muted-foreground">
-        Don&apos;t have an account? Ask an{" "}
-        <span className="font-semibold text-foreground">Admin</span> or{" "}
-        <span className="font-semibold text-foreground">Owner</span> to create
-        one.
-      </p>
     </div>
   );
 }

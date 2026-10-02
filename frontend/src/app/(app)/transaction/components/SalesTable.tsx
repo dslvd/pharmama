@@ -2,13 +2,20 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { Check, ChevronDown, Search, SlidersHorizontal } from "lucide-react";
-import { Transaction, TransactionStatus } from "@/lib/types/transaction";
+import {
+  STATUS_VALUES,
+  Transaction,
+  TransactionStatus,
+} from "@/lib/types/transaction";
 import {
   getTransactionList,
   updateTransactionStatus,
 } from "@/lib/api/transaction";
 import { SortOrder } from "@/lib/types/product";
-import FilterBar, { FilterProps } from "../../../../components/FilterBar";
+import FilterBar, { FilterProps } from "@/components/FilterBar";
+import { peso } from "@/lib/utils/format";
+import { statusClass } from "@/lib/utils/status";
+import Dropdown from "@/components/ui/Dropdown";
 
 interface SalesTableProps {
   initialRecords?: Transaction[];
@@ -19,13 +26,7 @@ interface SalesTableProps {
 }
 
 const inputClasses =
-  "rounded-full border border-[#e4dccf] bg-white py-2 text-sm text-[#1e1b3a] placeholder:text-[#9c93b0] focus:border-violet-400 focus:outline-none focus:ring-2 focus:ring-violet-100";
-
-const STATUS_VALUES: TransactionStatus[] = [
-  "COMPLETED",
-  "REFUNDED",
-  "CANCELLED",
-];
+  "rounded-full border border-border bg-card py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring/20";
 
 export default function SalesTable({
   initialRecords = [],
@@ -45,8 +46,7 @@ export default function SalesTable({
 
   useEffect(() => {
     async function getTransaction() {
-      onLoadingChange?.(true);
-      const result = await getTransactionList({});
+      const result = await getTransactionList();
       if (result.ok) {
         setAllSales(result.value);
       } else {
@@ -55,7 +55,7 @@ export default function SalesTable({
       onLoadingChange?.(false);
     }
     getTransaction();
-  }, [refreshKey]);
+  }, [refreshKey, onError, onLoadingChange]);
 
   const sales = useMemo(() => {
     const q = searchTerm.trim().toLowerCase();
@@ -78,19 +78,6 @@ export default function SalesTable({
 
     return list;
   }, [allSales, status, order, searchTerm]);
-
-  const getStatusColor = (status: TransactionStatus) => {
-    switch (status) {
-      case "COMPLETED":
-        return "bg-emerald-100 text-emerald-800 border-emerald-300";
-      case "REFUNDED":
-        return "bg-amber-100 text-amber-800 border-amber-300";
-      case "CANCELLED":
-        return "bg-rose-100 text-rose-800 border-rose-300";
-      default:
-        return "bg-muted text-foreground border-border";
-    }
-  };
 
   const handleStatusChange = async (
     id: number,
@@ -117,34 +104,50 @@ export default function SalesTable({
   };
 
   const FilterOptions: FilterProps[] = [
-    { title: "STATUS", sub: ["COMPLETED", "REFUNDED", "CANCELLED"] },
+    { title: "STATUS", sub: STATUS_VALUES },
     { title: "ORDER", sub: ["asc", "desc"] },
   ];
 
   return (
-    <section className="relative rounded-2xl border border-[#e4dccf] bg-[#f5f1e8] overflow-hidden">
+    <section className="relative overflow-hidden rounded-2xl border border-border bg-background">
       {/* Title bar */}
       <div className="flex items-center justify-between gap-3 px-5 py-4">
-        <h2 className="text-lg font-bold text-[#1e1b3a]">Sales history</h2>
+        <h2 className="text-lg font-bold text-foreground">Sales history</h2>
 
         <div className="flex items-center gap-2">
-          <button
-            onClick={() => setFilter((f) => !f)}
-            aria-label="Toggle filters"
-            aria-pressed={filter}
-            className={`rounded-full border p-2.5 transition-colors ${
-              filter
-                ? "border-violet-400 bg-violet-100 text-violet-700"
-                : "border-[#e4dccf] bg-white text-[#6f6787] hover:bg-[#efe9db]"
-            }`}
+          <Dropdown
+            open={filter}
+            onOpenChange={setFilter}
+            align="end"
+            className="w-64 max-h-none overflow-visible rounded-xl border border-border bg-card p-4 shadow-lg"
+            trigger={
+              <button
+                aria-label="Toggle filters"
+                aria-pressed={filter}
+                className={`rounded-full border p-2.5 transition-colors ${
+                  filter
+                    ? "border-primary bg-primary-soft text-primary"
+                    : "border-border bg-card text-muted-foreground hover:bg-secondary"
+                }`}
+              >
+                <SlidersHorizontal size={16} strokeWidth={2.2} />
+              </button>
+            }
           >
-            <SlidersHorizontal size={16} strokeWidth={2.2} />
-          </button>
+            <FilterBar
+              filters={FilterOptions}
+              onFilterChange={handleFilterChange}
+              selectedValues={{
+                STATUS: status,
+                ORDER: order,
+              }}
+            />
+          </Dropdown>
 
           <div className="relative">
             <Search
               size={16}
-              className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9c93b0]"
+              className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground"
             />
             <input
               value={searchTerm}
@@ -153,36 +156,23 @@ export default function SalesTable({
               className={`${inputClasses} pl-9 pr-4 w-48`}
             />
           </div>
-
-          {filter && (
-            <div className="absolute right-5 top-16 z-10 w-64 rounded-xl border border-[#e4dccf] bg-white p-4 shadow-lg">
-              <FilterBar
-                filters={FilterOptions}
-                onFilterChange={handleFilterChange}
-                selectedValues={{
-                  STATUS: status,
-                  ORDER: order,
-                }}
-              />
-            </div>
-          )}
         </div>
       </div>
 
       <div className="overflow-x-auto">
         <table className="w-full border-collapse text-left text-sm">
-          <thead className="border-y border-[#e4dccf]">
+          <thead className="border-y border-border">
             <tr>
-              <th className="px-5 py-2.5 text-xs font-bold uppercase tracking-wide text-[#4b4468]">
+              <th className="px-5 py-2.5 text-xs font-bold uppercase tracking-wide text-muted-foreground">
                 Transaction ID
               </th>
-              <th className="px-5 py-2.5 text-xs font-bold uppercase tracking-wide text-[#4b4468]">
+              <th className="px-5 py-2.5 text-xs font-bold uppercase tracking-wide text-muted-foreground">
                 Total
               </th>
-              <th className="px-5 py-2.5 text-xs font-bold uppercase tracking-wide text-[#4b4468]">
+              <th className="px-5 py-2.5 text-xs font-bold uppercase tracking-wide text-muted-foreground">
                 Handled by
               </th>
-              <th className="px-5 py-2.5 text-xs font-bold uppercase tracking-wide text-[#4b4468]">
+              <th className="px-5 py-2.5 text-xs font-bold uppercase tracking-wide text-muted-foreground">
                 Status
               </th>
               <th className="px-5 py-2.5" />
@@ -193,90 +183,77 @@ export default function SalesTable({
               <tr>
                 <td
                   colSpan={5}
-                  className="px-5 py-8 text-center text-sm text-[#6f6787]"
+                  className="px-5 py-8 text-center text-sm text-muted-foreground"
                 >
                   No transactions found.
                 </td>
               </tr>
             ) : (
-              sales.map((record, index) => (
+              sales.map((record) => (
                 <tr
                   key={record.id}
-                  className="border-t border-[#e4dccf] bg-white/60"
+                  className="border-t border-border bg-card/60"
                 >
-                  <td className="px-5 py-3.5 font-mono text-xs text-[#6f6787]">
+                  <td className="px-5 py-3.5 font-mono text-xs text-muted-foreground">
                     #{record.id}
                   </td>
-                  <td className="px-5 py-3.5 font-bold text-[#1e1b3a]">
-                    ₱{" "}
-                    {record.totalAmount.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })}
+                  <td className="px-5 py-3.5 font-bold text-foreground">
+                    {peso(record.totalAmount)}
                   </td>
-                  <td className="px-5 py-3.5 text-[#4b4468]">
+                  <td className="px-5 py-3.5 text-muted-foreground">
                     {record.user?.name ?? record.handledBy}
                   </td>
                   <td className="px-5 py-3.5">
-                    <div className="relative w-fit">
-                      <button
-                        type="button"
-                        aria-haspopup="listbox"
-                        aria-expanded={openStatusId === record.id}
-                        onClick={() =>
-                          setOpenStatusId((current) =>
-                            current === record.id ? null : record.id,
-                          )
-                        }
-                        className={`flex min-w-28 items-center justify-between gap-2 rounded-full border px-3 py-1.5 text-xs font-medium transition-shadow focus:outline-none focus:ring-2 focus:ring-violet-200 ${getStatusColor(
-                          record.status,
-                        )}`}
-                      >
-                        {record.status}
-                        <ChevronDown
-                          size={14}
-                          className={`transition-transform duration-200 ${
-                            openStatusId === record.id ? "rotate-180" : ""
-                          }`}
-                        />
-                      </button>
-                      {openStatusId === record.id && (
-                        <div
-                          role="listbox"
-                          aria-label="Transaction status"
-                          className={`absolute left-0 z-30 w-36 overflow-hidden rounded-xl border border-[#e4dccf] bg-white p-1.5 shadow-lg ${
-                            index >= sales.length - 2
-                              ? "bottom-[calc(100%+6px)]"
-                              : "top-[calc(100%+6px)]"
-                          }`}
+                    <Dropdown
+                      open={openStatusId === record.id}
+                      onOpenChange={(open) =>
+                        setOpenStatusId(open ? record.id : null)
+                      }
+                      className="w-36 p-1.5"
+                      trigger={
+                        <button
+                          type="button"
+                          className={`flex min-w-28 items-center justify-between gap-2 rounded-full border px-3 py-1.5 text-xs font-medium transition-shadow focus:outline-none focus:ring-2 focus:ring-ring/20 ${statusClass(
+                            record.status,
+                          )}`}
                         >
-                          {STATUS_VALUES.map((option) => (
-                            <button
-                              key={option}
-                              type="button"
-                              role="option"
-                              aria-selected={record.status === option}
-                              onClick={() =>
-                                handleStatusChange(record.id, option)
-                              }
-                              className={`flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-xs text-[#1e1b3a] transition-colors hover:bg-[#f5f1e8] ${
-                                record.status === option
-                                  ? "bg-[#f5f1e8] font-semibold"
-                                  : ""
-                              }`}
-                            >
-                              {option}
-                              {record.status === option && <Check size={14} />}
-                            </button>
-                          ))}
-                        </div>
-                      )}
-                    </div>
+                          {record.status}
+                          <ChevronDown
+                            size={14}
+                            className={`transition-transform duration-200 ${
+                              openStatusId === record.id ? "rotate-180" : ""
+                            }`}
+                          />
+                        </button>
+                      }
+                    >
+                      <div role="listbox" aria-label="Transaction status">
+                        {STATUS_VALUES.map((option) => (
+                          <button
+                            key={option}
+                            type="button"
+                            role="option"
+                            aria-selected={record.status === option}
+                            onClick={() =>
+                              handleStatusChange(record.id, option)
+                            }
+                            className={`flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-xs text-foreground transition-colors hover:bg-background ${
+                              record.status === option
+                                ? "bg-background font-semibold"
+                                : ""
+                            }`}
+                          >
+                            {option}
+                            {record.status === option && <Check size={14} />}
+                          </button>
+                        ))}
+                      </div>
+                    </Dropdown>
                   </td>
                   <td className="px-5 py-3.5 text-right">
                     <button
                       onClick={() => onViewClick?.(record)}
-                      className="rounded-full border border-[#d8cfbf] bg-white px-4 py-1.5 text-xs font-semibold text-[#1e1b3a] transition-colors hover:bg-[#f5f1e8]"
+                      className="rounded-full border border-border bg-card px-4 py-1.5 text-xs font-semibold text-foreground transition-colors hover:bg-background"
                     >
                       View
                     </button>

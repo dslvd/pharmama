@@ -20,12 +20,15 @@ export interface CreateProductPayload {
 
 export type UpdateProductPayload = Partial<CreateProductPayload>;
 
-export type Category =
-  | "ANALGESICS"
-  | "ANTIBIOTICS"
-  | "ANTIHISTAMINES"
-  | "VITAMINS"
-  | "SUPPLEMENTS"
-  | "ANTACIDS"
-  | "HYGIENE"
-  | "OTHERS";
+export const CATEGORIES = [
+  "ANALGESICS",
+  "ANTIBIOTICS",
+  "ANTIHISTAMINES",
+  "VITAMINS",
+  "SUPPLEMENTS",
+  "ANTACIDS",
+  "HYGIENE",
+  "OTHERS",
+] as const;
+
+export type Category = (typeof CATEGORIES)[number];

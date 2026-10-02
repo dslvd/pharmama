@@ -47,7 +47,7 @@ export default function LowStocks({ stock, variant = "card" }: LowStocksProps) {
     return (
       <article className="flex h-105 flex-col overflow-hidden rounded-xl border border-border bg-card p-5">
         <div className="flex items-center gap-2">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-100 text-amber-600">
+          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-warning-soft text-warning">
             <AlertTriangle className="h-4 w-4" />
           </span>
           <h3 className="text-lg font-semibold text-foreground">
@@ -73,7 +73,7 @@ export default function LowStocks({ stock, variant = "card" }: LowStocksProps) {
                       Batch {s.batchNumber}
                     </p>
                   </div>
-                  <span className="shrink-0 rounded-full bg-amber-100 px-2.5 py-1 text-xs font-semibold text-amber-700">
+                  <span className="shrink-0 rounded-full bg-warning-soft px-2.5 py-1 text-xs font-semibold text-warning">
                     {s.quantity} left
                   </span>
                 </li>
@@ -88,7 +88,7 @@ export default function LowStocks({ stock, variant = "card" }: LowStocksProps) {
   return (
     <article className="rounded-xl border border-border bg-card p-5">
       <div className="flex items-start justify-between">
-        <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-100 text-amber-600">
+        <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-warning-soft text-warning">
           <AlertTriangle className="h-5 w-5" />
         </span>
       </div>

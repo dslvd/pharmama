@@ -38,7 +38,9 @@ export default function AddStockModal({
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isProductOpen, setIsProductOpen] = useState(false);
-  const [selectedPr, setSelectedPr] = useState<Product | null>(null);
+  const [selectedPr, setSelectedPr] = useState<Product | null>(
+    stock?.product ?? null,
+  );
 
   const handleQuantityInput = (value: string) => {
     if (value === "") {
@@ -149,7 +151,7 @@ export default function AddStockModal({
         <div className="grid grid-cols-2 gap-4">
           <label className={labelClasses}>
             Quantity
-            <div className="mt-1.5 flex h-10.5 overflow-hidden rounded-md border border-border bg-input">
+            <div className="mt-1.5 flex h-10.5 overflow-hidden rounded-md border border-border bg-input focus-within:border-ring focus-within:ring-2 focus-within:ring-ring/20">
               <input
                 type="text"
                 inputMode="numeric"

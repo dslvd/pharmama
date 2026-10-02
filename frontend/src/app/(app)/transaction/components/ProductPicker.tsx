@@ -3,21 +3,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { Plus, Minus, Search } from "lucide-react";
 import { getProductList } from "@/lib/api/product";
-import { Category, Product } from "@/lib/types/product";
+import { CATEGORIES, Category, Product } from "@/lib/types/product";
 import { CreateTransactionItemPayload } from "@/lib/types/transaction";
 import { getStockList } from "@/lib/api/stocks";
 import { Stock } from "@/lib/types/stock";
-
-const CATEGORY_VALUES: Category[] = [
-  "ANALGESICS",
-  "ANTIBIOTICS",
-  "ANTIHISTAMINES",
-  "VITAMINS",
-  "SUPPLEMENTS",
-  "ANTACIDS",
-  "HYGIENE",
-  "OTHERS",
-];
+import { peso } from "@/lib/utils/format";
 
 export interface SubmittedItem {
   trItems: CreateTransactionItemPayload;
@@ -32,6 +22,13 @@ interface ProductPickerProps {
   // bump to reload stock (e.g. after a sale)
   refreshKey?: number;
 }
+
+const pillClass = (active: boolean) =>
+  `rounded-full border px-3 py-1 text-xs font-semibold transition-colors ${
+    active
+      ? "border-primary bg-primary text-primary-foreground"
+      : "border-border bg-card text-muted-foreground hover:bg-secondary"
+  }`;
 
 const isExpired = (s: Stock) => new Date(s.expiryDate).getTime() <= Date.now();
 
@@ -52,8 +49,8 @@ export default function ProductPicker({
     async function loadItems() {
       setLoading(true);
       const [stockResult, productResult] = await Promise.all([
-        getStockList({}),
-        getProductList({}),
+        getStockList(),
+        getProductList(),
       ]);
 
       if (stockResult.ok) {
@@ -72,7 +69,7 @@ export default function ProductPicker({
     }
 
     loadItems();
-  }, [refreshKey]);
+  }, [refreshKey, onError]);
 
   const products = useMemo(() => {
     const q = searchTerm.trim().toLowerCase();
@@ -148,89 +145,77 @@ export default function ProductPicker({
   };
 
   return (
-    <div className="flex h-full flex-col rounded-2xl border border-[#e4dccf] bg-[#f5f1e8] p-5">
+    <div className="flex h-full flex-col rounded-2xl border border-border bg-background p-5">
       <div className="relative mb-3">
         <Search
           size={16}
-          className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9c93b0]"
+          className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground"
         />
         <input
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           placeholder="Search"
-          className="w-full rounded-full border border-[#e4dccf] bg-white py-2 pl-9 pr-4 text-sm text-[#1e1b3a] placeholder:text-[#9c93b0] focus:border-violet-400 focus:outline-none focus:ring-2 focus:ring-violet-100"
+          className="w-full rounded-full border border-border bg-card py-2 pl-9 pr-4 text-sm text-foreground placeholder:text-muted-foreground focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring/20"
         />
       </div>
 
       <div className="mb-3 flex flex-wrap gap-2">
         <button
           onClick={() => setCategory(undefined)}
-          className={`rounded-full border px-3 py-1 text-xs font-semibold transition-colors ${
-            !category
-              ? "border-violet-950 bg-violet-950 text-white"
-              : "border-[#d8cfbf] bg-white text-[#4b4468] hover:bg-[#efe9db]"
-          }`}
+          className={pillClass(!category)}
         >
           All
         </button>
-        {CATEGORY_VALUES.map((c) => (
+        {CATEGORIES.map((c) => (
           <button
             key={c}
             onClick={() => setCategory(category === c ? undefined : c)}
-            className={`rounded-full border px-3 py-1 text-xs font-semibold transition-colors ${
-              category === c
-                ? "border-violet-950 bg-violet-950 text-white"
-                : "border-[#d8cfbf] bg-white text-[#4b4468] hover:bg-[#efe9db]"
-            }`}
+            className={pillClass(category === c)}
           >
             {c}
           </button>
         ))}
       </div>
 
-      <div className="flex-1 overflow-y-auto rounded-xl border border-[#e4dccf] bg-white">
+      <div className="flex-1 overflow-y-auto rounded-xl border border-border bg-card">
         {loading ? (
-          <div className="p-4 text-center text-sm text-[#6f6787]">
+          <div className="p-4 text-center text-sm text-muted-foreground">
             Loading products...
           </div>
         ) : availableProducts.length === 0 ? (
-          <div className="p-6 text-center text-sm text-[#6f6787]">
+          <div className="p-6 text-center text-sm text-muted-foreground">
             No products available.
           </div>
         ) : (
           availableProducts.map((product) => (
             <div
               key={product.id}
-              className="flex items-center justify-between gap-3 border-b border-[#f0ece0] px-4 py-3 last:border-b-0 hover:bg-[#faf7f0]"
+              className="flex items-center justify-between gap-3 border-b border-border/60 px-4 py-3 last:border-b-0 hover:bg-background"
             >
               <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-semibold text-[#1e1b3a]">
+                <p className="truncate text-sm font-semibold text-foreground">
                   {product.name}
                 </p>
-                <p className="text-xs text-[#9c93b0]">
-                  {product.category} &middot; ₱{" "}
-                  {product.price.toLocaleString(undefined, {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })}
+                <p className="text-xs text-muted-foreground">
+                  {product.category} &middot; {peso(product.price)}
                 </p>
               </div>
 
-              <div className="flex w-24 shrink-0 items-center justify-center gap-1 rounded-full border border-[#d8cfbf] bg-white px-1.5 py-1">
+              <div className="flex w-24 shrink-0 items-center justify-center gap-1 rounded-full border border-border bg-card px-1.5 py-1">
                 <button
                   onClick={() => adjustQty(product.id, -1)}
                   aria-label="Decrease quantity"
-                  className="flex h-5 w-5 items-center justify-center rounded-full text-[#6f6787] hover:bg-[#efe9db]"
+                  className="flex h-6 w-6 items-center justify-center rounded-full text-muted-foreground hover:bg-secondary"
                 >
                   <Minus size={12} />
                 </button>
-                <span className="w-5 text-center text-xs font-semibold text-[#1e1b3a]">
+                <span className="w-5 text-center text-xs font-semibold text-foreground">
                   {getQty(product.id)}
                 </span>
                 <button
                   onClick={() => adjustQty(product.id, 1)}
                   aria-label="Increase quantity"
-                  className="flex h-5 w-5 items-center justify-center rounded-full text-[#6f6787] hover:bg-[#efe9db]"
+                  className="flex h-6 w-6 items-center justify-center rounded-full text-muted-foreground hover:bg-secondary"
                 >
                   <Plus size={12} />
                 </button>
@@ -238,7 +223,7 @@ export default function ProductPicker({
 
               <button
                 onClick={() => handleAdd(product)}
-                className="w-16 shrink-0 rounded-full bg-violet-950 px-4 py-1.5 text-center text-xs font-semibold text-white transition-colors hover:bg-violet-900"
+                className="w-16 shrink-0 rounded-full bg-primary px-4 py-1.5 text-center text-xs font-semibold text-primary-foreground transition-colors hover:bg-primary-hover"
               >
                 Add
               </button>

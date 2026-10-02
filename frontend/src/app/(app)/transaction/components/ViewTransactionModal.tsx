@@ -1,6 +1,8 @@
 "use client";
-import { Transaction, TransactionStatus } from "@/lib/types/transaction";
+import { Transaction } from "@/lib/types/transaction";
 import Modal from "@/components/ui/Modal";
+import { peso } from "@/lib/utils/format";
+import { statusClass } from "@/lib/utils/status";
 
 interface ViewTransactionModalProps {
   transaction?: Transaction;
@@ -12,19 +14,6 @@ export default function ViewTransactionModal({
   onClose,
 }: ViewTransactionModalProps) {
   const items = transaction?.transactionItems;
-
-  const getStatusColor = (currentStatus: TransactionStatus | undefined) => {
-    switch (currentStatus) {
-      case "COMPLETED":
-        return "bg-emerald-100 text-emerald-800 border-emerald-300";
-      case "REFUNDED":
-        return "bg-amber-100 text-amber-800 border-amber-300";
-      case "CANCELLED":
-        return "bg-rose-100 text-rose-800 border-rose-300";
-      default:
-        return "bg-muted text-foreground border-border";
-    }
-  };
 
   return (
     <Modal
@@ -85,11 +74,7 @@ export default function ViewTransactionModal({
                       {item.quantity ?? "-"}
                     </td>
                     <td className="px-4 py-3 text-right text-xs font-semibold text-foreground">
-                      ₱{" "}
-                      {(item.subtotal || 0).toLocaleString(undefined, {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
+                      {peso(item.subtotal || 0)}
                     </td>
                   </tr>
                 );
@@ -105,7 +90,7 @@ export default function ViewTransactionModal({
           <div className="flex items-center gap-1.5">
             <span className="font-normal text-muted-foreground">Status:</span>
             <div
-              className={`rounded-full border px-2.5 py-1 text-xs font-medium ${getStatusColor(
+              className={`rounded-full border px-2.5 py-1 text-xs font-medium ${statusClass(
                 transaction?.status,
               )}`}
             >
@@ -115,11 +100,7 @@ export default function ViewTransactionModal({
         </div>
 
         <span className="text-base font-bold text-foreground">
-          Total: ₱{" "}
-          {(transaction?.totalAmount || 0).toLocaleString(undefined, {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          })}
+          Total: {peso(transaction?.totalAmount || 0)}
         </span>
       </div>
     </Modal>
