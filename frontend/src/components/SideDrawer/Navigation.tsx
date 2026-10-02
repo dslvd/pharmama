@@ -19,6 +19,8 @@ import ExitStaffViewDialog from "@/components/ExitStaffViewDialog";
 
 interface NavigationProps {
   isOpen: boolean;
+  // called when a link is clicked, so the overlay closes after navigating
+  onNavigate?: () => void;
 }
 
 const sections = [
@@ -59,7 +61,7 @@ const sections = [
   },
 ];
 
-export default function Navigation({ isOpen }: NavigationProps) {
+export default function Navigation({ isOpen, onNavigate }: NavigationProps) {
   const pathname = usePathname();
   const { user, role, staffView, logout } = useAuth();
   const [exitOpen, setExitOpen] = useState(false);
@@ -72,17 +74,22 @@ export default function Navigation({ isOpen }: NavigationProps) {
     .filter((s) => s.items.length > 0); // hide empty section headers
 
   return (
-    // the purple column stretches with the page; only its content is
-    // sticky, so the background never stops short on long pages
+    // slides over the page instead of pushing it; inert while hidden so
+    // its links can't be tabbed to
     <aside
-      className={`relative z-50 [--ring:var(--sidebar-ring)] shrink-0 overflow-clip bg-primary transition-all duration-200 ${
-        isOpen ? "w-56" : "w-0"
+      className={`fixed inset-y-0 left-0 z-50 w-56 bg-primary shadow-xl transition-transform duration-200 [--ring:var(--sidebar-ring)] ${
+        isOpen ? "translate-x-0" : "-translate-x-full shadow-none"
       }`}
       aria-label="Main Navigation"
+      inert={!isOpen}
     >
-      <div className="sticky top-0 flex h-screen w-56 flex-col justify-between">
+      <div className="flex h-full flex-col justify-between">
         <div className="flex flex-col px-4 pt-6">
-          <Link href={homeFor(role)} className="mb-10 flex items-center px-1">
+          <Link
+            href={homeFor(role)}
+            onClick={onNavigate}
+            className="mb-10 flex items-center px-1"
+          >
             <Image
               src="/logo/pharlogo.png"
               alt="PharMaMa"
@@ -108,6 +115,7 @@ export default function Navigation({ isOpen }: NavigationProps) {
                     <Link
                       key={page}
                       href={page}
+                      onClick={onNavigate}
                       className={`flex items-center gap-3 rounded-lg px-3 py-2 text-left text-sm transition-colors ${
                         isActive
                           ? "bg-sidebar-active font-semibold text-primary-foreground"
