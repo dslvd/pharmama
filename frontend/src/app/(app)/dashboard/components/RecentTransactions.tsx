@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { Transaction } from "@/lib/types/transaction";
-import { peso } from "@/lib/utils/format";
+import { formatTime, peso } from "@/lib/utils/format";
 import { statusClass } from "@/lib/utils/status";
 import Skeleton from "@/components/ui/Skeleton";
 
@@ -20,15 +20,6 @@ export default function RecentTransactions({
       )
       .slice(0, 5);
   }, [transactions]);
-
-  const formatTime = (date: Date | string) => {
-    const dateObj = typeof date === "string" ? new Date(date) : date;
-    return dateObj.toLocaleTimeString("en-US", {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: true,
-    });
-  };
 
   return (
     <section className="rounded-xl border border-border bg-card p-5">

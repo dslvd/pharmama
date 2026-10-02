@@ -3,6 +3,7 @@ import { Stock } from "@/lib/types/stock";
 import { useState } from "react";
 import { deleteStock } from "@/lib/api/stocks";
 import ConfirmDialog from "@/components/ConfirmDialog";
+import { formatDate } from "@/lib/utils/format";
 
 interface StockRowProps {
   stock: Stock;
@@ -24,8 +25,7 @@ export default function StockRow({
 }: StockRowProps) {
   const [deleting, setDeleting] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const expiry = new Date(stock.expiryDate);
-  const expiryDate = expiry.toLocaleDateString();
+  const expiryDate = formatDate(stock.expiryDate);
 
   const quantityStyle =
     stock.quantity <= LOW_QUANTITY_THRESHOLD

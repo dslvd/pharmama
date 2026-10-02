@@ -1,4 +1,5 @@
 import { AuditLog } from "@/lib/types/audit-log";
+import { formatDate, formatTime } from "@/lib/utils/format";
 
 const ACTION_STYLES: Record<string, string> = {
   CREATE: "bg-success-soft text-success",
@@ -10,12 +11,8 @@ const ACTION_STYLES: Record<string, string> = {
 };
 
 export default function AuditRow({ audit }: { audit: AuditLog }) {
-  const createdAt = new Date(audit.createdAt);
-  const date = createdAt.toLocaleDateString();
-  const time = createdAt.toLocaleTimeString([], {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  const date = formatDate(audit.createdAt);
+  const time = formatTime(audit.createdAt);
   const actionStyle =
     ACTION_STYLES[audit.action] ?? "bg-muted text-muted-foreground";
 
@@ -78,12 +75,12 @@ function formatFieldName(key: string): string {
 
 function displayValue(val: unknown): string {
   if (val === null || val === undefined) return "—";
-  if (val instanceof Date) return val.toLocaleDateString();
+  if (val instanceof Date) return formatDate(val);
   if (typeof val === "string") {
     // catch ISO date strings and format them nicely
     const parsed = new Date(val);
     if (!isNaN(parsed.getTime()) && /^\d{4}-\d{2}-\d{2}T/.test(val)) {
-      return parsed.toLocaleDateString();
+      return formatDate(parsed);
     }
     return val;
   }
