@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   PanelsTopLeft,
   ArrowLeftRight,
@@ -16,6 +16,8 @@ import Image from "next/image";
 import { useAuth } from "@/lib/auth";
 import { homeFor } from "@/lib/roles";
 import ExitStaffViewDialog from "@/components/ExitStaffViewDialog";
+import ConfirmDialog from "@/components/ConfirmDialog";
+import { clearLeaveWarning, getLeaveWarning } from "@/lib/leaveGuard";
 
 interface NavigationProps {
   isOpen: boolean;
@@ -65,6 +67,27 @@ export default function Navigation({ isOpen, onNavigate }: NavigationProps) {
   const pathname = usePathname();
   const { user, role, staffView, logout } = useAuth();
   const [exitOpen, setExitOpen] = useState(false);
+  const router = useRouter();
+  // action held back until the user confirms leaving unsaved work
+  const [pendingLeave, setPendingLeave] = useState<{
+    warning: string;
+    go: () => void;
+  } | null>(null);
+
+  const guard = (go: () => void) => {
+    const warning = getLeaveWarning();
+    if (warning) setPendingLeave({ warning, go });
+    else go();
+  };
+
+  const navigate = (href: string) => (e: React.MouseEvent) => {
+    if (href === pathname || !getLeaveWarning()) return onNavigate?.();
+    e.preventDefault();
+    guard(() => {
+      router.push(href);
+      onNavigate?.();
+    });
+  };
 
   const canSee = (roles?: string[]) =>
     !roles || (!!role && roles.includes(role));
@@ -81,14 +104,13 @@ export default function Navigation({ isOpen, onNavigate }: NavigationProps) {
         isOpen ? "translate-x-0" : "-translate-x-full shadow-none"
       }`}
       aria-label="Main Navigation"
-      data-drawer
       inert={!isOpen}
     >
       <div className="flex h-full flex-col justify-between">
         <div className="flex flex-col px-4 pt-6">
           <Link
             href={homeFor(role)}
-            onClick={onNavigate}
+            onClick={navigate(homeFor(role))}
             className="mb-10 flex items-center px-1"
           >
             <Image
@@ -116,7 +138,7 @@ export default function Navigation({ isOpen, onNavigate }: NavigationProps) {
                     <Link
                       key={page}
                       href={page}
-                      onClick={onNavigate}
+                      onClick={navigate(page)}
                       className={`flex items-center gap-3 rounded-lg px-3 py-2 text-left text-sm transition-colors ${
                         isActive
                           ? "bg-sidebar-active font-semibold text-primary-foreground"
@@ -141,7 +163,7 @@ export default function Navigation({ isOpen, onNavigate }: NavigationProps) {
                 Pharmacist view
               </p>
               <button
-                onClick={() => setExitOpen(true)}
+                onClick={() => guard(() => setExitOpen(true))}
                 className="mt-2 w-full rounded-md bg-primary-foreground/10 px-3 py-1.5 text-xs font-semibold text-primary-foreground transition-colors hover:bg-primary-foreground/20"
               >
                 Exit pharmacist view
@@ -161,7 +183,12 @@ export default function Navigation({ isOpen, onNavigate }: NavigationProps) {
               </p>
             </div>
             <button
-              onClick={logout}
+              onClick={() =>
+                guard(() => {
+                  clearLeaveWarning();
+                  logout();
+                })
+              }
               aria-label="Log out"
               className="text-sidebar-muted/80 transition-colors hover:text-primary-foreground"
             >
@@ -170,6 +197,17 @@ export default function Navigation({ isOpen, onNavigate }: NavigationProps) {
           </div>
         </div>
       </div>
+      <ConfirmDialog
+        open={!!pendingLeave}
+        title="Leave this page?"
+        message={pendingLeave?.warning}
+        confirmLabel="Leave"
+        onConfirm={() => {
+          pendingLeave?.go();
+          setPendingLeave(null);
+        }}
+        onClose={() => setPendingLeave(null)}
+      />
       <ExitStaffViewDialog open={exitOpen} onClose={() => setExitOpen(false)} />
     </aside>
   );
