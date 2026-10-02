@@ -43,6 +43,8 @@ export default function Modal({
   return (
     <Dialog
       open={open}
+      // only Cancel/Close (or Esc) closes a modal, not a click outside
+      disablePointerDismissal
       onOpenChange={(next: boolean) => {
         if (!next) onClose();
       }}
