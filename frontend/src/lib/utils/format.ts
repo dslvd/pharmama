@@ -36,3 +36,12 @@ export const formatTime = (d: Date | string) => timeFmt.format(new Date(d));
 // "Friday, October 2"
 export const formatLongDay = (d: Date | string) =>
   longDayFmt.format(new Date(d));
+
+// "#0012"
+export const txnId = (id: number) => `#${String(id).padStart(4, "0")}`;
+
+// "STOCK_ADJUSTMENT" -> "Stock adjustment"
+export const titleCase = (value: string) => {
+  const text = value.toLowerCase().replace(/_/g, " ");
+  return text.charAt(0).toUpperCase() + text.slice(1);
+};
