@@ -173,35 +173,32 @@
       50% / calc(var(--zigzag) * 2) 100%;
 }
 
-/* printing a receipt: show only #receipt, sized for an 80mm roll */
+/* printing a receipt: ReceiptModal portals a copy into <body>; print
+   only that, sized for an 80mm roll */
+.receipt-print {
+  display: none;
+}
+
 @media print {
   @page {
     size: 80mm auto;
     margin: 4mm;
   }
-  body * {
-    visibility: hidden;
+  html,
+  body {
+    background: #fff;
   }
-  #receipt,
-  #receipt * {
-    visibility: visible;
+  body > :not(.receipt-print) {
+    display: none !important;
   }
-  #receipt {
-    position: absolute;
-    inset: 0 auto auto 0;
-    width: 100%;
+  .receipt-print {
+    display: block;
+  }
+  .receipt-print > .receipt-paper {
     max-width: none;
     padding: 0;
     box-shadow: none;
     mask: none;
-  }
-  /* the dialog is centered with a transform; undo it so #receipt
-     lands at the top-left of the page */
-  [data-slot="dialog-content"] {
-    position: static;
-    transform: none;
-    max-height: none;
-    overflow: visible;
   }
 }
 

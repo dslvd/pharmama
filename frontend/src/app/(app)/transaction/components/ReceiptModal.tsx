@@ -1,5 +1,6 @@
 "use client";
 
+import { createPortal } from "react-dom";
 import { Printer } from "lucide-react";
 import Modal from "@/components/ui/Modal";
 import { txnId } from "@/lib/utils/format";
@@ -48,6 +49,15 @@ export default function ReceiptModal({
           Print
         </button>
       </div>
+
+      {/* print-only copy straight under <body>, so printing doesn't fight
+          the dialog's positioning; see .receipt-print in globals.css */}
+      {createPortal(
+        <div className="receipt-print">
+          <Receipt data={data} />
+        </div>,
+        document.body,
+      )}
     </Modal>
   );
 }

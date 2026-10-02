@@ -80,13 +80,12 @@ export default function Receipt({ data }: { data: ReceiptData }) {
 
   return (
     <div
-      id="receipt"
       className="receipt-paper relative mx-auto w-full max-w-[20rem] bg-card px-5 pb-8 pt-6 font-mono text-xs leading-relaxed text-foreground shadow-md"
     >
       {voided && (
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute left-1/2 top-1/3 -translate-x-1/2 -rotate-12 rounded-md border-4 border-danger/60 px-3 py-1 text-2xl font-extrabold tracking-widest text-danger/60"
+          className="pointer-events-none absolute left-1/2 top-[58%] -translate-x-1/2 -rotate-12 rounded-md border-4 border-danger/60 px-3 py-1 text-2xl font-extrabold tracking-widest text-danger/60"
         >
           {data.status}
         </div>
