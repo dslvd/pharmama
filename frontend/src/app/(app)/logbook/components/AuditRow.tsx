@@ -1,5 +1,6 @@
 import { AuditLog } from "@/lib/types/audit-log";
-import { formatDate, formatTime } from "@/lib/utils/format";
+import { formatDate, formatTime, titleCase } from "@/lib/utils/format";
+import { Badge, Td, Tr } from "@/components/ui/table";
 
 const ACTION_STYLES: Record<string, string> = {
   CREATE: "bg-success-soft text-success",
@@ -10,38 +11,58 @@ const ACTION_STYLES: Record<string, string> = {
   RESTORE_STOCK: "bg-success-soft text-success",
 };
 
+const ENTITY_LABELS: Record<string, string> = {
+  TRANSACTIONITEM: "Transaction item",
+};
+
 export default function AuditRow({ audit }: { audit: AuditLog }) {
-  const date = formatDate(audit.createdAt);
-  const time = formatTime(audit.createdAt);
   const actionStyle =
     ACTION_STYLES[audit.action] ?? "bg-muted text-muted-foreground";
+  const changes = audit.changes
+    ? formatChanges(audit.changes.old, audit.changes.new)
+    : [];
 
   return (
-    <tr className="border-b border-border last:border-0 odd:bg-card even:bg-primary-soft/30">
-      <td className="px-4 py-3 text-center text-muted-foreground">{date}</td>
-      <td className="px-4 py-3 text-center text-muted-foreground">{time}</td>
-      <td className="px-4 py-3 text-center text-muted-foreground">
-        {audit.entityId}
-      </td>
-      <td className="px-4 py-3 text-center">
-        <span
-          className={`rounded-full px-2.5 py-1 text-xs font-medium ${actionStyle}`}
-        >
-          {audit.action}
-        </span>
-      </td>
-      <td className="px-4 py-3 text-center text-foreground">{audit.entity}</td>
-      <td className="px-4 py-3 text-center text-muted-foreground">
-        {audit.changes
-          ? formatChanges(audit.changes.old, audit.changes.new)
-          : "—"}
-      </td>
-    </tr>
+    <Tr className="align-top">
+      <Td className="whitespace-nowrap">
+        <p>{formatDate(audit.createdAt)}</p>
+        <p className="text-xs text-muted-foreground">
+          {formatTime(audit.createdAt)}
+        </p>
+      </Td>
+      <Td>
+        <p className="font-medium">{audit.user?.name ?? "—"}</p>
+        <p className="text-xs text-muted-foreground">
+          {audit.user ? titleCase(audit.user.role) : ""}
+        </p>
+      </Td>
+      <Td>
+        <Badge className={actionStyle}>{titleCase(audit.action)}</Badge>
+      </Td>
+      <Td className="whitespace-nowrap">
+        <p>{ENTITY_LABELS[audit.entity] ?? titleCase(audit.entity)}</p>
+        <p className="font-mono text-xs text-muted-foreground">
+          #{audit.entityId}
+        </p>
+      </Td>
+      <Td className="text-muted-foreground">
+        {changes.length === 0 ? (
+          "—"
+        ) : (
+          <ul className="space-y-0.5 text-xs">
+            {changes.map((line) => (
+              <li key={line}>{line}</li>
+            ))}
+          </ul>
+        )}
+      </Td>
+    </Tr>
   );
 }
 
-function formatChanges(oldVal: unknown, newVal: unknown): string {
-  if (oldVal === null || oldVal === undefined) return "—";
+// one "Field: old → new" line per changed field
+function formatChanges(oldVal: unknown, newVal: unknown): string[] {
+  if (oldVal === null || oldVal === undefined) return [];
 
   if (
     typeof oldVal === "object" &&
@@ -55,17 +76,15 @@ function formatChanges(oldVal: unknown, newVal: unknown): string {
       (key) => JSON.stringify(oldObj[key]) !== JSON.stringify(newObj[key]),
     );
 
-    if (changedKeys.length === 0) return "No changes";
+    if (changedKeys.length === 0) return ["No changes"];
 
-    return changedKeys
-      .map(
-        (key) =>
-          `${formatFieldName(key)}: ${displayValue(oldObj[key])} → ${displayValue(newObj[key])}`,
-      )
-      .join(", ");
+    return changedKeys.map(
+      (key) =>
+        `${formatFieldName(key)}: ${displayValue(oldObj[key])} → ${displayValue(newObj[key])}`,
+    );
   }
 
-  return `${displayValue(oldVal)} → ${displayValue(newVal)}`;
+  return [`${displayValue(oldVal)} → ${displayValue(newVal)}`];
 }
 
 function formatFieldName(key: string): string {
