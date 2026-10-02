@@ -13,6 +13,7 @@ import {
 import { useAuth } from "@/lib/auth";
 import { ErrorStack } from "@/components/ErrorCard";
 import Loading from "./loading";
+import { useLeaveWarning } from "@/lib/leaveGuard";
 
 export default function TransactionsPage() {
   const [items, setItems] = useState<SubmittedItem[]>([]);
@@ -25,6 +26,12 @@ export default function TransactionsPage() {
     justSold: boolean;
   } | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
+
+  useLeaveWarning(
+    items.length > 0
+      ? "The current sale hasn't been confirmed. Leaving this page will clear the cart."
+      : null,
+  );
 
   const addError = useCallback(
     (message: string) =>
