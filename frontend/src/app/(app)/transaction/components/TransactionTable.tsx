@@ -80,7 +80,7 @@ export default function TransactionTable({
                   <button
                     onClick={() => removeItem(item.trItems.stockId)}
                     aria-label="Remove item"
-                    className="text-danger/80 hover:text-danger"
+                    className="rounded-md p-1 text-danger/80 transition-colors hover:bg-danger-soft hover:text-danger"
                   >
                     <X size={16} />
                   </button>

@@ -155,7 +155,7 @@ export default function ProductPicker({
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           placeholder="Search"
-          className="w-full rounded-full border border-border bg-card py-2 pl-9 pr-4 text-sm text-foreground placeholder:text-muted-foreground/70 focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring/20"
+          className="w-full rounded-full border border-border bg-card py-2 pl-9 pr-4 text-sm text-foreground placeholder:text-muted-foreground focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring/20"
         />
       </div>
 
@@ -205,7 +205,7 @@ export default function ProductPicker({
                 <button
                   onClick={() => adjustQty(product.id, -1)}
                   aria-label="Decrease quantity"
-                  className="flex h-5 w-5 items-center justify-center rounded-full text-muted-foreground hover:bg-secondary"
+                  className="flex h-6 w-6 items-center justify-center rounded-full text-muted-foreground hover:bg-secondary"
                 >
                   <Minus size={12} />
                 </button>
@@ -215,7 +215,7 @@ export default function ProductPicker({
                 <button
                   onClick={() => adjustQty(product.id, 1)}
                   aria-label="Increase quantity"
-                  className="flex h-5 w-5 items-center justify-center rounded-full text-muted-foreground hover:bg-secondary"
+                  className="flex h-6 w-6 items-center justify-center rounded-full text-muted-foreground hover:bg-secondary"
                 >
                   <Plus size={12} />
                 </button>

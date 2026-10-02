@@ -73,7 +73,7 @@ export default function Navigation({ isOpen }: NavigationProps) {
 
   return (
     <aside
-      className={`sticky top-0 z-50 flex h-screen shrink-0 flex-col justify-between overflow-hidden bg-primary transition-all duration-200 ${
+      className={`sticky top-0 z-50 flex [--ring:var(--sidebar-ring)] h-screen shrink-0 flex-col justify-between overflow-hidden bg-primary transition-all duration-200 ${
         isOpen ? "w-56" : "w-0"
       }`}
       aria-label="Main Navigation"

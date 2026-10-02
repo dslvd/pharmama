@@ -66,7 +66,7 @@
   --sidebar-accent: #6B5B7F;
   --sidebar-accent-foreground: #F5F1E8;
   --sidebar-border: #4A3A6B;
-  --sidebar-ring: #2D1B4E;
+  --sidebar-ring: #C4B5FD;
 
   /* misc */
   --skeleton: #EAE3D8;
@@ -144,6 +144,11 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+  /* keyboard focus is always visible; inputs that draw their own ring
+     opt out with focus:outline-none */
+  :where(a, button, input, select, textarea, [tabindex]):focus-visible {
+    @apply outline-2 outline-offset-2 outline-ring;
   }
 }
 

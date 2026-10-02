@@ -50,11 +50,11 @@ export default function ProductRow({
           {peso(product.price)}
         </td>
         <td className="px-4 py-3">
-          <div className="flex items-center gap-3 text-muted-foreground">
+          <div className="flex items-center gap-1 text-muted-foreground">
             <button
               aria-label={`Edit product ${product.id}`}
               onClick={() => onEdit?.(product)}
-              className="transition-colors hover:text-primary"
+              className="rounded-md p-1.5 transition-colors hover:bg-muted/40 hover:text-primary"
             >
               <PencilLine size={15} />
             </button>
@@ -63,7 +63,7 @@ export default function ProductRow({
               aria-label={`Delete product ${product.id}`}
               onClick={() => setConfirmOpen(true)}
               disabled={deleting}
-              className="transition-colors hover:text-danger disabled:opacity-50"
+              className="rounded-md p-1.5 transition-colors hover:bg-danger-soft hover:text-danger disabled:opacity-50"
             >
               <Trash size={15} />
             </button>

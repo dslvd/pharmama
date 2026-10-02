@@ -47,7 +47,7 @@ export default function LoginPage() {
           </ul>
         </div>
 
-        <p className="relative text-xs text-sidebar-muted/60">© 2026 PharMaMa</p>
+        <p className="relative text-xs text-sidebar-muted/80">© 2026 PharMaMa</p>
       </section>
 
       <section className="flex items-center justify-center px-4 py-10">

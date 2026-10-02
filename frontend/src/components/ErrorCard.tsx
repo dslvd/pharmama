@@ -13,7 +13,8 @@ export function ErrorCard({
   depth?: number;
   onClose?: () => void;
 }) {
-  const opacity = depth === 0 ? 1 : Math.max(0.2, 0.8 - depth * 0.2);
+  // older errors fade, but stay readable
+  const opacity = depth === 0 ? 1 : Math.max(0.6, 0.9 - depth * 0.1);
 
   return (
     <div
@@ -25,10 +26,14 @@ export function ErrorCard({
         <p className="text-sm text-error/90">
           <span className="font-semibold"> Error: </span> {err}
         </p>
-        <X
+        <button
+          type="button"
           onClick={onClose}
-          className="w-4 h-4 text-error/50 hover:text-error cursor-pointer ml-auto shrink-0 transition-colors"
-        />
+          aria-label="Dismiss error"
+          className="ml-auto shrink-0 rounded-md p-1 text-error/80 transition-colors hover:bg-error/10 hover:text-error"
+        >
+          <X className="h-4 w-4" />
+        </button>
       </div>
     </div>
   );
