@@ -1,5 +1,5 @@
 import { Trash, PencilLine } from "lucide-react";
-import { Stock } from "@/lib/types/stock";
+import { LOW_STOCK_THRESHOLD, Stock } from "@/lib/types/stock";
 import { useState } from "react";
 import { deleteStock } from "@/lib/api/stocks";
 import ConfirmDialog from "@/components/ConfirmDialog";
@@ -14,8 +14,6 @@ interface StockRowProps {
   canDelete?: boolean;
 }
 
-const LOW_QUANTITY_THRESHOLD = 20;
-
 export default function StockRow({
   stock,
   onDeleted,
@@ -28,7 +26,7 @@ export default function StockRow({
   const expiryDate = formatDate(stock.expiryDate);
 
   const quantityStyle =
-    stock.quantity <= LOW_QUANTITY_THRESHOLD
+    stock.quantity <= LOW_STOCK_THRESHOLD
       ? "bg-warning-soft text-warning"
       : "bg-muted text-foreground";
 
@@ -65,9 +63,9 @@ export default function StockRow({
         </td>
         <td className="px-4 py-3">
           <span
-            className={`rounded-full px-2.5 py-1 text-xs font-medium ${stock.quantity <= LOW_QUANTITY_THRESHOLD ? "bg-warning-soft text-warning" : "bg-success-soft text-success"}`}
+            className={`rounded-full px-2.5 py-1 text-xs font-medium ${stock.quantity <= LOW_STOCK_THRESHOLD ? "bg-warning-soft text-warning" : "bg-success-soft text-success"}`}
           >
-            {stock.quantity <= LOW_QUANTITY_THRESHOLD
+            {stock.quantity <= LOW_STOCK_THRESHOLD
               ? "Low stock"
               : "In stock"}
           </span>

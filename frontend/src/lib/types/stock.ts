@@ -1,5 +1,8 @@
 import { Product } from "./product";
 
+// a batch at or below this quantity counts as low stock
+export const LOW_STOCK_THRESHOLD = 20;
+
 export type SortBy = "quantity" | "expiryDate" | "createdAt";
 
 export interface Stock {
