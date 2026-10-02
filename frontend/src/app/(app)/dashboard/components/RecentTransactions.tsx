@@ -23,13 +23,14 @@ export default function RecentTransactions({
   }, [transactions]);
 
   return (
-    <section className="rounded-xl border border-border bg-card p-5">
-      <h3 className="mb-4 text-lg font-semibold text-foreground">
+    // the table runs edge to edge; only the title and fallbacks are padded
+    <section className="overflow-hidden rounded-xl border border-border bg-card">
+      <h3 className="px-5 py-4 text-lg font-semibold text-foreground">
         Recent transactions
       </h3>
 
       {recent === null ? (
-        <div className="space-y-3">
+        <div className="space-y-3 px-5 pb-5">
           {[...Array(5)].map((_, i) => (
             <Skeleton key={i} className="h-12 w-full rounded-lg" />
           ))}
@@ -39,7 +40,9 @@ export default function RecentTransactions({
           No transactions found
         </p>
       ) : (
-        <Table className="border-0 shadow-none" minWidth="min-w-[560px]">
+        <Table
+          className="rounded-none border-0 border-t shadow-none"
+          minWidth="min-w-[560px]">
           <TableHead>
             <Th>Transaction</Th>
             <Th>When</Th>
