@@ -181,7 +181,7 @@ export default function SalesTable({
         </div>
       </div>
 
-      <Table className="max-h-[32rem]" minWidth="min-w-[760px]">
+      <Table className="h-[30rem]" minWidth="min-w-[760px]">
         <TableHead>
           <Th>Transaction</Th>
           <Th>Date</Th>

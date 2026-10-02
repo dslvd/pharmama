@@ -2,7 +2,7 @@ import Skeleton from "@/components/ui/Skeleton";
 
 export default function Loading() {
   return (
-    <main className="flex min-h-screen flex-col gap-5 p-6">
+    <main className="flex h-dvh min-h-[36rem] flex-col gap-5 p-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <Skeleton className="h-9 w-32 rounded-lg" />
@@ -14,14 +14,14 @@ export default function Loading() {
           <Skeleton className="h-10 w-28 rounded-lg" />
         </div>
       </div>
-      <div className="flex-1 overflow-hidden rounded-xl border border-border bg-card shadow-sm">
+      <div className="min-h-0 flex-1 overflow-hidden rounded-xl border border-border bg-card shadow-sm">
         <div className="grid grid-cols-[2fr_1fr_1fr_1fr_1fr_6rem] gap-4 border-b border-border bg-surface-subtle px-4 py-3.5">
           {Array.from({ length: 5 }).map((_, index) => (
             <Skeleton key={index} className="h-3 w-16 rounded" />
           ))}
           <span />
         </div>
-        {Array.from({ length: 8 }).map((_, row) => (
+        {Array.from({ length: 14 }).map((_, row) => (
           <div
             key={row}
             className="grid grid-cols-[2fr_1fr_1fr_1fr_1fr_6rem] items-center gap-4 border-b border-border/70 px-4 py-3"

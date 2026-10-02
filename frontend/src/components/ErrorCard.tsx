@@ -1,6 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+
+// errors dismiss themselves after this long (paused while hovered)
+const AUTO_DISMISS_MS = 8000;
 import { Ban, X } from "lucide-react";
 
 // card
@@ -13,11 +16,28 @@ export function ErrorCard({
   depth?: number;
   onClose?: () => void;
 }) {
+  const [hovered, setHovered] = useState(false);
+  // latest onClose without restarting the timer when the parent re-renders
+  const onCloseRef = useRef(onClose);
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
+
+  useEffect(() => {
+    if (hovered) return;
+    // restarts on mouse leave, so the full time is given again after reading
+    const timer = setTimeout(() => onCloseRef.current?.(), AUTO_DISMISS_MS);
+    return () => clearTimeout(timer);
+  }, [hovered]);
+
   // older errors fade, but stay readable
   const opacity = depth === 0 ? 1 : Math.max(0.6, 0.9 - depth * 0.1);
 
   return (
     <div
+      role="alert"
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
       className="shadow-sm w-full bg-error/5 backdrop-blur-sm rounded-lg border border-border/50 p-4 transition-all duration-300 pointer-events-auto shrink-0"
       style={{ opacity }}
     >
