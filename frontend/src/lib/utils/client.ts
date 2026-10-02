@@ -2,6 +2,9 @@ import { err, ok, Result } from "./errorHandling";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
+// localStorage flag for pharmacist view; cleared whenever the session ends
+export const STAFF_VIEW_KEY = "staffView";
+
 export const getToken = () =>
   typeof window === "undefined" ? null : localStorage.getItem("token");
 
@@ -24,6 +27,7 @@ export async function apiFetch<T>(
     // is also a 401, so skip it (bad login, or re-checking the password)
     if (res.status === 401 && token && endpoint !== "/auth/login") {
       localStorage.removeItem("token");
+      localStorage.removeItem(STAFF_VIEW_KEY);
       window.location.href = "/auth";
     }
 

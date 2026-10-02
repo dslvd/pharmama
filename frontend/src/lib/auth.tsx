@@ -1,6 +1,6 @@
 "use client";
 import { createContext, useContext, useEffect, useState } from "react";
-import { apiFetch, getToken } from "./utils/client";
+import { apiFetch, getToken, STAFF_VIEW_KEY } from "./utils/client";
 import { Roles, User } from "./types/users";
 import { isManager } from "./roles";
 
@@ -15,8 +15,6 @@ type AuthCtx = {
   enterStaffView: () => void;
   exitStaffView: (password: string) => Promise<string | null>; // error msg or null
 };
-
-const STAFF_VIEW_KEY = "staffView";
 
 const AuthContext = createContext<AuthCtx | null>(null);
 export const useAuth = () => useContext(AuthContext)!;
@@ -49,6 +47,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (!r.ok) return r.error;
 
     localStorage.setItem("token", r.value.access_token);
+    // a fresh sign-in always starts in the normal view
+    localStorage.removeItem(STAFF_VIEW_KEY);
+    setStaffView(false);
 
     const me = await apiFetch<User>("/auth/me");
     if (!me.ok) {
