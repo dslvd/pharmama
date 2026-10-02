@@ -24,6 +24,8 @@ interface ModalProps {
   size?: keyof typeof sizeClasses;
   className?: string;
   contentClassName?: string;
+  // hide the corner X when the modal has its own Cancel/Close button
+  showCloseButton?: boolean;
   children: React.ReactNode;
 }
 
@@ -35,6 +37,7 @@ export default function Modal({
   size = "md",
   className,
   contentClassName,
+  showCloseButton = true,
   children,
 }: ModalProps) {
   return (
@@ -45,13 +48,14 @@ export default function Modal({
       }}
     >
       <DialogContent
+        showCloseButton={showCloseButton}
         className={cn(
           "flex max-h-[85vh] w-full flex-col gap-4 rounded-2xl border border-border bg-card p-6 text-card-foreground shadow-xl",
           sizeClasses[size],
           className,
         )}
       >
-        <DialogHeader className="gap-1 pr-6">
+        <DialogHeader className={cn("gap-1", showCloseButton && "pr-6")}>
           {eyebrow && (
             <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
               {eyebrow}

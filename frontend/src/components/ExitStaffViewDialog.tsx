@@ -47,6 +47,7 @@ export default function ExitStaffViewDialog({
       title="Exit pharmacist view"
       eyebrow={user?.email}
       size="sm"
+      showCloseButton={false}
     >
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <label className="block text-sm font-medium text-foreground">

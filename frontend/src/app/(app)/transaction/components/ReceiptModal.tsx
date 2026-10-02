@@ -25,6 +25,7 @@ export default function ReceiptModal({
       title={`Receipt ${txnId(data.id)}`}
       eyebrow={eyebrow}
       size="sm"
+      showCloseButton={false}
       className="bg-background"
       contentClassName="flex min-h-0 flex-col gap-4"
     >

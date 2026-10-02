@@ -22,7 +22,13 @@ export default function ConfirmDialog({
   onClose,
 }: ConfirmDialogProps) {
   return (
-    <Modal open={open} onClose={onClose} title={title} size="sm">
+    <Modal
+      open={open}
+      onClose={onClose}
+      title={title}
+      size="sm"
+      showCloseButton={false}
+    >
       <p className="text-sm text-muted-foreground">{message}</p>
       <div className="mt-6 flex justify-end gap-3">
         <button

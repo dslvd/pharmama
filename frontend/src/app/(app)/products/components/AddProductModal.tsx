@@ -95,6 +95,7 @@ export default function AddProductModal({
       onClose={onClose}
       title={isEditing ? "Edit Product" : "Add Product"}
       size="lg"
+      showCloseButton={false}
     >
       <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
         <label className={labelClasses}>
