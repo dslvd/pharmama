@@ -25,7 +25,7 @@ interface SalesTableProps {
 }
 
 const inputClasses =
-  "rounded-full border border-border bg-card py-2 text-sm text-foreground placeholder:text-muted-foreground/70 focus:border-violet-400 focus:outline-none focus:ring-2 focus:ring-violet-100";
+  "rounded-full border border-border bg-card py-2 text-sm text-foreground placeholder:text-muted-foreground/70 focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring/20";
 
 export default function SalesTable({
   initialRecords = [],
@@ -120,7 +120,7 @@ export default function SalesTable({
             aria-pressed={filter}
             className={`rounded-full border p-2.5 transition-colors ${
               filter
-                ? "border-violet-400 bg-violet-100 text-violet-700"
+                ? "border-primary bg-primary-soft text-primary"
                 : "border-border bg-card text-muted-foreground hover:bg-secondary"
             }`}
           >
@@ -210,7 +210,7 @@ export default function SalesTable({
                             current === record.id ? null : record.id,
                           )
                         }
-                        className={`flex min-w-28 items-center justify-between gap-2 rounded-full border px-3 py-1.5 text-xs font-medium transition-shadow focus:outline-none focus:ring-2 focus:ring-violet-200 ${statusClass(
+                        className={`flex min-w-28 items-center justify-between gap-2 rounded-full border px-3 py-1.5 text-xs font-medium transition-shadow focus:outline-none focus:ring-2 focus:ring-ring/20 ${statusClass(
                           record.status,
                         )}`}
                       >

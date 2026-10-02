@@ -3,11 +3,11 @@ import { TransactionStatus } from "../types/transaction";
 export const statusClass = (status?: TransactionStatus) => {
   switch (status) {
     case "COMPLETED":
-      return "bg-emerald-100 text-emerald-800 border-emerald-300";
+      return "bg-success-soft text-success border-success/30";
     case "REFUNDED":
-      return "bg-amber-100 text-amber-800 border-amber-300";
+      return "bg-warning-soft text-warning border-warning/30";
     case "CANCELLED":
-      return "bg-rose-100 text-rose-800 border-rose-300";
+      return "bg-danger-soft text-danger border-danger/30";
     default:
       return "bg-muted text-foreground border-border";
   }

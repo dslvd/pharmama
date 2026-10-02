@@ -80,7 +80,7 @@ export default function TransactionTable({
                   <button
                     onClick={() => removeItem(item.trItems.stockId)}
                     aria-label="Remove item"
-                    className="text-rose-500 hover:text-rose-700"
+                    className="text-danger/80 hover:text-danger"
                   >
                     <X size={16} />
                   </button>
@@ -103,7 +103,7 @@ export default function TransactionTable({
           <button
             onClick={onCancelTransaction}
             disabled={items.length === 0}
-            className="flex flex-1 items-center justify-center gap-1.5 rounded-full bg-rose-100 py-2.5 text-sm font-semibold text-rose-600 transition-colors hover:bg-rose-200 disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex flex-1 items-center justify-center gap-1.5 rounded-full bg-danger-soft py-2.5 text-sm font-semibold text-danger transition-colors hover:bg-danger/20 disabled:cursor-not-allowed disabled:opacity-50"
           >
             <XCircle size={15} />
             Cancel

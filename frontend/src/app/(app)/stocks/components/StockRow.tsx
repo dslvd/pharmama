@@ -29,7 +29,7 @@ export default function StockRow({
 
   const quantityStyle =
     stock.quantity <= LOW_QUANTITY_THRESHOLD
-      ? "bg-amber-100 text-amber-700"
+      ? "bg-warning-soft text-warning"
       : "bg-muted text-foreground";
 
   async function handleDelete(id: number) {
@@ -47,7 +47,7 @@ export default function StockRow({
 
   return (
     <>
-      <tr className="border-t border-border odd:bg-card even:bg-violet-50/60">
+      <tr className="border-t border-border odd:bg-card even:bg-primary-soft/30">
         <td className="px-4 py-3 text-foreground">{stock.productId}</td>
         <td className="px-4 py-3 text-foreground">{stock.product?.name}</td>
         <td className="px-4 py-3 text-muted-foreground">{stock.batchNumber}</td>
@@ -65,7 +65,7 @@ export default function StockRow({
         </td>
         <td className="px-4 py-3">
           <span
-            className={`rounded-full px-2.5 py-1 text-xs font-medium ${stock.quantity <= LOW_QUANTITY_THRESHOLD ? "bg-amber-100 text-amber-700" : "bg-emerald-100 text-emerald-700"}`}
+            className={`rounded-full px-2.5 py-1 text-xs font-medium ${stock.quantity <= LOW_QUANTITY_THRESHOLD ? "bg-warning-soft text-warning" : "bg-success-soft text-success"}`}
           >
             {stock.quantity <= LOW_QUANTITY_THRESHOLD
               ? "Low stock"
@@ -77,7 +77,7 @@ export default function StockRow({
             <button
               aria-label={`Edit stock ${stock.id}`}
               onClick={() => onEdit?.(stock)}
-              className="transition-colors hover:text-violet-700"
+              className="transition-colors hover:text-primary"
             >
               <PencilLine size={15} />
             </button>
@@ -86,7 +86,7 @@ export default function StockRow({
                 aria-label={`Delete stock ${stock.id}`}
                 onClick={() => setConfirmOpen(true)}
                 disabled={deleting}
-                className="transition-colors hover:text-rose-600 disabled:opacity-50"
+                className="transition-colors hover:text-danger disabled:opacity-50"
               >
                 <Trash size={15} />
               </button>

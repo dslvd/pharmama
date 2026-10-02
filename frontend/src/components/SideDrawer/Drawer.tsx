@@ -18,7 +18,7 @@ export default function Drawer({ children }: { children: React.ReactNode }) {
 
       <div className="relative min-w-0 flex-1">
         <button
-          className="fixed top-1/2 z-50 flex h-14 w-6 -translate-y-1/2 items-center justify-center bg-primary text-white shadow-md transition-all duration-200 focus:outline-none"
+          className="fixed top-1/2 z-50 flex h-14 w-6 -translate-y-1/2 items-center justify-center bg-primary text-primary-foreground shadow-md transition-all duration-200 focus:outline-none"
           style={{
             left: isOpen ? '14rem' : '0rem',
             borderTopRightRadius: '0.75rem',
@@ -29,7 +29,7 @@ export default function Drawer({ children }: { children: React.ReactNode }) {
           title={isOpen ? 'Collapse navigation drawer' : 'Open navigation drawer'}
         >
           <span className="pointer-events-none absolute -top-3 left-0 h-3 w-3 overflow-hidden">
-            <span className="block h-full w-full rounded-bl-full bg-transparent shadow-[-3px_3px_0_3px_var(--tw-shadow-color,#1e1b4b)] shadow-primary" />
+            <span className="block h-full w-full rounded-bl-full bg-transparent shadow-[-3px_3px_0_3px_var(--tw-shadow-color,var(--primary))] shadow-primary" />
           </span>
 
           {isOpen ? (
@@ -39,7 +39,7 @@ export default function Drawer({ children }: { children: React.ReactNode }) {
           )}
 
           <span className="pointer-events-none absolute -bottom-3 left-0 h-3 w-3 overflow-hidden">
-            <span className="block h-full w-full rounded-tl-full bg-transparent shadow-[-3px_-3px_0_3px_var(--tw-shadow-color,#1e1b4b)] shadow-primary" />
+            <span className="block h-full w-full rounded-tl-full bg-transparent shadow-[-3px_-3px_0_3px_var(--tw-shadow-color,var(--primary))] shadow-primary" />
           </span>
         </button>
 

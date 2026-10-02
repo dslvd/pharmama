@@ -33,7 +33,7 @@ export default function SalesCard({
   return (
     <article className="rounded-xl border border-border bg-card p-5">
       <div className="flex items-start justify-between">
-        <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-100 text-emerald-600">
+        <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-success-soft text-success">
           <Wallet className="h-5 w-5" />
         </span>
       </div>
@@ -56,9 +56,9 @@ function Delta({ today, yesterday }: { today: number; yesterday: number }) {
   const pct = Math.round(((today - yesterday) / yesterday) * 100);
   const [Icon, color, sign] =
     pct > 0
-      ? [TrendingUp, "text-emerald-600", "+"]
+      ? [TrendingUp, "text-success", "+"]
       : pct < 0
-        ? [TrendingDown, "text-rose-600", ""]
+        ? [TrendingDown, "text-danger", ""]
         : [Minus, "text-muted-foreground", ""];
 
   return (

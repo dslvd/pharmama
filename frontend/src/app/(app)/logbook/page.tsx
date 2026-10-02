@@ -113,7 +113,7 @@ export default function LogbookPage() {
                 value={searchTerm}
                 onChange={(event) => setSearchTerm(event.target.value)}
                 placeholder="Search entity or action..."
-                className="w-full rounded-lg border border-border bg-card py-2.5 pl-9 pr-3 text-sm text-foreground shadow-sm focus:border-violet-300 focus:outline-none focus:ring-2 focus:ring-violet-100"
+                className="w-full rounded-lg border border-border bg-card py-2.5 pl-9 pr-3 text-sm text-foreground shadow-sm focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring/20"
               />
             </div>
             <div className="relative">
@@ -123,7 +123,7 @@ export default function LogbookPage() {
                 aria-pressed={filter}
                 className={`rounded-lg border p-2.5 transition-colors ${
                   filter
-                    ? "border-primary bg-violet-100 text-violet-700"
+                    ? "border-primary bg-primary-soft text-primary"
                     : "border-border bg-card text-muted-foreground hover:bg-muted"
                 }`}
               >
@@ -150,7 +150,7 @@ export default function LogbookPage() {
         <div className="min-h-128 flex-1 overflow-x-auto rounded-xl border border-border bg-card shadow-sm">
           <table className="w-full text-left text-sm">
             <thead>
-              <tr className="border-b border-border bg-[#fdfbf7]">
+              <tr className="border-b border-border bg-surface-subtle">
                 <th className="px-4 py-3 text-center text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                   Date
                 </th>
@@ -180,7 +180,7 @@ export default function LogbookPage() {
                     className="h-112 px-4 py-8 text-center text-sm text-muted-foreground"
                   >
                     <div className="flex flex-col items-center justify-center gap-3">
-                      <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-violet-100 text-violet-950">
+                      <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary-soft text-primary">
                         <BookOpen className="h-7 w-7" />
                       </span>
                       <p className="text-base font-semibold text-foreground">

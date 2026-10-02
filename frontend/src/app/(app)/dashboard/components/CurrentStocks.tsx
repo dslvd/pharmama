@@ -11,7 +11,7 @@ export default function CurrentStocks({ stocks }: { stocks: Stock[] | null }) {
   return (
     <article className="rounded-xl border border-border bg-card p-5">
       <div className="flex items-start justify-between">
-        <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100 text-blue-600">
+        <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-info-soft text-info">
           <Package className="h-5 w-5" />
         </span>
       </div>

@@ -26,7 +26,7 @@ interface ProductPickerProps {
 const pillClass = (active: boolean) =>
   `rounded-full border px-3 py-1 text-xs font-semibold transition-colors ${
     active
-      ? "border-violet-950 bg-violet-950 text-white"
+      ? "border-primary bg-primary text-primary-foreground"
       : "border-border bg-card text-muted-foreground hover:bg-secondary"
   }`;
 
@@ -155,7 +155,7 @@ export default function ProductPicker({
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           placeholder="Search"
-          className="w-full rounded-full border border-border bg-card py-2 pl-9 pr-4 text-sm text-foreground placeholder:text-muted-foreground/70 focus:border-violet-400 focus:outline-none focus:ring-2 focus:ring-violet-100"
+          className="w-full rounded-full border border-border bg-card py-2 pl-9 pr-4 text-sm text-foreground placeholder:text-muted-foreground/70 focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring/20"
         />
       </div>
 
@@ -223,7 +223,7 @@ export default function ProductPicker({
 
               <button
                 onClick={() => handleAdd(product)}
-                className="w-16 shrink-0 rounded-full bg-violet-950 px-4 py-1.5 text-center text-xs font-semibold text-white transition-colors hover:bg-violet-900"
+                className="w-16 shrink-0 rounded-full bg-primary px-4 py-1.5 text-center text-xs font-semibold text-primary-foreground transition-colors hover:bg-primary-hover"
               >
                 Add
               </button>

@@ -59,7 +59,7 @@ export default function SalesOverview({
     <section className="flex h-105 flex-col rounded-xl border border-border bg-card p-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-violet-100 text-violet-800">
+          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-soft text-primary">
             <TrendingUp className="h-4 w-4" />
           </span>
           <h3 className="text-lg font-semibold text-foreground">

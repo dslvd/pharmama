@@ -94,7 +94,7 @@ export default function Navigation({ isOpen }: NavigationProps) {
           {visible.map((section, i) => (
             <div key={section.title} className="flex flex-col gap-1">
               <p
-                className={`px-1 text-[11px] font-semibold uppercase tracking-wider text-violet-300/70 ${i > 0 ? "pt-5" : ""}`}
+                className={`px-1 text-[11px] font-semibold uppercase tracking-wider text-sidebar-muted/70 ${i > 0 ? "pt-5" : ""}`}
               >
                 {section.title}
               </p>
@@ -107,8 +107,8 @@ export default function Navigation({ isOpen }: NavigationProps) {
                     href={page}
                     className={`flex items-center gap-3 rounded-lg px-3 py-2 text-left text-sm transition-colors ${
                       isActive
-                        ? "bg-violet-900 font-semibold text-white"
-                        : "text-violet-100/80 hover:bg-violet-900/50 hover:text-white"
+                        ? "bg-sidebar-active font-semibold text-primary-foreground"
+                        : "text-sidebar-foreground/80 hover:bg-sidebar-active/50 hover:text-primary-foreground"
                     }`}
                   >
                     <Icon className="h-4 w-4 shrink-0" />
@@ -121,37 +121,37 @@ export default function Navigation({ isOpen }: NavigationProps) {
         </nav>
       </div>
 
-      <div className="border-t border-violet-900/60 p-4">
+      <div className="border-t border-sidebar-border p-4">
         {staffView && (
-          <div className="mb-3 rounded-lg bg-violet-900/60 p-3">
-            <p className="flex items-center gap-2 text-xs font-semibold text-white">
+          <div className="mb-3 rounded-lg bg-sidebar-active/60 p-3">
+            <p className="flex items-center gap-2 text-xs font-semibold text-primary-foreground">
               <UserRoundCheck className="h-4 w-4 shrink-0" />
               Pharmacist view
             </p>
             <button
               onClick={() => setExitOpen(true)}
-              className="mt-2 w-full rounded-md bg-white/10 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-white/20"
+              className="mt-2 w-full rounded-md bg-primary-foreground/10 px-3 py-1.5 text-xs font-semibold text-primary-foreground transition-colors hover:bg-primary-foreground/20"
             >
               Exit pharmacist view
             </button>
           </div>
         )}
         <div className="flex items-center gap-3 px-1">
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-violet-900 text-sm font-bold uppercase text-white">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-sidebar-active text-sm font-bold uppercase text-primary-foreground">
             {user?.email[0]}
           </span>
           <div className="min-w-0 flex-1">
-            <p className="truncate text-xs font-semibold text-white">
+            <p className="truncate text-xs font-semibold text-primary-foreground">
               {user?.email}
             </p>
-            <p className="truncate text-[11px] capitalize text-violet-300/80">
+            <p className="truncate text-[11px] capitalize text-sidebar-muted/80">
               {staffView ? "staff view" : user?.role.toLowerCase()}
             </p>
           </div>
           <button
             onClick={logout}
             aria-label="Log out"
-            className="text-violet-300/80 transition-colors hover:text-white"
+            className="text-sidebar-muted/80 transition-colors hover:text-primary-foreground"
           >
             <LogOut className="h-4 w-4" />
           </button>

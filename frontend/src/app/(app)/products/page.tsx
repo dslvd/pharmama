@@ -121,7 +121,7 @@ export default function ProductPage() {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search products..."
-                className="w-full rounded-lg border border-border bg-card py-2.5 pl-9 pr-3 text-sm text-foreground shadow-sm focus:border-violet-300 focus:outline-none focus:ring-2 focus:ring-violet-100"
+                className="w-full rounded-lg border border-border bg-card py-2.5 pl-9 pr-3 text-sm text-foreground shadow-sm focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring/20"
               />
             </div>
 
@@ -132,7 +132,7 @@ export default function ProductPage() {
                 aria-pressed={filter}
                 className={`rounded-lg border p-2.5 transition-colors ${
                   filter
-                    ? "border-primary bg-violet-100 text-violet-700"
+                    ? "border-primary bg-primary-soft text-primary"
                     : "border-border bg-card text-muted-foreground hover:bg-muted"
                 }`}
               >
@@ -155,7 +155,7 @@ export default function ProductPage() {
 
             <button
               onClick={openAddModal}
-              className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-violet-950"
+              className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary-hover"
             >
               <Plus className="h-4 w-4" />
               Add product
@@ -166,7 +166,7 @@ export default function ProductPage() {
         <div className="min-h-122 flex-1 overflow-x-auto rounded-xl border border-border bg-card shadow-sm">
           <table className="w-full text-left text-sm">
             <thead>
-              <tr className="border-b border-border bg-[#fdfbf7]">
+              <tr className="border-b border-border bg-surface-subtle">
                 <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                   Name
                 </th>
@@ -193,7 +193,7 @@ export default function ProductPage() {
                     className="h-112 px-4 py-8 text-center text-sm text-muted-foreground"
                   >
                     <div className="flex flex-col items-center justify-center gap-3">
-                      <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-violet-100 text-primary">
+                      <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary-soft text-primary">
                         <PackageOpen className="h-7 w-7" />
                       </span>
                       <p className="text-base font-semibold text-foreground">
@@ -205,7 +205,7 @@ export default function ProductPage() {
                       </p>
                       <button
                         onClick={openAddModal}
-                        className="mt-2 flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-violet-950"
+                        className="mt-2 flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary-hover"
                       >
                         <Plus className="h-4 w-4" />
                         Add your first product

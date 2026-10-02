@@ -36,7 +36,7 @@ export default function ProductRow({
 
   return (
     <>
-      <tr className="border-t border-border odd:bg-card even:bg-violet-50/60">
+      <tr className="border-t border-border odd:bg-card even:bg-primary-soft/30">
         <td className="px-4 py-3 text-foreground">{product.name}</td>
         <td className="px-4 py-3 text-muted-foreground">
           {product.genericName}
@@ -54,7 +54,7 @@ export default function ProductRow({
             <button
               aria-label={`Edit product ${product.id}`}
               onClick={() => onEdit?.(product)}
-              className="transition-colors hover:text-violet-700"
+              className="transition-colors hover:text-primary"
             >
               <PencilLine size={15} />
             </button>
@@ -63,7 +63,7 @@ export default function ProductRow({
               aria-label={`Delete product ${product.id}`}
               onClick={() => setConfirmOpen(true)}
               disabled={deleting}
-              className="transition-colors hover:text-rose-600 disabled:opacity-50"
+              className="transition-colors hover:text-danger disabled:opacity-50"
             >
               <Trash size={15} />
             </button>
