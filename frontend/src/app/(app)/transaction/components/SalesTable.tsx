@@ -15,6 +15,7 @@ import { SortOrder } from "@/lib/types/product";
 import FilterBar, { FilterProps } from "@/components/FilterBar";
 import { peso } from "@/lib/utils/format";
 import { statusClass } from "@/lib/utils/status";
+import Dropdown from "@/components/ui/Dropdown";
 
 interface SalesTableProps {
   initialRecords?: Transaction[];
@@ -108,24 +109,40 @@ export default function SalesTable({
   ];
 
   return (
-    <section className="relative rounded-2xl border border-border bg-background overflow-hidden">
+    <section className="relative overflow-hidden rounded-2xl border border-border bg-background">
       {/* Title bar */}
       <div className="flex items-center justify-between gap-3 px-5 py-4">
         <h2 className="text-lg font-bold text-foreground">Sales history</h2>
 
         <div className="flex items-center gap-2">
-          <button
-            onClick={() => setFilter((f) => !f)}
-            aria-label="Toggle filters"
-            aria-pressed={filter}
-            className={`rounded-full border p-2.5 transition-colors ${
-              filter
-                ? "border-primary bg-primary-soft text-primary"
-                : "border-border bg-card text-muted-foreground hover:bg-secondary"
-            }`}
+          <Dropdown
+            open={filter}
+            onOpenChange={setFilter}
+            align="end"
+            className="w-64 max-h-none overflow-visible rounded-xl border border-border bg-card p-4 shadow-lg"
+            trigger={
+              <button
+                aria-label="Toggle filters"
+                aria-pressed={filter}
+                className={`rounded-full border p-2.5 transition-colors ${
+                  filter
+                    ? "border-primary bg-primary-soft text-primary"
+                    : "border-border bg-card text-muted-foreground hover:bg-secondary"
+                }`}
+              >
+                <SlidersHorizontal size={16} strokeWidth={2.2} />
+              </button>
+            }
           >
-            <SlidersHorizontal size={16} strokeWidth={2.2} />
-          </button>
+            <FilterBar
+              filters={FilterOptions}
+              onFilterChange={handleFilterChange}
+              selectedValues={{
+                STATUS: status,
+                ORDER: order,
+              }}
+            />
+          </Dropdown>
 
           <div className="relative">
             <Search
@@ -139,19 +156,6 @@ export default function SalesTable({
               className={`${inputClasses} pl-9 pr-4 w-48`}
             />
           </div>
-
-          {filter && (
-            <div className="absolute right-5 top-16 z-10 w-64 rounded-xl border border-border bg-card p-4 shadow-lg">
-              <FilterBar
-                filters={FilterOptions}
-                onFilterChange={handleFilterChange}
-                selectedValues={{
-                  STATUS: status,
-                  ORDER: order,
-                }}
-              />
-            </div>
-          )}
         </div>
       </div>
 
@@ -185,7 +189,7 @@ export default function SalesTable({
                 </td>
               </tr>
             ) : (
-              sales.map((record, index) => (
+              sales.map((record) => (
                 <tr
                   key={record.id}
                   className="border-t border-border bg-card/60"
@@ -200,60 +204,51 @@ export default function SalesTable({
                     {record.user?.name ?? record.handledBy}
                   </td>
                   <td className="px-5 py-3.5">
-                    <div className="relative w-fit">
-                      <button
-                        type="button"
-                        aria-haspopup="listbox"
-                        aria-expanded={openStatusId === record.id}
-                        onClick={() =>
-                          setOpenStatusId((current) =>
-                            current === record.id ? null : record.id,
-                          )
-                        }
-                        className={`flex min-w-28 items-center justify-between gap-2 rounded-full border px-3 py-1.5 text-xs font-medium transition-shadow focus:outline-none focus:ring-2 focus:ring-ring/20 ${statusClass(
-                          record.status,
-                        )}`}
-                      >
-                        {record.status}
-                        <ChevronDown
-                          size={14}
-                          className={`transition-transform duration-200 ${
-                            openStatusId === record.id ? "rotate-180" : ""
-                          }`}
-                        />
-                      </button>
-                      {openStatusId === record.id && (
-                        <div
-                          role="listbox"
-                          aria-label="Transaction status"
-                          className={`absolute left-0 z-30 w-36 overflow-hidden rounded-xl border border-border bg-card p-1.5 shadow-lg ${
-                            index >= sales.length - 2
-                              ? "bottom-[calc(100%+6px)]"
-                              : "top-[calc(100%+6px)]"
-                          }`}
+                    <Dropdown
+                      open={openStatusId === record.id}
+                      onOpenChange={(open) =>
+                        setOpenStatusId(open ? record.id : null)
+                      }
+                      className="w-36 p-1.5"
+                      trigger={
+                        <button
+                          type="button"
+                          className={`flex min-w-28 items-center justify-between gap-2 rounded-full border px-3 py-1.5 text-xs font-medium transition-shadow focus:outline-none focus:ring-2 focus:ring-ring/20 ${statusClass(
+                            record.status,
+                          )}`}
                         >
-                          {STATUS_VALUES.map((option) => (
-                            <button
-                              key={option}
-                              type="button"
-                              role="option"
-                              aria-selected={record.status === option}
-                              onClick={() =>
-                                handleStatusChange(record.id, option)
-                              }
-                              className={`flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-xs text-foreground transition-colors hover:bg-background ${
-                                record.status === option
-                                  ? "bg-background font-semibold"
-                                  : ""
-                              }`}
-                            >
-                              {option}
-                              {record.status === option && <Check size={14} />}
-                            </button>
-                          ))}
-                        </div>
-                      )}
-                    </div>
+                          {record.status}
+                          <ChevronDown
+                            size={14}
+                            className={`transition-transform duration-200 ${
+                              openStatusId === record.id ? "rotate-180" : ""
+                            }`}
+                          />
+                        </button>
+                      }
+                    >
+                      <div role="listbox" aria-label="Transaction status">
+                        {STATUS_VALUES.map((option) => (
+                          <button
+                            key={option}
+                            type="button"
+                            role="option"
+                            aria-selected={record.status === option}
+                            onClick={() =>
+                              handleStatusChange(record.id, option)
+                            }
+                            className={`flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-xs text-foreground transition-colors hover:bg-background ${
+                              record.status === option
+                                ? "bg-background font-semibold"
+                                : ""
+                            }`}
+                          >
+                            {option}
+                            {record.status === option && <Check size={14} />}
+                          </button>
+                        ))}
+                      </div>
+                    </Dropdown>
                   </td>
                   <td className="px-5 py-3.5 text-right">
                     <button

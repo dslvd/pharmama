@@ -12,6 +12,7 @@ import { PackageOpen, Plus, Search, SlidersHorizontal } from "lucide-react";
 import { ErrorStack } from "@/components/ErrorCard";
 import { useAuth } from "@/lib/auth";
 import { isManager } from "@/lib/roles";
+import Dropdown from "@/components/ui/Dropdown";
 
 export default function StockPage() {
   const { role } = useAuth();
@@ -134,33 +135,34 @@ export default function StockPage() {
               />
             </div>
 
-            <div className="relative">
-              <button
-                onClick={() => setFilter(!filter)}
-                aria-label="Toggle filters"
-                aria-pressed={filter}
-                className={`rounded-lg border p-2.5 transition-colors ${
-                  filter
-                    ? "border-primary bg-primary-soft text-primary"
-                    : "border-border bg-card text-muted-foreground hover:bg-muted"
-                }`}
-              >
-                <SlidersHorizontal size={18} strokeWidth={2.2} />
-              </button>
-
-              {filter && (
-                <div className="absolute right-0 z-10 mt-2 w-80 rounded-2xl border-2 border-foreground bg-card p-5 shadow-2xl">
-                  <FilterBar
-                    filters={FilterOptions}
-                    onFilterChange={handleFilterChange}
-                    selectedValues={{
-                      SORTBY: sortBy,
-                      ORDER: order,
-                    }}
-                  />
-                </div>
-              )}
-            </div>
+            <Dropdown
+              open={filter}
+              onOpenChange={setFilter}
+              align="end"
+              className="w-80 max-h-none overflow-visible rounded-2xl border-2 border-foreground bg-card p-5 shadow-2xl"
+              trigger={
+                <button
+                  aria-label="Toggle filters"
+                  aria-pressed={filter}
+                  className={`rounded-lg border p-2.5 transition-colors ${
+                    filter
+                      ? "border-primary bg-primary-soft text-primary"
+                      : "border-border bg-card text-muted-foreground hover:bg-muted"
+                  }`}
+                >
+                  <SlidersHorizontal size={18} strokeWidth={2.2} />
+                </button>
+              }
+            >
+              <FilterBar
+                filters={FilterOptions}
+                onFilterChange={handleFilterChange}
+                selectedValues={{
+                  SORTBY: sortBy,
+                  ORDER: order,
+                }}
+              />
+            </Dropdown>
 
             <button
               onClick={() => setShowAddStockModal(true)}

@@ -9,6 +9,7 @@ import AuditRow from "./components/AuditRow";
 import FilterBar, { FilterProps } from "@/components/FilterBar";
 import { ErrorStack } from "@/components/ErrorCard";
 import Loading from "@/app/(app)/logbook/loading";
+import Dropdown from "@/components/ui/Dropdown";
 
 export default function LogbookPage() {
   const [allAudit, setAllAudit] = useState<AuditLog[]>([]);
@@ -116,34 +117,35 @@ export default function LogbookPage() {
                 className="w-full rounded-lg border border-border bg-card py-2.5 pl-9 pr-3 text-sm text-foreground shadow-sm focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring/20"
               />
             </div>
-            <div className="relative">
-              <button
-                onClick={() => setFilter(!filter)}
-                aria-label="Toggle filters"
-                aria-pressed={filter}
-                className={`rounded-lg border p-2.5 transition-colors ${
-                  filter
-                    ? "border-primary bg-primary-soft text-primary"
-                    : "border-border bg-card text-muted-foreground hover:bg-muted"
-                }`}
-              >
-                <SlidersHorizontal size={18} strokeWidth={2.2} />
-              </button>
-
-              {filter && (
-                <div className="absolute right-0 z-10 mt-2 w-96 rounded-2xl border-2 border-foreground bg-card p-5 shadow-2xl">
-                  <FilterBar
-                    filters={FilterOptions}
-                    onFilterChange={handleFilterChange}
-                    selectedValues={{
-                      ACTION: action,
-                      ENTITY: entity,
-                      ORDER: order,
-                    }}
-                  />
-                </div>
-              )}
-            </div>
+            <Dropdown
+              open={filter}
+              onOpenChange={setFilter}
+              align="end"
+              className="w-96 max-h-none overflow-visible rounded-2xl border-2 border-foreground bg-card p-5 shadow-2xl"
+              trigger={
+                <button
+                  aria-label="Toggle filters"
+                  aria-pressed={filter}
+                  className={`rounded-lg border p-2.5 transition-colors ${
+                    filter
+                      ? "border-primary bg-primary-soft text-primary"
+                      : "border-border bg-card text-muted-foreground hover:bg-muted"
+                  }`}
+                >
+                  <SlidersHorizontal size={18} strokeWidth={2.2} />
+                </button>
+              }
+            >
+              <FilterBar
+                filters={FilterOptions}
+                onFilterChange={handleFilterChange}
+                selectedValues={{
+                  ACTION: action,
+                  ENTITY: entity,
+                  ORDER: order,
+                }}
+              />
+            </Dropdown>
           </div>
         </div>
 
