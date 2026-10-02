@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarDays, ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
 import { createStock, updateStock } from "@/lib/api/stocks";
 import {
@@ -118,6 +118,7 @@ export default function AddStockModal({
       onClose={onClose}
       title={isEditing ? "Edit Stock" : "Add Stock"}
       size="md"
+      showCloseButton={false}
     >
       <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
         <label className={labelClasses}>
@@ -187,29 +188,12 @@ export default function AddStockModal({
 
           <label className={labelClasses}>
             Expiry Date
-            <div className="relative mt-1.5">
-              <input
-                type="date"
-                value={expiryDate}
-                onChange={(e) => setExpiryDate(e.target.value)}
-                placeholder="mm/dd/yyyy"
-                className="h-10.5 w-full appearance-none rounded-md border border-border bg-input px-3 pr-10 text-sm text-foreground outline-none transition-colors duration-200 placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring/20"
-              />
-              <button
-                type="button"
-                aria-label="Open calendar"
-                className="absolute inset-y-0 right-0 flex w-10 items-center justify-center rounded-r-md text-foreground"
-                onClick={(e) => {
-                  e.preventDefault();
-                  const input = e.currentTarget.parentElement?.querySelector('input[type="date"]') as HTMLInputElement | null;
-                  if (input && input.showPicker) {
-                    input.showPicker();
-                  }
-                }}
-              >
-                <CalendarDays className="h-4 w-4" />
-              </button>
-            </div>
+            <input
+              type="date"
+              value={expiryDate}
+              onChange={(e) => setExpiryDate(e.target.value)}
+              className="mt-1.5 h-10.5 w-full rounded-md border border-border bg-input px-3 text-sm text-foreground outline-none transition-colors duration-200 focus:border-ring focus:ring-2 focus:ring-ring/20"
+            />
             {expiryDateError && (
               <p className="mt-1.5 text-sm text-destructive">{expiryDateError}</p>
             )}
