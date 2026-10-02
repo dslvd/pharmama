@@ -182,7 +182,8 @@ export default function ProductPicker({
     .sort((a, b) => Number(!!a.reason) - Number(!!b.reason));
 
   return (
-    <div className="flex h-full flex-col rounded-2xl border border-border bg-background p-5">
+    // same height as the cart (TransactionTable) so the two cards line up
+    <div className="flex h-[520px] flex-col rounded-2xl border border-border bg-background p-4 sm:h-[560px] sm:p-5 lg:h-[620px]">
       <div className="relative mb-3">
         <Search
           size={16}
@@ -214,7 +215,7 @@ export default function ProductPicker({
         ))}
       </div>
 
-      <div className="flex-1 overflow-y-auto rounded-xl border border-border bg-card">
+      <div className="min-h-0 flex-1 overflow-y-auto rounded-xl border border-border bg-card">
         {loading ? (
           <div className="p-4 text-center text-sm text-muted-foreground">
             Loading products...
@@ -227,7 +228,7 @@ export default function ProductPicker({
           listed.map(({ product, reason }) => (
             <div
               key={product.id}
-              className={`flex items-center justify-between gap-3 border-b border-border/60 px-4 py-3 last:border-b-0 ${
+              className={`flex min-h-16 items-center justify-between gap-3 border-b border-border/60 px-4 py-3 last:border-b-0 ${
                 reason ? "bg-muted/15" : "hover:bg-background"
               }`}
             >
