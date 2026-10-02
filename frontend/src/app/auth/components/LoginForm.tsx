@@ -125,13 +125,6 @@ export default function LoginForm() {
           {submitting ? "Signing in…" : "Sign in"}
         </button>
       </form>
-
-      <p className="mt-7 border-t border-border pt-5 text-center text-sm text-muted-foreground">
-        Don&apos;t have an account? Ask an{" "}
-        <span className="font-semibold text-foreground">Admin</span> or{" "}
-        <span className="font-semibold text-foreground">Owner</span> to create
-        one.
-      </p>
     </div>
   );
 }
