@@ -1,12 +1,8 @@
 "use client";
 
-import { getProductList } from "@/lib/api/product";
-import { Stock } from "@/lib/types/stock";
-import { Product } from "@/lib/types/product";
+import { LOW_STOCK_THRESHOLD, Stock } from "@/lib/types/stock";
 import { AlertTriangle } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
-
-const LOW_STOCK_THRESHOLD = 20;
+import { useMemo } from "react";
 
 interface LowStocksProps {
   stock: Stock[] | null;
@@ -14,34 +10,10 @@ interface LowStocksProps {
 }
 
 export default function LowStocks({ stock, variant = "card" }: LowStocksProps) {
-  const [products, setProducts] = useState<Record<number, Product>>({});
-
   const lowStocks = useMemo(
     () => stock?.filter((s) => s.quantity <= LOW_STOCK_THRESHOLD),
     [stock],
   );
-
-  useEffect(() => {
-    if (variant !== "watchlist") return;
-
-    let cancelled = false;
-
-    async function load() {
-      const productResult = await getProductList();
-      if (productResult.ok && !cancelled) {
-        const productMap: Record<number, Product> = {};
-        productResult.value.forEach((product: Product) => {
-          productMap[product.id] = product;
-        });
-        setProducts(productMap);
-      }
-    }
-
-    load();
-    return () => {
-      cancelled = true;
-    };
-  }, [variant]);
 
   if (variant === "watchlist") {
     return (
@@ -58,27 +30,24 @@ export default function LowStocks({ stock, variant = "card" }: LowStocksProps) {
           {lowStocks?.length === 0 ? (
             <li className="text-sm text-muted-foreground">No low stocks</li>
           ) : (
-            lowStocks?.map((s) => {
-              const product = products[s.productId];
-              return (
-                <li
-                  key={s.id}
-                  className="flex items-center justify-between gap-3 rounded-lg border border-border bg-muted/30 p-3"
-                >
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm font-medium text-foreground">
-                      {product?.name || `Product #${s.productId}`}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      Batch {s.batchNumber}
-                    </p>
-                  </div>
-                  <span className="shrink-0 rounded-full bg-warning-soft px-2.5 py-1 text-xs font-semibold text-warning">
-                    {s.quantity} left
-                  </span>
-                </li>
-              );
-            })
+            lowStocks?.map((s) => (
+              <li
+                key={s.id}
+                className="flex items-center justify-between gap-3 rounded-lg border border-border bg-muted/30 p-3"
+              >
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-medium text-foreground">
+                    {s.product?.name ?? `Product #${s.productId}`}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    Batch {s.batchNumber}
+                  </p>
+                </div>
+                <span className="shrink-0 rounded-full bg-warning-soft px-2.5 py-1 text-xs font-semibold text-warning">
+                  {s.quantity} left
+                </span>
+              </li>
+            ))
           )}
         </ul>
       </article>
@@ -94,10 +63,10 @@ export default function LowStocks({ stock, variant = "card" }: LowStocksProps) {
       </div>
       <p className="mt-4 text-sm text-muted-foreground">Low stock alerts</p>
       <p className="mt-3 text-3xl font-bold text-foreground">
-        {lowStocks?.length}
+        {stock === null ? "—" : lowStocks?.length}
       </p>
       <p className="mt-2 text-xs text-muted-foreground">
-        needs restock this week
+        batches at or below {LOW_STOCK_THRESHOLD} units
       </p>
     </article>
   );

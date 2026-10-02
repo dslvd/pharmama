@@ -10,6 +10,7 @@ import Loading from "./loading";
 import { PackageOpen, Search, Plus, SlidersHorizontal } from "lucide-react";
 import { ErrorStack } from "@/components/ErrorCard";
 import Dropdown from "@/components/ui/Dropdown";
+import { Table, TableEmpty, TableHead, Th } from "@/components/ui/table";
 
 export default function ProductPage() {
   const [allProducts, setAllProducts] = useState<Product[]>([]);
@@ -148,6 +149,10 @@ export default function ProductPage() {
               <FilterBar
                 filters={FilterOptions}
                 onFilterChange={handleFilterChange}
+                onReset={() => {
+                  setCategory(undefined);
+                  setOrder(undefined);
+                }}
                 selectedValues={{
                   CATEGORY: category,
                   ORDER: order,
@@ -165,70 +170,57 @@ export default function ProductPage() {
           </div>
         </div>
 
-        <div className="min-h-122 flex-1 overflow-x-auto rounded-xl border border-border bg-card shadow-sm">
-          <table className="w-full text-left text-sm">
-            <thead>
-              <tr className="border-b border-border bg-surface-subtle">
-                <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                  Name
-                </th>
-                <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                  Generic Name
-                </th>
-                <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                  Category
-                </th>
-                <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                  Price
-                </th>
-                <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {products.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan={5}
-                    className="h-112 px-4 py-8 text-center text-sm text-muted-foreground"
-                  >
-                    <div className="flex flex-col items-center justify-center gap-3">
-                      <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary-soft text-primary">
-                        <PackageOpen className="h-7 w-7" />
-                      </span>
-                      <p className="text-base font-semibold text-foreground">
-                        No products yet
-                      </p>
-                      <p className="max-w-xs leading-5 text-muted-foreground">
-                        Add a product to start building your catalog. You can
-                        link stock batches to it right after.
-                      </p>
-                      <button
-                        onClick={openAddModal}
-                        className="mt-2 flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary-hover"
-                      >
-                        <Plus className="h-4 w-4" />
-                        Add your first product
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ) : (
-                products.map((item) => (
-                  <ProductRow
-                    key={item.id}
-                    product={item}
-                    onDeleted={() => setRefreshKey((k) => k + 1)}
-                    onEdit={openEditModal}
-                    onError={addError}
-                  />
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+        <Table className="flex-1" minWidth="min-w-[640px]">
+          <TableHead>
+            <Th>Product</Th>
+            <Th>Category</Th>
+            <Th align="right">Price</Th>
+            <Th align="right" className="w-24">
+              <span className="sr-only">Actions</span>
+            </Th>
+          </TableHead>
+          <tbody>
+            {products.length === 0 ? (
+              <TableEmpty
+                colSpan={4}
+                icon={<PackageOpen className="h-6 w-6" />}
+                title={
+                  allProducts.length === 0
+                    ? "No products yet"
+                    : "No matching products"
+                }
+              >
+                {allProducts.length === 0 ? (
+                  <>
+                    <p>
+                      Add a product to start building your catalog. You can
+                      link stock batches to it right after.
+                    </p>
+                    <button
+                      onClick={openAddModal}
+                      className="mx-auto mt-4 flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary-hover"
+                    >
+                      <Plus className="h-4 w-4" />
+                      Add your first product
+                    </button>
+                  </>
+                ) : (
+                  <p>Try a different search or clear the filters.</p>
+                )}
+              </TableEmpty>
+            ) : (
+              products.map((item) => (
+                <ProductRow
+                  key={item.id}
+                  product={item}
+                  onDeleted={() => setRefreshKey((k) => k + 1)}
+                  onEdit={openEditModal}
+                  onError={addError}
+                />
+              ))
+            )}
+          </tbody>
+        </Table>
 
         {showAddProductModal && (
           <AddProductModal

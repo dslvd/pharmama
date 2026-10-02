@@ -5,13 +5,15 @@ import { X, XCircle } from "lucide-react";
 import { createTransaction } from "@/lib/api/transaction";
 import { SubmittedItem } from "./ProductPicker";
 import { peso } from "@/lib/utils/format";
+import { Transaction } from "@/lib/types/transaction";
 
 interface TransactionTableProps {
   items: SubmittedItem[];
   setItems: React.Dispatch<React.SetStateAction<SubmittedItem[]>>;
   onCancelTransaction?: () => void;
   onError?: (message: string) => void;
-  onSuccess?: () => void;
+  // the saved transaction plus the cart that was sold, for the receipt
+  onSuccess?: (transaction: Transaction, sold: SubmittedItem[]) => void;
 }
 
 export default function TransactionTable({
@@ -30,9 +32,8 @@ export default function TransactionTable({
     });
 
     if (result.ok) {
+      onSuccess?.(result.value, items);
       setItems([]);
-      onSuccess?.();
-      onCancelTransaction?.();
     } else {
       onError?.(result.error);
     }
@@ -103,7 +104,7 @@ export default function TransactionTable({
           <button
             onClick={onCancelTransaction}
             disabled={items.length === 0}
-            className="flex flex-1 items-center justify-center gap-1.5 rounded-full bg-danger-soft py-2.5 text-sm font-semibold text-danger transition-colors hover:bg-danger/20 disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex items-center justify-center gap-1.5 rounded-full border border-border bg-card px-6 py-2.5 text-sm font-semibold text-danger transition-colors hover:bg-danger-soft disabled:cursor-not-allowed disabled:opacity-50 sm:shrink-0"
           >
             <XCircle size={15} />
             Cancel
@@ -112,7 +113,7 @@ export default function TransactionTable({
         <button
           onClick={handleSubmit}
           disabled={items.length === 0 || loading}
-          className="rounded-full border border-border bg-card px-6 py-2.5 text-sm font-semibold text-foreground transition-colors hover:bg-background disabled:cursor-not-allowed disabled:opacity-50 sm:flex-shrink-0"
+          className="flex flex-1 items-center justify-center rounded-full bg-primary py-2.5 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
         >
           {loading ? "Submitting..." : "Confirm sale"}
         </button>

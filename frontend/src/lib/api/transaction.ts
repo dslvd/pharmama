@@ -11,11 +11,14 @@ export const getTransactionList = async () =>
     list.map(toTransaction),
   );
 
-export const createTransaction = (data: CreateTransactionPayload) =>
-  apiFetch<Transaction>("/transaction", {
-    method: "POST",
-    body: JSON.stringify(data),
-  });
+export const createTransaction = async (data: CreateTransactionPayload) =>
+  mapResult(
+    await apiFetch<Transaction>("/transaction", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+    toTransaction,
+  );
 
 export const updateTransactionStatus = (
   id: number,

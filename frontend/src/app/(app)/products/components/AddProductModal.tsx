@@ -85,7 +85,6 @@ export default function AddProductModal({
       onSuccess?.();
       onClose();
     } else {
-      console.log(result.error);
       setError(result.error);
     }
   }

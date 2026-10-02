@@ -13,13 +13,15 @@ interface FilterBarProps {
   filters: FilterProps[];
   selectedValues?: Record<string, string[] | string | undefined>;
   onFilterChange: (title: string, sub: string, checked: boolean) => void;
+  // clears every filter; the button only shows when something is selected
+  onReset?: () => void;
 }
-// Should have a reset button
 
 export default function FilterBar({
   filters,
   selectedValues = {},
   onFilterChange,
+  onReset,
 }: FilterBarProps) {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -58,8 +60,28 @@ export default function FilterBar({
     return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
   };
 
+  const hasSelection = Object.values(selectedValues).some((v) =>
+    Array.isArray(v) ? v.length > 0 : !!v,
+  );
+
   return (
     <div ref={containerRef} className="w-full space-y-5 text-foreground">
+      {onReset && (
+        <div className="flex items-center justify-between">
+          <p className="text-sm font-semibold text-muted-foreground">Filters</p>
+          <button
+            type="button"
+            onClick={() => {
+              onReset();
+              setOpenDropdown(null);
+            }}
+            disabled={!hasSelection}
+            className="rounded-md px-2 py-1 text-xs font-semibold text-primary transition-colors hover:bg-primary-soft disabled:cursor-not-allowed disabled:text-muted-foreground disabled:hover:bg-transparent"
+          >
+            Reset
+          </button>
+        </div>
+      )}
       {filters.map((group) => {
         const titleKey = group.title.toUpperCase();
         const rawValue =

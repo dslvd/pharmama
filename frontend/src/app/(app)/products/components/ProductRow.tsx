@@ -3,7 +3,8 @@ import { Product } from "@/lib/types/product";
 import { useState } from "react";
 import { deleteProduct } from "@/lib/api/product";
 import ConfirmDialog from "@/components/ConfirmDialog";
-import { peso } from "@/lib/utils/format";
+import { peso, titleCase } from "@/lib/utils/format";
+import { Badge, Td, Tr } from "@/components/ui/table";
 
 interface ProductRowProps {
   product: Product;
@@ -36,40 +37,41 @@ export default function ProductRow({
 
   return (
     <>
-      <tr className="border-t border-border odd:bg-card even:bg-primary-soft/30">
-        <td className="px-4 py-3 text-foreground">{product.name}</td>
-        <td className="px-4 py-3 text-muted-foreground">
-          {product.genericName}
-        </td>
-        <td className="px-4 py-3">
-          <span className="rounded-full bg-muted px-2.5 py-1 text-xs font-medium text-foreground">
-            {product.category}
-          </span>
-        </td>
-        <td className="px-4 py-3 font-medium text-foreground">
+      <Tr>
+        <Td>
+          <p className="font-medium">{product.name}</p>
+          <p className="text-xs text-muted-foreground">
+            {product.genericName}
+          </p>
+        </Td>
+        <Td>
+          <Badge className="bg-secondary/60 text-secondary-foreground">
+            {titleCase(product.category)}
+          </Badge>
+        </Td>
+        <Td numeric className="font-medium">
           {peso(product.price)}
-        </td>
-        <td className="px-4 py-3">
-          <div className="flex items-center gap-1 text-muted-foreground">
+        </Td>
+        <Td align="right">
+          <div className="flex items-center justify-end gap-1 text-muted-foreground">
             <button
-              aria-label={`Edit product ${product.id}`}
+              aria-label={`Edit ${product.name}`}
               onClick={() => onEdit?.(product)}
-              className="rounded-md p-1.5 transition-colors hover:bg-muted/40 hover:text-primary"
+              className="rounded-md p-2 transition-colors hover:bg-primary-soft hover:text-primary"
             >
-              <PencilLine size={15} />
+              <PencilLine size={16} />
             </button>
-
             <button
-              aria-label={`Delete product ${product.id}`}
+              aria-label={`Delete ${product.name}`}
               onClick={() => setConfirmOpen(true)}
               disabled={deleting}
-              className="rounded-md p-1.5 transition-colors hover:bg-danger-soft hover:text-danger disabled:opacity-50"
+              className="rounded-md p-2 transition-colors hover:bg-danger-soft hover:text-danger disabled:opacity-50"
             >
-              <Trash size={15} />
+              <Trash size={16} />
             </button>
           </div>
-        </td>
-      </tr>
+        </Td>
+      </Tr>
       <ConfirmDialog
         open={confirmOpen}
         title="Delete product?"

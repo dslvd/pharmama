@@ -15,6 +15,7 @@ import { Transaction } from "@/lib/types/transaction";
 import { getTransactionList } from "@/lib/api/transaction";
 import { useAuth } from "@/lib/auth";
 import { UserRound } from "lucide-react";
+import { formatLongDay } from "@/lib/utils/format";
 
 export default function Dashboard() {
   const { enterStaffView } = useAuth();
@@ -61,13 +62,7 @@ export default function Dashboard() {
     getTransaction();
   }, [addError, setLoadingFor]);
 
-  const dateString = useMemo(() => {
-    const today = new Date();
-    const dayFormatter = new Intl.DateTimeFormat("en-US", { weekday: "long" });
-    const monthFormatter = new Intl.DateTimeFormat("en-US", { month: "long" });
-    const dayOfMonth = today.getDate();
-    return `${dayFormatter.format(today)}, ${monthFormatter.format(today)} ${dayOfMonth}`;
-  }, []);
+  const dateString = useMemo(() => formatLongDay(new Date()), []);
 
   return (
     <div className="relative">

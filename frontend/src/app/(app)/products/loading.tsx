@@ -14,21 +14,27 @@ export default function Loading() {
           <Skeleton className="h-10 w-32 rounded-lg" />
         </div>
       </div>
-      <div className="min-h-122 flex-1 overflow-hidden rounded-xl border border-border bg-card shadow-sm">
-        <div className="grid grid-cols-5 gap-4 border-b border-border bg-surface-subtle px-4 py-3">
-          {Array.from({ length: 5 }).map((_, index) => (
-            <Skeleton key={index} className="h-3 w-20 rounded" />
-          ))}
+      <div className="flex-1 overflow-hidden rounded-xl border border-border bg-card shadow-sm">
+        <div className="grid grid-cols-[2fr_1fr_1fr_6rem] gap-4 border-b border-border bg-surface-subtle px-4 py-3.5">
+          <Skeleton className="h-3 w-16 rounded" />
+          <Skeleton className="h-3 w-16 rounded" />
+          <Skeleton className="ml-auto h-3 w-12 rounded" />
+          <span />
         </div>
-        <div className="space-y-3 px-4 py-4">
-          {Array.from({ length: 8 }).map((_, row) => (
-            <div key={row} className="grid grid-cols-5 gap-4 py-2">
-              {Array.from({ length: 5 }).map((_, column) => (
-                <Skeleton key={column} className="h-4 w-full rounded" />
-              ))}
+        {Array.from({ length: 8 }).map((_, row) => (
+          <div
+            key={row}
+            className="grid grid-cols-[2fr_1fr_1fr_6rem] items-center gap-4 border-b border-border/70 px-4 py-3"
+          >
+            <div className="space-y-1.5">
+              <Skeleton className="h-4 w-40 rounded" />
+              <Skeleton className="h-3 w-28 rounded" />
             </div>
-          ))}
-        </div>
+            <Skeleton className="h-5 w-24 rounded-full" />
+            <Skeleton className="ml-auto h-4 w-20 rounded" />
+            <Skeleton className="ml-auto h-6 w-16 rounded" />
+          </div>
+        ))}
       </div>
     </main>
   );

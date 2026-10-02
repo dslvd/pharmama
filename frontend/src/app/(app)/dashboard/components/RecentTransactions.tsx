@@ -2,9 +2,10 @@
 
 import { useMemo } from "react";
 import { Transaction } from "@/lib/types/transaction";
-import { peso } from "@/lib/utils/format";
-import { statusClass } from "@/lib/utils/status";
+import { formatDate, formatTime, peso, txnId } from "@/lib/utils/format";
 import Skeleton from "@/components/ui/Skeleton";
+import StatusBadge from "@/components/StatusBadge";
+import { Table, TableHead, Td, Th, Tr } from "@/components/ui/table";
 
 export default function RecentTransactions({
   transactions,
@@ -21,23 +22,15 @@ export default function RecentTransactions({
       .slice(0, 5);
   }, [transactions]);
 
-  const formatTime = (date: Date | string) => {
-    const dateObj = typeof date === "string" ? new Date(date) : date;
-    return dateObj.toLocaleTimeString("en-US", {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: true,
-    });
-  };
-
   return (
-    <section className="rounded-xl border border-border bg-card p-5">
-      <h3 className="mb-4 text-lg font-semibold text-foreground">
+    // the table runs edge to edge; only the title and fallbacks are padded
+    <section className="overflow-hidden rounded-xl border border-border bg-card">
+      <h3 className="px-5 py-4 text-lg font-semibold text-foreground">
         Recent transactions
       </h3>
 
       {recent === null ? (
-        <div className="space-y-3">
+        <div className="space-y-3 px-5 pb-5">
           {[...Array(5)].map((_, i) => (
             <Skeleton key={i} className="h-12 w-full rounded-lg" />
           ))}
@@ -47,59 +40,39 @@ export default function RecentTransactions({
           No transactions found
         </p>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead className="border-b border-border">
-              <tr>
-                <th className="py-3 px-4 text-left font-semibold text-muted-foreground">
-                  ID
-                </th>
-                <th className="py-3 px-4 text-left font-semibold text-muted-foreground">
-                  TOTAL
-                </th>
-                <th className="py-3 px-4 text-left font-semibold text-muted-foreground">
-                  HANDLED BY
-                </th>
-                <th className="py-3 px-4 text-left font-semibold text-muted-foreground">
-                  STATUS
-                </th>
-                <th className="py-3 px-4 text-right font-semibold text-muted-foreground">
-                  TIME
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {recent.map((transaction) => (
-                <tr
-                  key={transaction.id}
-                  className="border-b border-border hover:bg-muted/30 transition-colors"
-                >
-                  <td className="py-3 px-4 text-foreground font-medium">
-                    F{transaction.id.toString().padStart(4, "0")}
-                  </td>
-                  <td className="py-3 px-4 text-foreground">
-                    {peso(transaction.totalAmount)}
-                  </td>
-                  <td className="py-3 px-4 text-foreground">
-                    {transaction.user?.name ?? transaction.handledBy}
-                  </td>
-                  <td className="py-3 px-4">
-                    <span
-                      className={`inline-block rounded-full px-3 py-1 text-xs font-semibold ${statusClass(
-                        transaction.status,
-                      )}`}
-                    >
-                      {transaction.status}
-                    </span>
-                  </td>
-                  <td className="py-3 px-4 text-right text-foreground">
+        <Table
+          className="rounded-none border-0 border-t shadow-none"
+          minWidth="min-w-[560px]">
+          <TableHead>
+            <Th>Transaction</Th>
+            <Th>When</Th>
+            <Th>Handled by</Th>
+            <Th>Status</Th>
+            <Th align="right">Total</Th>
+          </TableHead>
+          <tbody>
+            {recent.map((transaction) => (
+              <Tr key={transaction.id}>
+                <Td className="font-mono text-xs text-muted-foreground">
+                  {txnId(transaction.id)}
+                </Td>
+                <Td className="whitespace-nowrap">
+                  <p>{formatDate(transaction.createdAt)}</p>
+                  <p className="text-xs text-muted-foreground">
                     {formatTime(transaction.createdAt)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                  </p>
+                </Td>
+                <Td>{transaction.user?.name ?? transaction.handledBy}</Td>
+                <Td>
+                  <StatusBadge status={transaction.status} />
+                </Td>
+                <Td numeric className="font-semibold">
+                  {peso(transaction.totalAmount)}
+                </Td>
+              </Tr>
+            ))}
+          </tbody>
+        </Table>
       )}
     </section>
   );

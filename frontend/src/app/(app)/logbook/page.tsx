@@ -10,6 +10,7 @@ import FilterBar, { FilterProps } from "@/components/FilterBar";
 import { ErrorStack } from "@/components/ErrorCard";
 import Loading from "@/app/(app)/logbook/loading";
 import Dropdown from "@/components/ui/Dropdown";
+import { Table, TableEmpty, TableHead, Th } from "@/components/ui/table";
 
 export default function LogbookPage() {
   const [allAudit, setAllAudit] = useState<AuditLog[]>([]);
@@ -48,7 +49,8 @@ export default function LogbookPage() {
         (!action || log.action === action) &&
         (!q ||
           log.action.toLowerCase().includes(q) ||
-          log.entity.toLowerCase().includes(q)),
+          log.entity.toLowerCase().includes(q) ||
+          log.user?.name.toLowerCase().includes(q)),
     );
 
     list = [...list].sort((a, b) =>
@@ -113,7 +115,7 @@ export default function LogbookPage() {
                 type="text"
                 value={searchTerm}
                 onChange={(event) => setSearchTerm(event.target.value)}
-                placeholder="Search entity or action..."
+                placeholder="Search user, entity or action..."
                 className="w-full rounded-lg border border-border bg-card py-2.5 pl-9 pr-3 text-sm text-foreground shadow-sm focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring/20"
               />
             </div>
@@ -139,6 +141,11 @@ export default function LogbookPage() {
               <FilterBar
                 filters={FilterOptions}
                 onFilterChange={handleFilterChange}
+                onReset={() => {
+                  setAction(undefined);
+                  setEntity(undefined);
+                  setOrder(undefined);
+                }}
                 selectedValues={{
                   ACTION: action,
                   ENTITY: entity,
@@ -149,58 +156,36 @@ export default function LogbookPage() {
           </div>
         </div>
 
-        <div className="min-h-128 flex-1 overflow-x-auto rounded-xl border border-border bg-card shadow-sm">
-          <table className="w-full text-left text-sm">
-            <thead>
-              <tr className="border-b border-border bg-surface-subtle">
-                <th className="px-4 py-3 text-center text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                  Date
-                </th>
-                <th className="px-4 py-3 text-center text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                  Time
-                </th>
-                <th className="px-4 py-3 text-center text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                  ID
-                </th>
-                <th className="px-4 py-3 text-center text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                  Action
-                </th>
-                <th className="px-4 py-3 text-center text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                  Entity
-                </th>
-                <th className="px-4 py-3 text-center text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                  Change
-                </th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {audit.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan={6}
-                    className="h-112 px-4 py-8 text-center text-sm text-muted-foreground"
-                  >
-                    <div className="flex flex-col items-center justify-center gap-3">
-                      <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary-soft text-primary">
-                        <BookOpen className="h-7 w-7" />
-                      </span>
-                      <p className="text-base font-semibold text-foreground">
-                        Nothing logged yet
-                      </p>
-                      <p className="max-w-sm leading-5 text-muted-foreground">
-                        Every add, edit, and delete across the app will be
-                        recorded here automatically — no action needed.
-                      </p>
-                    </div>
-                  </td>
-                </tr>
-              ) : (
-                audit.map((item) => <AuditRow key={item.id} audit={item} />)
-              )}
-            </tbody>
-          </table>
-        </div>
+        <Table className="flex-1" minWidth="min-w-[860px]">
+          <TableHead>
+            <Th className="w-36">When</Th>
+            <Th className="w-44">User</Th>
+            <Th className="w-40">Action</Th>
+            <Th className="w-40">Entity</Th>
+            <Th>Changes</Th>
+          </TableHead>
+          <tbody>
+            {audit.length === 0 ? (
+              <TableEmpty
+                colSpan={5}
+                icon={<BookOpen className="h-6 w-6" />}
+                title={
+                  allAudit.length === 0
+                    ? "Nothing logged yet"
+                    : "No matching entries"
+                }
+              >
+                <p>
+                  {allAudit.length === 0
+                    ? "Every add, edit, and delete across the app will be recorded here automatically."
+                    : "Try a different search or clear the filters."}
+                </p>
+              </TableEmpty>
+            ) : (
+              audit.map((item) => <AuditRow key={item.id} audit={item} />)
+            )}
+          </tbody>
+        </Table>
         <ErrorStack errors={errors} />
       </main>
       <div
