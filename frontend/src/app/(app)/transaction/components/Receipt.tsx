@@ -1,5 +1,6 @@
 import { Transaction, TransactionStatus } from "@/lib/types/transaction";
 import { formatDate, formatTime, peso, txnId } from "@/lib/utils/format";
+import { SubmittedItem } from "./ProductPicker";
 
 export interface ReceiptLine {
   productId: number;
@@ -49,6 +50,30 @@ export const receiptFromTransaction = (t: Transaction): ReceiptData => ({
       quantity: item.quantity,
       unitPrice: item.unitPrice,
       subtotal: item.subtotal,
+    })),
+  ),
+});
+
+// right after checkout: the API returns the bare transaction, so the
+// lines come from the cart that was just sold
+export const receiptFromSale = (
+  t: Transaction,
+  cart: SubmittedItem[],
+  cashier: string,
+): ReceiptData => ({
+  id: t.id,
+  createdAt: t.createdAt,
+  cashier,
+  status: t.status,
+  total: t.totalAmount,
+  lines: mergeLines(
+    cart.map(({ product, trItems }) => ({
+      productId: product.id,
+      name: product.name,
+      genericName: product.genericName,
+      quantity: trItems.quantity,
+      unitPrice: product.price,
+      subtotal: product.price * trItems.quantity,
     })),
   ),
 });

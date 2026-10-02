@@ -5,7 +5,12 @@ import TransactionTable from "./components/TransactionTable";
 import SalesTable from "./components/SalesTable";
 import ProductPicker, { SubmittedItem } from "./components/ProductPicker";
 import ReceiptModal from "./components/ReceiptModal";
-import { ReceiptData, receiptFromTransaction } from "./components/Receipt";
+import {
+  ReceiptData,
+  receiptFromSale,
+  receiptFromTransaction,
+} from "./components/Receipt";
+import { useAuth } from "@/lib/auth";
 import { ErrorStack } from "@/components/ErrorCard";
 import Loading from "./loading";
 
@@ -13,7 +18,12 @@ export default function TransactionsPage() {
   const [items, setItems] = useState<SubmittedItem[]>([]);
   const [errors, setErrors] = useState<{ id: string; message: string }[]>([]);
   const [loading, setLoading] = useState(true);
-  const [receipt, setReceipt] = useState<ReceiptData | null>(null);
+  const { user } = useAuth();
+  // justSold: opened by checkout rather than "View"
+  const [receipt, setReceipt] = useState<{
+    data: ReceiptData;
+    justSold: boolean;
+  } | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
 
   const addError = useCallback(
@@ -59,7 +69,13 @@ export default function TransactionsPage() {
             setItems={setItems}
             onCancelTransaction={() => setItems([])}
             onError={addError}
-            onSuccess={() => setRefreshKey((k) => k + 1)}
+            onSuccess={(tx, sold) => {
+              setRefreshKey((k) => k + 1);
+              setReceipt({
+                data: receiptFromSale(tx, sold, user?.name ?? "—"),
+                justSold: true,
+              });
+            }}
           />
         </div>
 
@@ -67,11 +83,17 @@ export default function TransactionsPage() {
           refreshKey={refreshKey}
           onError={addError}
           onLoadingChange={setLoading}
-          onViewClick={(tr) => setReceipt(receiptFromTransaction(tr))}
+          onViewClick={(tr) =>
+            setReceipt({ data: receiptFromTransaction(tr), justSold: false })
+          }
         />
 
         {receipt && (
-          <ReceiptModal data={receipt} onClose={() => setReceipt(null)} />
+          <ReceiptModal
+            data={receipt.data}
+            eyebrow={receipt.justSold ? "Sale complete" : undefined}
+            onClose={() => setReceipt(null)}
+          />
         )}
         <ErrorStack errors={errors} />
       </main>

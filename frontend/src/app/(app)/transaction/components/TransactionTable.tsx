@@ -5,13 +5,15 @@ import { X, XCircle } from "lucide-react";
 import { createTransaction } from "@/lib/api/transaction";
 import { SubmittedItem } from "./ProductPicker";
 import { peso } from "@/lib/utils/format";
+import { Transaction } from "@/lib/types/transaction";
 
 interface TransactionTableProps {
   items: SubmittedItem[];
   setItems: React.Dispatch<React.SetStateAction<SubmittedItem[]>>;
   onCancelTransaction?: () => void;
   onError?: (message: string) => void;
-  onSuccess?: () => void;
+  // the saved transaction plus the cart that was sold, for the receipt
+  onSuccess?: (transaction: Transaction, sold: SubmittedItem[]) => void;
 }
 
 export default function TransactionTable({
@@ -30,9 +32,8 @@ export default function TransactionTable({
     });
 
     if (result.ok) {
+      onSuccess?.(result.value, items);
       setItems([]);
-      onSuccess?.();
-      onCancelTransaction?.();
     } else {
       onError?.(result.error);
     }
