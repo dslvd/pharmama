@@ -96,7 +96,7 @@ export default function LogbookPage() {
 
   return (
     <>
-      <main className="flex min-h-screen flex-col gap-5 p-6">
+      <main className="flex h-dvh min-h-[36rem] flex-col gap-5 p-6">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
             <h2 className="text-3xl font-bold text-foreground">Logbook</h2>
@@ -156,7 +156,7 @@ export default function LogbookPage() {
           </div>
         </div>
 
-        <Table className="flex-1" minWidth="min-w-[860px]">
+        <Table className="min-h-0 flex-1" minWidth="min-w-[860px]">
           <TableHead>
             <Th className="w-36">When</Th>
             <Th className="w-44">User</Th>

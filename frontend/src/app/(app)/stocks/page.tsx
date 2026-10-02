@@ -114,7 +114,7 @@ export default function StockPage() {
 
   return (
     <>
-      <main className="flex min-h-screen flex-col gap-5 p-6">
+      <main className="flex h-dvh min-h-[36rem] flex-col gap-5 p-6">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
             <h2 className="text-3xl font-bold text-foreground">Stocks</h2>
@@ -181,7 +181,7 @@ export default function StockPage() {
           </div>
         </div>
 
-        <Table className="flex-1">
+        <Table className="min-h-0 flex-1">
           <TableHead>
             <Th>Product</Th>
             <Th>Batch</Th>
