@@ -81,6 +81,7 @@ export default function Navigation({ isOpen, onNavigate }: NavigationProps) {
         isOpen ? "translate-x-0" : "-translate-x-full shadow-none"
       }`}
       aria-label="Main Navigation"
+      data-drawer
       inert={!isOpen}
     >
       <div className="flex h-full flex-col justify-between">
