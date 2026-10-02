@@ -25,8 +25,6 @@ export default function LogbookPage() {
 
   useEffect(() => {
     async function loadAudit() {
-      setLoading(true);
-
       const result = await getAuditList({});
 
       if (result.ok) {
@@ -178,7 +176,7 @@ export default function LogbookPage() {
               {audit.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={5}
+                    colSpan={6}
                     className="h-112 px-4 py-8 text-center text-sm text-muted-foreground"
                   >
                     <div className="flex flex-col items-center justify-center gap-3">

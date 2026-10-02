@@ -29,7 +29,6 @@ export default function ProductPage() {
 
   useEffect(() => {
     async function loadProducts() {
-      setLoading(true);
       const result = await getProductList({});
 
       if (result.ok) {

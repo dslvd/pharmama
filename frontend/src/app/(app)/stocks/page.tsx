@@ -10,11 +10,14 @@ import AddStockModal from "@/app/(app)/stocks/components/AddStockModal";
 import Loading from "@/app/(app)/stocks/loading";
 import { PackageOpen, Plus, Search, SlidersHorizontal } from "lucide-react";
 import { ErrorStack } from "@/components/ErrorCard";
+import { useAuth } from "@/lib/auth";
+import { isManager } from "@/lib/roles";
 
 // GET /stock already includes each batch's product.
 export type StockWithProduct = Stock;
 
 export default function StockPage() {
+  const { user } = useAuth();
   const [allStock, setAllStock] = useState<StockWithProduct[]>([]);
   const [order, setOrder] = useState<SortOrder | undefined>(undefined);
   const [sortBy, setSortBy] = useState<SortBy[]>([]);
@@ -33,11 +36,10 @@ export default function StockPage() {
 
   useEffect(() => {
     async function loadStock() {
-      setLoading(true);
       const result = await getStockList({});
 
       if (!result.ok) {
-        addError?.(result.error);
+        addError(result.error);
         setLoading(false);
         return;
       }
@@ -202,7 +204,7 @@ export default function StockPage() {
               {stock.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={6}
+                    colSpan={7}
                     className="h-112 px-4 py-8 text-center text-sm text-muted-foreground"
                   >
                     <div className="flex flex-col items-center justify-center gap-3">
@@ -233,6 +235,8 @@ export default function StockPage() {
                     stock={item}
                     onDeleted={() => setRefreshKey((k) => k + 1)}
                     onEdit={openEditModal}
+                    onError={addError}
+                    canDelete={isManager(user?.role)}
                   />
                 ))
               )}

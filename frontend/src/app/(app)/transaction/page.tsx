@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import TransactionTable from "./components/TransactionTable";
 import SalesTable from "./components/SalesTable";
 import ProductPicker, { SubmittedItem } from "./components/ProductPicker";
@@ -17,8 +17,11 @@ export default function TransactionsPage() {
   const [tr, setTr] = useState<Transaction | undefined>(undefined);
   const [refreshKey, setRefreshKey] = useState(0);
 
-  const addError = (message: string) =>
-    setErrors((prev) => [...prev, { id: crypto.randomUUID(), message }]);
+  const addError = useCallback(
+    (message: string) =>
+      setErrors((prev) => [...prev, { id: crypto.randomUUID(), message }]),
+    [],
+  );
 
   const handleAddItem = (entry: SubmittedItem) => {
     setItems((prev) => {

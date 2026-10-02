@@ -45,7 +45,6 @@ export default function SalesTable({
 
   useEffect(() => {
     async function getTransaction() {
-      onLoadingChange?.(true);
       const result = await getTransactionList({});
       if (result.ok) {
         setAllSales(result.value);
@@ -55,7 +54,7 @@ export default function SalesTable({
       onLoadingChange?.(false);
     }
     getTransaction();
-  }, [refreshKey]);
+  }, [refreshKey, onError, onLoadingChange]);
 
   const sales = useMemo(() => {
     const q = searchTerm.trim().toLowerCase();

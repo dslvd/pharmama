@@ -72,7 +72,7 @@ export default function ProductPicker({
     }
 
     loadItems();
-  }, [refreshKey]);
+  }, [refreshKey, onError]);
 
   const products = useMemo(() => {
     const q = searchTerm.trim().toLowerCase();

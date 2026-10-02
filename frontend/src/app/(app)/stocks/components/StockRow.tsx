@@ -8,11 +8,20 @@ interface StockRowProps {
   stock: StockWithProduct;
   onDeleted?: (id: number) => void;
   onEdit?: (stock: Stock) => void;
+  onError?: (message: string) => void;
+  // only owners/admins can delete stock
+  canDelete?: boolean;
 }
 
 const LOW_QUANTITY_THRESHOLD = 20;
 
-export default function StockRow({ stock, onDeleted, onEdit }: StockRowProps) {
+export default function StockRow({
+  stock,
+  onDeleted,
+  onEdit,
+  onError,
+  canDelete = false,
+}: StockRowProps) {
   const [deleting, setDeleting] = useState(false);
   const expiry = new Date(stock.expiryDate);
   const expiryDate = expiry.toLocaleDateString();
@@ -30,7 +39,7 @@ export default function StockRow({ stock, onDeleted, onEdit }: StockRowProps) {
     if (result.ok) {
       onDeleted?.(id);
     } else {
-      console.log(result.error);
+      onError?.(result.error);
     }
   }
 
@@ -63,14 +72,16 @@ export default function StockRow({ stock, onDeleted, onEdit }: StockRowProps) {
           >
             <PencilLine size={15} />
           </button>
-          <button
-            aria-label={`Delete stock ${stock.id}`}
-            onClick={() => handleDelete(stock.id)}
-            disabled={deleting}
-            className="transition-colors hover:text-rose-600 disabled:opacity-50"
-          >
-            <Trash size={15} />
-          </button>
+          {canDelete && (
+            <button
+              aria-label={`Delete stock ${stock.id}`}
+              onClick={() => handleDelete(stock.id)}
+              disabled={deleting}
+              className="transition-colors hover:text-rose-600 disabled:opacity-50"
+            >
+              <Trash size={15} />
+            </button>
+          )}
         </div>
       </td>
     </tr>

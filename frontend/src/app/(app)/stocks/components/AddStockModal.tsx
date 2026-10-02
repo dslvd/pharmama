@@ -38,7 +38,9 @@ export default function AddStockModal({
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isProductOpen, setIsProductOpen] = useState(false);
-  const [selectedPr, setSelectedPr] = useState<Product | null>(null);
+  const [selectedPr, setSelectedPr] = useState<Product | null>(
+    stock?.product ?? null,
+  );
 
   const handleQuantityInput = (value: string) => {
     if (value === "") {
