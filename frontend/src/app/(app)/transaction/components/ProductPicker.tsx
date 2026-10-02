@@ -7,7 +7,7 @@ import { CATEGORIES, Category, Product } from "@/lib/types/product";
 import { CreateTransactionItemPayload } from "@/lib/types/transaction";
 import { getStockList } from "@/lib/api/stocks";
 import { Stock } from "@/lib/types/stock";
-import { peso } from "@/lib/utils/format";
+import { peso, titleCase } from "@/lib/utils/format";
 
 export interface SubmittedItem {
   trItems: CreateTransactionItemPayload;
@@ -42,7 +42,8 @@ export default function ProductPicker({
   const [stock, setStock] = useState<Stock[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [category, setCategory] = useState<Category | undefined>(undefined);
-  const [pendingQty, setPendingQty] = useState<Record<number, number>>({});
+  // typed quantities per product, kept as text so the field can be empty
+  const [pendingQty, setPendingQty] = useState<Record<number, string>>({});
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -100,17 +101,35 @@ export default function ProductPicker({
     return s.quantity - inCart;
   }
 
-  const getQty = (id: number) => pendingQty[id] ?? 1;
+  // sellable units left for a product: unexpired batches minus the cart
+  const availableFor = (productId: number) =>
+    stock
+      .filter((s) => s.productId === productId && !isExpired(s))
+      .reduce((sum, s) => sum + Math.max(0, remainingInBatch(s)), 0);
 
-  const adjustQty = (id: number, delta: number) => {
-    setPendingQty((prev) => ({
-      ...prev,
-      [id]: Math.max(1, (prev[id] ?? 1) + delta),
-    }));
-  };
+  // at least 1; the +/- buttons also stop at what's available
+  const atLeastOne = (value: string | number) =>
+    Math.max(1, Number(value) || 1);
+
+  const getQty = (id: number) => pendingQty[id] ?? "1";
+
+  const setQty = (id: number, value: string) =>
+    setPendingQty((prev) => ({ ...prev, [id]: value }));
+
+  const adjustQty = (id: number, delta: number) =>
+    setQty(
+      id,
+      String(
+        Math.min(
+          atLeastOne(Number(getQty(id)) + delta),
+          Math.max(1, availableFor(id)),
+        ),
+      ),
+    );
 
   const handleAdd = (product: Product) => {
-    const qty = getQty(product.id);
+    // typing more than what's left is reported by the allocation below
+    const qty = atLeastOne(getQty(product.id));
 
     // sell from the earliest-expiring batches first, splitting across batches
     const batches = stock
@@ -141,7 +160,7 @@ export default function ProductPicker({
     }
 
     allocations.forEach(onAddItem);
-    setPendingQty((prev) => ({ ...prev, [product.id]: 1 }));
+    setQty(product.id, "1");
   };
 
   return (
@@ -197,11 +216,12 @@ export default function ProductPicker({
                   {product.name}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  {product.category} &middot; {peso(product.price)}
+                  {titleCase(product.category)} &middot; {peso(product.price)}{" "}
+                  &middot; {availableFor(product.id)} available
                 </p>
               </div>
 
-              <div className="flex w-24 shrink-0 items-center justify-center gap-1 rounded-full border border-border bg-card px-1.5 py-1">
+              <div className="flex w-28 shrink-0 items-center justify-center gap-1 rounded-full border border-border bg-card px-1.5 py-1">
                 <button
                   onClick={() => adjustQty(product.id, -1)}
                   aria-label="Decrease quantity"
@@ -209,9 +229,22 @@ export default function ProductPicker({
                 >
                   <Minus size={12} />
                 </button>
-                <span className="w-5 text-center text-xs font-semibold text-foreground">
-                  {getQty(product.id)}
-                </span>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  aria-label={`Quantity of ${product.name}`}
+                  value={getQty(product.id)}
+                  onChange={(e) =>
+                    setQty(product.id, e.target.value.replace(/\D/g, ""))
+                  }
+                  onBlur={(e) =>
+                    setQty(product.id, String(atLeastOne(e.target.value)))
+                  }
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") handleAdd(product);
+                  }}
+                  className="w-10 rounded bg-transparent text-center text-xs font-semibold text-foreground tabular-nums focus:bg-background focus:outline-none"
+                />
                 <button
                   onClick={() => adjustQty(product.id, 1)}
                   aria-label="Increase quantity"
