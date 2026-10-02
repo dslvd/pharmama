@@ -1,38 +1,34 @@
-import { useEffect, useState } from "react";
-import { Wallet, TrendingUp } from "lucide-react";
-import { getSalesOverview } from "@/lib/api/sales";
+import { useMemo, useState } from "react";
+import { Minus, TrendingDown, TrendingUp, Wallet } from "lucide-react";
+import { Transaction } from "@/lib/types/transaction";
 import { peso } from "@/lib/utils/format";
 
+// YYYY-MM-DD in Manila time, so "today" matches the pharmacy's day
+const manilaDay = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Manila" });
+const DAY_MS = 24 * 60 * 60 * 1000;
+
 export default function SalesCard({
-  onError,
-  onLoadingChange,
+  transactions,
 }: {
-  onError?: (message: string) => void;
-  onLoadingChange?: (loading: boolean) => void;
+  transactions: Transaction[] | null;
 }) {
-  const [sales, setSales] = useState<{ label: string; value: number }[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [percentageChange, setPercentageChange] = useState(0);
+  // fixed at mount; the dashboard refetches on reload anyway
+  const [now] = useState(() => Date.now());
 
-  useEffect(() => {
-    onLoadingChange?.(true);
+  const { today, yesterday } = useMemo(() => {
+    const todayKey = manilaDay.format(now);
+    const yesterdayKey = manilaDay.format(now - DAY_MS);
+    let today = 0;
+    let yesterday = 0;
 
-    async function loadSales() {
-      const result = await getSalesOverview("Today");
-
-      if (result.ok) {
-        setSales(result.value);
-        setPercentageChange(12);
-      } else {
-        onError?.(result.error);
-      }
-      setLoading(false);
-      onLoadingChange?.(false);
+    for (const t of transactions ?? []) {
+      if (t.status !== "COMPLETED") continue;
+      const key = manilaDay.format(new Date(t.createdAt));
+      if (key === todayKey) today += t.totalAmount;
+      else if (key === yesterdayKey) yesterday += t.totalAmount;
     }
-    loadSales();
-  }, [onError, onLoadingChange]);
-
-  const total = sales.reduce((sum, i) => sum + i.value, 0);
+    return { today, yesterday };
+  }, [transactions, now]);
 
   return (
     <article className="rounded-xl border border-border bg-card p-5">
@@ -42,15 +38,36 @@ export default function SalesCard({
         </span>
       </div>
       <p className="mt-4 text-sm text-muted-foreground">Today&apos;s sales</p>
-      <p className="mt-3 flex items-center gap-2 text-3xl font-bold text-foreground">
-        {loading ? "—" : peso(total)}
+      <p className="mt-3 text-3xl font-bold text-foreground">
+        {transactions === null ? "—" : peso(today)}
       </p>
-      <div className="mt-2 flex items-center gap-1">
-        <TrendingUp className="h-4 w-4 text-emerald-600" />
-        <span className="text-xs font-medium text-emerald-600">
-          {percentageChange}% vs. yesterday
-        </span>
-      </div>
+      {transactions !== null && <Delta today={today} yesterday={yesterday} />}
     </article>
+  );
+}
+
+function Delta({ today, yesterday }: { today: number; yesterday: number }) {
+  if (yesterday === 0) {
+    return (
+      <p className="mt-2 text-xs text-muted-foreground">No sales yesterday</p>
+    );
+  }
+
+  const pct = Math.round(((today - yesterday) / yesterday) * 100);
+  const [Icon, color, sign] =
+    pct > 0
+      ? [TrendingUp, "text-emerald-600", "+"]
+      : pct < 0
+        ? [TrendingDown, "text-rose-600", ""]
+        : [Minus, "text-muted-foreground", ""];
+
+  return (
+    <div className={`mt-2 flex items-center gap-1 ${color}`}>
+      <Icon className="h-4 w-4" />
+      <span className="text-xs font-medium">
+        {sign}
+        {pct}% vs. yesterday
+      </span>
+    </div>
   );
 }

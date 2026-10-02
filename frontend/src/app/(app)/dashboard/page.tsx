@@ -19,7 +19,6 @@ export default function Dashboard() {
   const [transaction, setTransaction] = useState<Transaction[] | null>(null);
   const [errors, setErrors] = useState<{ id: string; message: string }[]>([]);
   const [loading, setLoading] = useState({
-    sales: true,
     stock: true,
     transaction: true,
   });
@@ -32,10 +31,6 @@ export default function Dashboard() {
   );
 
   const isLoading = Object.values(loading).some(Boolean);
-  const handleSalesLoadingChange = useCallback(
-    (v: boolean) => setLoadingFor("sales", v),
-    [setLoadingFor],
-  );
 
   const addError = useCallback(
     (message: string) =>
@@ -105,10 +100,7 @@ export default function Dashboard() {
 
         {/* Stats Grid */}
         <section className="grid grid-cols-1 gap-4 md:grid-cols-4">
-          <SalesCard
-            onError={addError}
-            onLoadingChange={handleSalesLoadingChange}
-          />
+          <SalesCard transactions={transaction} />
           <TransactionsCard transactions={transaction} />
           <CurrentStocks stocks={stock} />
           <LowStocks stock={stock} />
