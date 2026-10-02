@@ -1,13 +1,4 @@
-import type { HTMLAttributes } from "react";
-
-function Skeleton({
-  className = "",
-  ...props
-}: HTMLAttributes<HTMLDivElement>) {
-  return (
-    <div aria-hidden="true" className={`skeleton ${className}`} {...props} />
-  );
-}
+import Skeleton from "@/components/ui/Skeleton";
 
 function StatCardSkeleton() {
   return (

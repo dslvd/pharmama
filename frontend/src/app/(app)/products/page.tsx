@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { getProductList } from "@/lib/api/product";
-import { Category, Product, SortOrder } from "@/lib/types/product";
+import { CATEGORIES, Category, Product, SortOrder } from "@/lib/types/product";
 import FilterBar, { FilterProps } from "@/components/FilterBar";
 import ProductRow from "@/app/(app)/products/components/ProductRow";
 import AddProductModal from "@/app/(app)/products/components/AddProductModal";
@@ -29,7 +29,7 @@ export default function ProductPage() {
 
   useEffect(() => {
     async function loadProducts() {
-      const result = await getProductList({});
+      const result = await getProductList();
 
       if (result.ok) {
         setAllProducts(result.value);
@@ -78,16 +78,7 @@ export default function ProductPage() {
   const FilterOptions: FilterProps[] = [
     {
       title: "CATEGORY",
-      sub: [
-        "ANALGESICS",
-        "ANTIBIOTICS",
-        "ANTIHISTAMINES",
-        "VITAMINS",
-        "SUPPLEMENTS",
-        "ANTACIDS",
-        "HYGIENE",
-        "OTHERS",
-      ],
+      sub: CATEGORIES,
     },
     { title: "ORDER", sub: ["asc", "desc"] },
   ];

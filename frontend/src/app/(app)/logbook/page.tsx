@@ -25,7 +25,7 @@ export default function LogbookPage() {
 
   useEffect(() => {
     async function loadAudit() {
-      const result = await getAuditList({});
+      const result = await getAuditList();
 
       if (result.ok) {
         setAllAudit(result.value);

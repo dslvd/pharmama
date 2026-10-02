@@ -3,10 +3,9 @@ import { Stock } from "@/lib/types/stock";
 import { useState } from "react";
 import { deleteStock } from "@/lib/api/stocks";
 import ConfirmDialog from "@/components/ConfirmDialog";
-import { StockWithProduct } from "../page";
 
 interface StockRowProps {
-  stock: StockWithProduct;
+  stock: Stock;
   onDeleted?: (id: number) => void;
   onEdit?: (stock: Stock) => void;
   onError?: (message: string) => void;

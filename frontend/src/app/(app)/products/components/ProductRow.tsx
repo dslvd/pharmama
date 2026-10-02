@@ -3,6 +3,7 @@ import { Product } from "@/lib/types/product";
 import { useState } from "react";
 import { deleteProduct } from "@/lib/api/product";
 import ConfirmDialog from "@/components/ConfirmDialog";
+import { peso } from "@/lib/utils/format";
 
 interface ProductRowProps {
   product: Product;
@@ -46,11 +47,7 @@ export default function ProductRow({
           </span>
         </td>
         <td className="px-4 py-3 font-medium text-foreground">
-          ₱{" "}
-          {product.price.toLocaleString(undefined, {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          })}
+          {peso(product.price)}
         </td>
         <td className="px-4 py-3">
           <div className="flex items-center gap-3 text-muted-foreground">

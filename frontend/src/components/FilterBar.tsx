@@ -5,7 +5,7 @@ import { Check, ChevronDown } from "lucide-react";
 
 export interface FilterProps {
   title: string;
-  sub: string[];
+  sub: readonly string[];
   type?: "pills" | "select";
 }
 

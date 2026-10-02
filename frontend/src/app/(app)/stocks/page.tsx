@@ -13,12 +13,9 @@ import { ErrorStack } from "@/components/ErrorCard";
 import { useAuth } from "@/lib/auth";
 import { isManager } from "@/lib/roles";
 
-// GET /stock already includes each batch's product.
-export type StockWithProduct = Stock;
-
 export default function StockPage() {
   const { user } = useAuth();
-  const [allStock, setAllStock] = useState<StockWithProduct[]>([]);
+  const [allStock, setAllStock] = useState<Stock[]>([]);
   const [order, setOrder] = useState<SortOrder | undefined>(undefined);
   const [sortBy, setSortBy] = useState<SortBy[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -36,7 +33,7 @@ export default function StockPage() {
 
   useEffect(() => {
     async function loadStock() {
-      const result = await getStockList({});
+      const result = await getStockList();
 
       if (!result.ok) {
         addError(result.error);

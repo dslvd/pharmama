@@ -2,6 +2,9 @@
 
 import { useMemo } from "react";
 import { Transaction } from "@/lib/types/transaction";
+import { peso } from "@/lib/utils/format";
+import { statusClass } from "@/lib/utils/status";
+import Skeleton from "@/components/ui/Skeleton";
 
 export default function RecentTransactions({
   transactions,
@@ -17,19 +20,6 @@ export default function RecentTransactions({
       )
       .slice(0, 5);
   }, [transactions]);
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "COMPLETED":
-        return "bg-teal-100 text-teal-700";
-      case "REFUNDED":
-        return "bg-orange-100 text-orange-700";
-      case "CANCELLED":
-        return "bg-red-100 text-red-700";
-      default:
-        return "bg-gray-100 text-gray-700";
-    }
-  };
 
   const formatTime = (date: Date | string) => {
     const dateObj = typeof date === "string" ? new Date(date) : date;
@@ -49,7 +39,7 @@ export default function RecentTransactions({
       {recent === null ? (
         <div className="space-y-3">
           {[...Array(5)].map((_, i) => (
-            <div key={i} className="skeleton h-12 w-full rounded-lg" />
+            <Skeleton key={i} className="h-12 w-full rounded-lg" />
           ))}
         </div>
       ) : recent.length === 0 ? (
@@ -88,18 +78,14 @@ export default function RecentTransactions({
                     F{transaction.id.toString().padStart(4, "0")}
                   </td>
                   <td className="py-3 px-4 text-foreground">
-                    ₱{" "}
-                    {transaction.totalAmount.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })}
+                    {peso(transaction.totalAmount)}
                   </td>
                   <td className="py-3 px-4 text-foreground">
                     {transaction.user?.name ?? transaction.handledBy}
                   </td>
                   <td className="py-3 px-4">
                     <span
-                      className={`inline-block rounded-full px-3 py-1 text-xs font-semibold ${getStatusColor(
+                      className={`inline-block rounded-full px-3 py-1 text-xs font-semibold ${statusClass(
                         transaction.status,
                       )}`}
                     >

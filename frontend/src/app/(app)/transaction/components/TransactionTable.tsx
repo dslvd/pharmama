@@ -4,6 +4,7 @@ import { useState } from "react";
 import { X, XCircle } from "lucide-react";
 import { createTransaction } from "@/lib/api/transaction";
 import { SubmittedItem } from "./ProductPicker";
+import { peso } from "@/lib/utils/format";
 
 interface TransactionTableProps {
   items: SubmittedItem[];
@@ -48,43 +49,33 @@ export default function TransactionTable({
   );
 
   return (
-    <div className="flex h-[520px] flex-col rounded-2xl border border-[#e4dccf] bg-white p-4 sm:h-[560px] sm:p-5 lg:h-[620px]">
-      <h2 className="mb-4 text-lg font-bold text-[#1e1b3a]">Current sale</h2>
+    <div className="flex h-[520px] flex-col rounded-2xl border border-border bg-card p-4 sm:h-[560px] sm:p-5 lg:h-[620px]">
+      <h2 className="mb-4 text-lg font-bold text-foreground">Current sale</h2>
 
       <div className="flex-1 overflow-y-auto">
         {items.length === 0 ? (
-          <div className="flex h-full items-center justify-center text-center text-sm text-[#9c93b0]">
+          <div className="flex h-full items-center justify-center text-center text-sm text-muted-foreground">
             No items yet. Add from the left to build a sale.
           </div>
         ) : (
-          <ul className="divide-y divide-[#f0ece0]">
+          <ul className="divide-y divide-border/60">
             {items.map((item) => (
               <li
                 key={item.trItems.stockId}
                 className="flex items-start justify-between gap-3 py-3"
               >
                 <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold text-[#1e1b3a]">
+                  <p className="truncate text-sm font-semibold text-foreground">
                     {item.product.name}
                   </p>
-                  <p className="text-xs text-[#9c93b0]">
-                    {item.trItems.quantity} &times; ₱{" "}
-                    {item.product.price.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })}
+                  <p className="text-xs text-muted-foreground">
+                    {item.trItems.quantity} &times; {peso(item.product.price)}
                   </p>
                 </div>
 
                 <div className="flex shrink-0 items-center gap-2">
-                  <span className="text-sm font-semibold text-[#1e1b3a]">
-                    ₱{" "}
-                    {(
-                      item.product.price * item.trItems.quantity
-                    ).toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })}
+                  <span className="text-sm font-semibold text-foreground">
+                    {peso(item.product.price * item.trItems.quantity)}
                   </span>
                   <button
                     onClick={() => removeItem(item.trItems.stockId)}
@@ -100,14 +91,10 @@ export default function TransactionTable({
         )}
       </div>
 
-      <div className="mt-4 flex items-center justify-between border-t border-[#e4dccf] pt-3">
-        <span className="text-sm font-bold text-[#1e1b3a]">Total</span>
-        <span className="text-base font-bold text-[#1e1b3a]">
-          ₱{" "}
-          {grandTotal.toLocaleString(undefined, {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          })}
+      <div className="mt-4 flex items-center justify-between border-t border-border pt-3">
+        <span className="text-sm font-bold text-foreground">Total</span>
+        <span className="text-base font-bold text-foreground">
+          {peso(grandTotal)}
         </span>
       </div>
 
@@ -125,7 +112,7 @@ export default function TransactionTable({
         <button
           onClick={handleSubmit}
           disabled={items.length === 0 || loading}
-          className="rounded-full border border-[#d8cfbf] bg-white px-6 py-2.5 text-sm font-semibold text-[#1e1b3a] transition-colors hover:bg-[#f5f1e8] disabled:cursor-not-allowed disabled:opacity-50 sm:flex-shrink-0"
+          className="rounded-full border border-border bg-card px-6 py-2.5 text-sm font-semibold text-foreground transition-colors hover:bg-background disabled:cursor-not-allowed disabled:opacity-50 sm:flex-shrink-0"
         >
           {loading ? "Submitting..." : "Confirm sale"}
         </button>

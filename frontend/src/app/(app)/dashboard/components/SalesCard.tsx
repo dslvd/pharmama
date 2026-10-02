@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Wallet, TrendingUp } from "lucide-react";
 import { getSalesOverview } from "@/lib/api/sales";
+import { peso } from "@/lib/utils/format";
 
 export default function SalesCard({
   onError,
@@ -42,12 +43,7 @@ export default function SalesCard({
       </div>
       <p className="mt-4 text-sm text-muted-foreground">Today&apos;s sales</p>
       <p className="mt-3 flex items-center gap-2 text-3xl font-bold text-foreground">
-        {loading
-          ? "—"
-          : `₱ ${total.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            })}`}
+        {loading ? "—" : peso(total)}
       </p>
       <div className="mt-2 flex items-center gap-1">
         <TrendingUp className="h-4 w-4 text-emerald-600" />

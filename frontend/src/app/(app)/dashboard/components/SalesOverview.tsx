@@ -12,6 +12,7 @@ import {
 } from "recharts";
 import { TrendingUp } from "lucide-react";
 import { getSalesOverview } from "@/lib/api/sales";
+import { peso } from "@/lib/utils/format";
 
 type Period = "Today" | "Week" | "Month" | "Year";
 
@@ -111,13 +112,7 @@ export default function SalesOverview({
               />
               <Tooltip
                 cursor={{ fill: "var(--muted)", opacity: 0.3 }}
-                formatter={(value: number) => [
-                  `₱${value.toLocaleString(undefined, {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })}`,
-                  "Sales",
-                ]}
+                formatter={(value: number) => [peso(value), "Sales"]}
                 contentStyle={{
                   borderRadius: 8,
                   border: "1px solid var(--border)",

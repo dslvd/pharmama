@@ -118,18 +118,6 @@
     background-size: 200% 100%;
     animation: skeleton-shimmer 1.8s ease-in-out infinite;
   }
-
-  .cream {
-    @apply bg-background;
-  }
-  
-  .purple-dark {
-    @apply bg-primary text-primary-foreground;
-  }
-  
-  .card-base {
-    @apply bg-card rounded-lg border border-border shadow-sm;
-  }
 }
 
 @keyframes skeleton-shimmer {

@@ -6,7 +6,7 @@ import {
 import { apiFetch } from "../utils/client";
 import { mapResult, toProduct } from "../utils/decimal";
 
-export const getProductList = async (_params?: Record<string, unknown>) =>
+export const getProductList = async () =>
   mapResult(await apiFetch<Product[]>(`/product`), (list) =>
     list.map(toProduct),
   );
