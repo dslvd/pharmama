@@ -247,7 +247,7 @@ export default function StockPage() {
         <ErrorStack errors={errors} />
       </main>
       {loading && (
-        <div className="pointer-events-auto fixed inset-0 z-40 bg-background">
+        <div className="pointer-events-auto absolute inset-0 z-40 bg-background">
           <Loading />
         </div>
       )}

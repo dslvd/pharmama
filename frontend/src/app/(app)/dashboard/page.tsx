@@ -109,7 +109,7 @@ export default function Dashboard() {
         <ErrorStack errors={errors} />
       </main>
       {isLoading && (
-        <div className="pointer-events-auto fixed inset-0 z-40 bg-background">
+        <div className="pointer-events-auto absolute inset-0 z-40 bg-background">
           <Loading />
         </div>
       )}

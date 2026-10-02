@@ -189,7 +189,7 @@ export default function LogbookPage() {
         <ErrorStack errors={errors} />
       </main>
       <div
-        className={`fixed inset-0 z-40 bg-background transition-opacity duration-300 ease-out ${
+        className={`absolute inset-0 z-40 bg-background transition-opacity duration-300 ease-out ${
           loading
             ? "pointer-events-auto opacity-100"
             : "pointer-events-none opacity-0"

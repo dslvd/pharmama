@@ -3,7 +3,7 @@ import Skeleton from "@/components/ui/Skeleton";
 export default function Loading() {
   return (
     <main
-      className="flex min-h-screen flex-col gap-5 p-6"
+      className="flex h-dvh min-h-[36rem] flex-col gap-5 p-6"
       role="status"
       aria-label="Loading logbook"
     >
@@ -25,7 +25,7 @@ export default function Loading() {
 function TableSkeleton() {
   const cols = "grid-cols-[9rem_11rem_10rem_10rem_1fr]";
   return (
-    <div className="flex-1 overflow-hidden rounded-xl border border-border bg-card shadow-sm">
+    <div className="min-h-0 flex-1 overflow-hidden rounded-xl border border-border bg-card shadow-sm">
       <div
         className={`grid min-w-[860px] ${cols} gap-4 border-b border-border bg-surface-subtle px-4 py-3.5`}
       >
@@ -33,7 +33,7 @@ function TableSkeleton() {
           <Skeleton key={index} className="h-3 w-14 rounded" />
         ))}
       </div>
-      {Array.from({ length: 9 }).map((_, row) => (
+      {Array.from({ length: 14 }).map((_, row) => (
         <div
           key={row}
           className={`grid min-w-[860px] ${cols} gap-4 border-b border-border/70 px-4 py-3`}
