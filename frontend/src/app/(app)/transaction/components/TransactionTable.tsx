@@ -5,6 +5,7 @@ import { X, XCircle } from "lucide-react";
 import { createTransaction } from "@/lib/api/transaction";
 import { SubmittedItem } from "./ProductPicker";
 import { peso } from "@/lib/utils/format";
+import ConfirmDialog from "@/components/ConfirmDialog";
 import { Transaction } from "@/lib/types/transaction";
 
 interface TransactionTableProps {
@@ -24,6 +25,7 @@ export default function TransactionTable({
   onSuccess,
 }: TransactionTableProps) {
   const [loading, setLoading] = useState(false);
+  const [confirmClear, setConfirmClear] = useState(false);
 
   const handleSubmit = async () => {
     setLoading(true);
@@ -128,7 +130,7 @@ export default function TransactionTable({
       <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:gap-3">
         {onCancelTransaction && (
           <button
-            onClick={onCancelTransaction}
+            onClick={() => setConfirmClear(true)}
             disabled={items.length === 0}
             className="flex items-center justify-center gap-1.5 rounded-full border border-border bg-card px-6 py-2.5 text-sm font-semibold text-danger transition-colors hover:bg-danger-soft disabled:cursor-not-allowed disabled:opacity-50 sm:shrink-0"
           >
@@ -144,6 +146,17 @@ export default function TransactionTable({
           {loading ? "Submitting..." : "Confirm sale"}
         </button>
       </div>
+      <ConfirmDialog
+        open={confirmClear}
+        title="Clear current sale?"
+        message={`All ${lines.length} item${lines.length === 1 ? "" : "s"} will be removed from the cart.`}
+        confirmLabel="Clear sale"
+        onConfirm={() => {
+          setConfirmClear(false);
+          onCancelTransaction?.();
+        }}
+        onClose={() => setConfirmClear(false)}
+      />
     </div>
   );
 }

@@ -28,7 +28,15 @@ import {
 } from "@/lib/utils/format";
 import { statusClass } from "@/lib/utils/status";
 import Dropdown from "@/components/ui/Dropdown";
-import { Table, TableEmpty, TableHead, Td, Th, Tr } from "@/components/ui/table";
+import {
+  Table,
+  TableEmpty,
+  TableHead,
+  Td,
+  Th,
+  Tr,
+} from "@/components/ui/table";
+import ConfirmDialog from "@/components/ConfirmDialog";
 
 // total units sold, not batch lines
 const itemCount = (t: Transaction) =>
@@ -97,12 +105,22 @@ export default function SalesTable({
     return list;
   }, [allSales, status, order, searchTerm]);
 
+  // cancelling or refunding can't be undone, so it asks first
+  const [pendingStatus, setPendingStatus] = useState<{
+    id: number;
+    status: TransactionStatus;
+  } | null>(null);
+  const [savingStatus, setSavingStatus] = useState(false);
+
   const handleStatusChange = async (
     id: number,
     newStatus: TransactionStatus,
   ) => {
     setOpenStatusId(null);
+    setSavingStatus(true);
     const result = await updateTransactionStatus(id, { status: newStatus });
+    setSavingStatus(false);
+    setPendingStatus(null);
 
     if (result.ok) {
       setAllSales((prev) =>
@@ -261,7 +279,16 @@ export default function SalesTable({
                           type="button"
                           role="option"
                           aria-selected={record.status === option}
-                          onClick={() => handleStatusChange(record.id, option)}
+                          onClick={() => {
+                            if (option === record.status) return;
+                            setOpenStatusId(null);
+                            if (option === "CANCELLED" || option === "REFUNDED")
+                              setPendingStatus({
+                                id: record.id,
+                                status: option,
+                              });
+                            else handleStatusChange(record.id, option);
+                          }}
                           className={`flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-xs text-foreground transition-colors hover:bg-background ${
                             record.status === option
                               ? "bg-background font-semibold"
@@ -289,6 +316,27 @@ export default function SalesTable({
           )}
         </tbody>
       </Table>
+      <ConfirmDialog
+        open={!!pendingStatus}
+        title={
+          pendingStatus?.status === "REFUNDED"
+            ? `Refund transaction ${pendingStatus ? txnId(pendingStatus.id) : ""}?`
+            : `Cancel transaction ${pendingStatus ? txnId(pendingStatus.id) : ""}?`
+        }
+        message="Its items go back into stock. This can't be undone."
+        confirmLabel={
+          pendingStatus?.status === "REFUNDED"
+            ? "Mark as refunded"
+            : "Mark as cancelled"
+        }
+        busyLabel="Saving..."
+        busy={savingStatus}
+        onConfirm={() =>
+          pendingStatus &&
+          handleStatusChange(pendingStatus.id, pendingStatus.status)
+        }
+        onClose={() => setPendingStatus(null)}
+      />
     </section>
   );
 }
