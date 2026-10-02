@@ -13,6 +13,7 @@ import { ErrorStack } from "@/components/ErrorCard";
 import { useAuth } from "@/lib/auth";
 import { isManager } from "@/lib/roles";
 import Dropdown from "@/components/ui/Dropdown";
+import { Table, TableEmpty, TableHead, Th } from "@/components/ui/table";
 
 export default function StockPage() {
   const { role } = useAuth();
@@ -27,6 +28,8 @@ export default function StockPage() {
   );
   const [refreshKey, setRefreshKey] = useState(0);
   const [loading, setLoading] = useState(true);
+  // fixed at mount, like the dashboard; used for expiry badges
+  const [now] = useState(() => Date.now());
   const [errors, setErrors] = useState<{ id: string; message: string }[]>([]);
 
   const addError = (message: string) =>
@@ -178,74 +181,61 @@ export default function StockPage() {
           </div>
         </div>
 
-        <div className="min-h-128 flex-1 overflow-x-auto rounded-xl border border-border bg-card shadow-sm">
-          <table className="w-full text-left text-sm">
-            <thead>
-              <tr className="border-b border-border bg-surface-subtle">
-                <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                  Product ID
-                </th>
-                <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                  Product Name
-                </th>
-                <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                  Batch No.
-                </th>
-                <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                  Quantity
-                </th>
-                <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                  Expiry Date
-                </th>
-                <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                  Status
-                </th>
-                <th className="w-24 px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground" />
-              </tr>
-            </thead>
-            <tbody>
-              {stock.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan={7}
-                    className="h-112 px-4 py-8 text-center text-sm text-muted-foreground"
-                  >
-                    <div className="flex flex-col items-center justify-center gap-3">
-                      <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary-soft text-primary">
-                        <PackageOpen className="h-7 w-7" />
-                      </span>
-                      <p className="text-base font-semibold text-foreground">
-                        No stock recorded yet
-                      </p>
-                      <p className="max-w-xs leading-5 text-muted-foreground">
-                        Once you add a batch, it&apos;ll show up here with
-                        quantity, expiry, and low-stock status at a glance.
-                      </p>
-                      <button
-                        onClick={() => setShowAddStockModal(true)}
-                        className="mt-2 flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary-hover"
-                      >
-                        <Plus className="h-4 w-4" />
-                        Add your first stock
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ) : (
-                stock.map((item) => (
-                  <StockRow
-                    key={item.id}
-                    stock={item}
-                    onDeleted={() => setRefreshKey((k) => k + 1)}
-                    onEdit={openEditModal}
-                    onError={addError}
-                    canDelete={isManager(role)}
-                  />
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+        <Table className="flex-1">
+          <TableHead>
+            <Th>Product</Th>
+            <Th>Batch</Th>
+            <Th align="right">Quantity</Th>
+            <Th>Expiry</Th>
+            <Th>Status</Th>
+            <Th align="right" className="w-24">
+              <span className="sr-only">Actions</span>
+            </Th>
+          </TableHead>
+          <tbody>
+            {stock.length === 0 ? (
+              <TableEmpty
+                colSpan={6}
+                icon={<PackageOpen className="h-6 w-6" />}
+                title={
+                  allStock.length === 0
+                    ? "No stock recorded yet"
+                    : "No matching batches"
+                }
+              >
+                {allStock.length === 0 ? (
+                  <>
+                    <p>
+                      Once you add a batch, it&apos;ll show up here with
+                      quantity, expiry, and low-stock status at a glance.
+                    </p>
+                    <button
+                      onClick={() => setShowAddStockModal(true)}
+                      className="mx-auto mt-4 flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary-hover"
+                    >
+                      <Plus className="h-4 w-4" />
+                      Add your first stock
+                    </button>
+                  </>
+                ) : (
+                  <p>Try a different search.</p>
+                )}
+              </TableEmpty>
+            ) : (
+              stock.map((item) => (
+                <StockRow
+                  key={item.id}
+                  stock={item}
+                  onDeleted={() => setRefreshKey((k) => k + 1)}
+                  onEdit={openEditModal}
+                  onError={addError}
+                  canDelete={isManager(role)}
+                  now={now}
+                />
+              ))
+            )}
+          </tbody>
+        </Table>
 
         {showAddStockModal && (
           <AddStockModal

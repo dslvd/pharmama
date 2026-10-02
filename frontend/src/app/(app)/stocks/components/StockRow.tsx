@@ -1,9 +1,16 @@
 import { Trash, PencilLine } from "lucide-react";
-import { LOW_STOCK_THRESHOLD, Stock } from "@/lib/types/stock";
+import {
+  EXPIRING_SOON_DAYS,
+  LOW_STOCK_THRESHOLD,
+  Stock,
+} from "@/lib/types/stock";
 import { useState } from "react";
 import { deleteStock } from "@/lib/api/stocks";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import { formatDate } from "@/lib/utils/format";
+import { Badge, Td, Tr } from "@/components/ui/table";
+
+const DAY_MS = 24 * 60 * 60 * 1000;
 
 interface StockRowProps {
   stock: Stock;
@@ -12,6 +19,8 @@ interface StockRowProps {
   onError?: (message: string) => void;
   // only owners/admins can delete stock
   canDelete?: boolean;
+  // current time from the page, for expiry checks
+  now: number;
 }
 
 export default function StockRow({
@@ -20,15 +29,22 @@ export default function StockRow({
   onEdit,
   onError,
   canDelete = false,
+  now,
 }: StockRowProps) {
   const [deleting, setDeleting] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const expiryDate = formatDate(stock.expiryDate);
+  const daysLeft = Math.ceil(
+    (new Date(stock.expiryDate).getTime() - now) / DAY_MS,
+  );
+  const expired = daysLeft <= 0;
+  const expiringSoon = !expired && daysLeft <= EXPIRING_SOON_DAYS;
+  const low = stock.quantity <= LOW_STOCK_THRESHOLD;
 
-  const quantityStyle =
-    stock.quantity <= LOW_STOCK_THRESHOLD
-      ? "bg-warning-soft text-warning"
-      : "bg-muted text-foreground";
+  const [statusLabel, statusStyle] = expired
+    ? ["Expired", "bg-danger-soft text-danger"]
+    : low
+      ? ["Low stock", "bg-warning-soft text-warning"]
+      : ["In stock", "bg-success-soft text-success"];
 
   async function handleDelete(id: number) {
     setDeleting(true);
@@ -45,53 +61,58 @@ export default function StockRow({
 
   return (
     <>
-      <tr className="border-t border-border odd:bg-card even:bg-primary-soft/30">
-        <td className="px-4 py-3 text-foreground">{stock.productId}</td>
-        <td className="px-4 py-3 text-foreground">{stock.product?.name}</td>
-        <td className="px-4 py-3 text-muted-foreground">{stock.batchNumber}</td>
-        <td className="px-4 py-3">
+      <Tr>
+        <Td>
+          <p className="font-medium">{stock.product?.name ?? "—"}</p>
+          <p className="text-xs text-muted-foreground">
+            {stock.product?.genericName}
+          </p>
+        </Td>
+        <Td className="font-mono text-xs text-muted-foreground">
+          {stock.batchNumber}
+        </Td>
+        <Td numeric>
           <span
-            className={`rounded-full px-2.5 py-1 text-xs font-medium ${quantityStyle}`}
+            className={low ? "font-semibold text-warning" : "font-medium"}
           >
             {stock.quantity}
           </span>
-        </td>
-        <td className="px-4 py-3">
-          <span className={`rounded-full px-2.5 py-1 text-xs font-medium`}>
-            {expiryDate}
-          </span>
-        </td>
-        <td className="px-4 py-3">
-          <span
-            className={`rounded-full px-2.5 py-1 text-xs font-medium ${stock.quantity <= LOW_STOCK_THRESHOLD ? "bg-warning-soft text-warning" : "bg-success-soft text-success"}`}
-          >
-            {stock.quantity <= LOW_STOCK_THRESHOLD
-              ? "Low stock"
-              : "In stock"}
-          </span>
-        </td>
-        <td className="px-4 py-3">
-          <div className="flex items-center gap-1 text-muted-foreground">
+        </Td>
+        <Td>
+          <p className={expired ? "font-medium text-danger" : ""}>
+            {formatDate(stock.expiryDate)}
+          </p>
+          {expiringSoon && (
+            <p className="text-xs text-warning">
+              {daysLeft === 1 ? "Tomorrow" : `In ${daysLeft} days`}
+            </p>
+          )}
+        </Td>
+        <Td>
+          <Badge className={statusStyle}>{statusLabel}</Badge>
+        </Td>
+        <Td align="right">
+          <div className="flex items-center justify-end gap-1 text-muted-foreground">
             <button
-              aria-label={`Edit stock ${stock.id}`}
+              aria-label={`Edit batch ${stock.batchNumber}`}
               onClick={() => onEdit?.(stock)}
-              className="rounded-md p-1.5 transition-colors hover:bg-muted/40 hover:text-primary"
+              className="rounded-md p-2 transition-colors hover:bg-primary-soft hover:text-primary"
             >
-              <PencilLine size={15} />
+              <PencilLine size={16} />
             </button>
             {canDelete && (
               <button
-                aria-label={`Delete stock ${stock.id}`}
+                aria-label={`Delete batch ${stock.batchNumber}`}
                 onClick={() => setConfirmOpen(true)}
                 disabled={deleting}
-                className="rounded-md p-1.5 transition-colors hover:bg-danger-soft hover:text-danger disabled:opacity-50"
+                className="rounded-md p-2 transition-colors hover:bg-danger-soft hover:text-danger disabled:opacity-50"
               >
-                <Trash size={15} />
+                <Trash size={16} />
               </button>
             )}
           </div>
-        </td>
-      </tr>
+        </Td>
+      </Tr>
       <ConfirmDialog
         open={confirmOpen}
         title="Delete stock?"
