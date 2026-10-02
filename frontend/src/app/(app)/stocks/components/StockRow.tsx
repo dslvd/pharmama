@@ -2,6 +2,7 @@ import { Trash, PencilLine } from "lucide-react";
 import { Stock } from "@/lib/types/stock";
 import { useState } from "react";
 import { deleteStock } from "@/lib/api/stocks";
+import ConfirmDialog from "@/components/ConfirmDialog";
 import { StockWithProduct } from "../page";
 
 interface StockRowProps {
@@ -23,6 +24,7 @@ export default function StockRow({
   canDelete = false,
 }: StockRowProps) {
   const [deleting, setDeleting] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const expiry = new Date(stock.expiryDate);
   const expiryDate = expiry.toLocaleDateString();
 
@@ -35,6 +37,7 @@ export default function StockRow({
     setDeleting(true);
     const result = await deleteStock(id);
     setDeleting(false);
+    setConfirmOpen(false);
 
     if (result.ok) {
       onDeleted?.(id);
@@ -44,46 +47,62 @@ export default function StockRow({
   }
 
   return (
-    <tr className="border-t border-border odd:bg-card even:bg-violet-50/60">
-      <td className="px-4 py-3 text-foreground">{stock.productId}</td>
-      <td className="px-4 py-3 text-foreground">{stock.product?.name}</td>
-      <td className="px-4 py-3 text-muted-foreground">{stock.batchNumber}</td>
-      <td className="px-4 py-3">
-        <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${quantityStyle}`}>
-          {stock.quantity}
-        </span>
-      </td>
-      <td className="px-4 py-3">
-        <span className={`rounded-full px-2.5 py-1 text-xs font-medium`}>
-          {expiryDate}
-        </span>
-      </td>
-      <td className="px-4 py-3">
-        <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${stock.quantity <= LOW_QUANTITY_THRESHOLD ? "bg-amber-100 text-amber-700" : "bg-emerald-100 text-emerald-700"}`}>
-          {stock.quantity <= LOW_QUANTITY_THRESHOLD ? "Low stock" : "In stock"}
-        </span>
-      </td>
-      <td className="px-4 py-3">
-        <div className="flex items-center gap-3 text-muted-foreground">
-          <button
-            aria-label={`Edit stock ${stock.id}`}
-            onClick={() => onEdit?.(stock)}
-            className="transition-colors hover:text-violet-700"
+    <>
+      <tr className="border-t border-border odd:bg-card even:bg-violet-50/60">
+        <td className="px-4 py-3 text-foreground">{stock.productId}</td>
+        <td className="px-4 py-3 text-foreground">{stock.product?.name}</td>
+        <td className="px-4 py-3 text-muted-foreground">{stock.batchNumber}</td>
+        <td className="px-4 py-3">
+          <span
+            className={`rounded-full px-2.5 py-1 text-xs font-medium ${quantityStyle}`}
           >
-            <PencilLine size={15} />
-          </button>
-          {canDelete && (
+            {stock.quantity}
+          </span>
+        </td>
+        <td className="px-4 py-3">
+          <span className={`rounded-full px-2.5 py-1 text-xs font-medium`}>
+            {expiryDate}
+          </span>
+        </td>
+        <td className="px-4 py-3">
+          <span
+            className={`rounded-full px-2.5 py-1 text-xs font-medium ${stock.quantity <= LOW_QUANTITY_THRESHOLD ? "bg-amber-100 text-amber-700" : "bg-emerald-100 text-emerald-700"}`}
+          >
+            {stock.quantity <= LOW_QUANTITY_THRESHOLD
+              ? "Low stock"
+              : "In stock"}
+          </span>
+        </td>
+        <td className="px-4 py-3">
+          <div className="flex items-center gap-3 text-muted-foreground">
             <button
-              aria-label={`Delete stock ${stock.id}`}
-              onClick={() => handleDelete(stock.id)}
-              disabled={deleting}
-              className="transition-colors hover:text-rose-600 disabled:opacity-50"
+              aria-label={`Edit stock ${stock.id}`}
+              onClick={() => onEdit?.(stock)}
+              className="transition-colors hover:text-violet-700"
             >
-              <Trash size={15} />
+              <PencilLine size={15} />
             </button>
-          )}
-        </div>
-      </td>
-    </tr>
+            {canDelete && (
+              <button
+                aria-label={`Delete stock ${stock.id}`}
+                onClick={() => setConfirmOpen(true)}
+                disabled={deleting}
+                className="transition-colors hover:text-rose-600 disabled:opacity-50"
+              >
+                <Trash size={15} />
+              </button>
+            )}
+          </div>
+        </td>
+      </tr>
+      <ConfirmDialog
+        open={confirmOpen}
+        title="Delete stock?"
+        message={`Batch ${stock.batchNumber} of ${stock.product?.name ?? "this product"} will be removed. This can't be undone.`}
+        busy={deleting}
+        onConfirm={() => handleDelete(stock.id)}
+        onClose={() => setConfirmOpen(false)}
+      />
+    </>
   );
 }

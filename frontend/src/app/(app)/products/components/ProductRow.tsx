@@ -2,6 +2,7 @@ import { Trash, PencilLine } from "lucide-react";
 import { Product } from "@/lib/types/product";
 import { useState } from "react";
 import { deleteProduct } from "@/lib/api/product";
+import ConfirmDialog from "@/components/ConfirmDialog";
 
 interface ProductRowProps {
   product: Product;
@@ -17,11 +18,13 @@ export default function ProductRow({
   onError,
 }: ProductRowProps) {
   const [deleting, setDeleting] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   async function handleDelete(id: number) {
     setDeleting(true);
     const result = await deleteProduct(id);
     setDeleting(false);
+    setConfirmOpen(false);
 
     if (result.ok) {
       onDeleted?.(id);
@@ -51,7 +54,6 @@ export default function ProductRow({
         </td>
         <td className="px-4 py-3">
           <div className="flex items-center gap-3 text-muted-foreground">
-            {/* If no changes made should cancel */}
             <button
               aria-label={`Edit product ${product.id}`}
               onClick={() => onEdit?.(product)}
@@ -60,10 +62,9 @@ export default function ProductRow({
               <PencilLine size={15} />
             </button>
 
-            {/* Confirmation text before deleting */}
             <button
               aria-label={`Delete product ${product.id}`}
-              onClick={() => handleDelete(product.id)}
+              onClick={() => setConfirmOpen(true)}
               disabled={deleting}
               className="transition-colors hover:text-rose-600 disabled:opacity-50"
             >
@@ -72,6 +73,14 @@ export default function ProductRow({
           </div>
         </td>
       </tr>
+      <ConfirmDialog
+        open={confirmOpen}
+        title="Delete product?"
+        message={`${product.name} will be removed from the catalog. This can't be undone.`}
+        busy={deleting}
+        onConfirm={() => handleDelete(product.id)}
+        onClose={() => setConfirmOpen(false)}
+      />
     </>
   );
 }
