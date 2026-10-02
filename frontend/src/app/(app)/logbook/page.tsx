@@ -139,6 +139,11 @@ export default function LogbookPage() {
               <FilterBar
                 filters={FilterOptions}
                 onFilterChange={handleFilterChange}
+                onReset={() => {
+                  setAction(undefined);
+                  setEntity(undefined);
+                  setOrder(undefined);
+                }}
                 selectedValues={{
                   ACTION: action,
                   ENTITY: entity,

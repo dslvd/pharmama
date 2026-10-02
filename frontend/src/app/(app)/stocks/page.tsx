@@ -157,6 +157,10 @@ export default function StockPage() {
               <FilterBar
                 filters={FilterOptions}
                 onFilterChange={handleFilterChange}
+                onReset={() => {
+                  setSortBy([]);
+                  setOrder(undefined);
+                }}
                 selectedValues={{
                   SORTBY: sortBy,
                   ORDER: order,

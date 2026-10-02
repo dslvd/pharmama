@@ -148,6 +148,10 @@ export default function ProductPage() {
               <FilterBar
                 filters={FilterOptions}
                 onFilterChange={handleFilterChange}
+                onReset={() => {
+                  setCategory(undefined);
+                  setOrder(undefined);
+                }}
                 selectedValues={{
                   CATEGORY: category,
                   ORDER: order,

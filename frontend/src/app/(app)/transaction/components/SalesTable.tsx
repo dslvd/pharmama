@@ -137,6 +137,10 @@ export default function SalesTable({
             <FilterBar
               filters={FilterOptions}
               onFilterChange={handleFilterChange}
+              onReset={() => {
+                setStatus(undefined);
+                setOrder(undefined);
+              }}
               selectedValues={{
                 STATUS: status,
                 ORDER: order,
