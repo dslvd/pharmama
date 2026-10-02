@@ -165,6 +165,46 @@
   }
 }
 
+/* receipt: torn-paper zigzag along the bottom edge */
+.receipt-paper {
+  --zigzag: 8px;
+  mask:
+    conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg)
+      50% / calc(var(--zigzag) * 2) 100%;
+}
+
+/* printing a receipt: show only #receipt, sized for an 80mm roll */
+@media print {
+  @page {
+    size: 80mm auto;
+    margin: 4mm;
+  }
+  body * {
+    visibility: hidden;
+  }
+  #receipt,
+  #receipt * {
+    visibility: visible;
+  }
+  #receipt {
+    position: absolute;
+    inset: 0 auto auto 0;
+    width: 100%;
+    max-width: none;
+    padding: 0;
+    box-shadow: none;
+    mask: none;
+  }
+  /* the dialog is centered with a transform; undo it so #receipt
+     lands at the top-left of the page */
+  [data-slot="dialog-content"] {
+    position: static;
+    transform: none;
+    max-height: none;
+    overflow: visible;
+  }
+}
+
 @keyframes skeleton-shimmer {
   from {
     background-position: -200% 0;

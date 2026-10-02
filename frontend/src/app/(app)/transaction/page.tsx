@@ -4,17 +4,16 @@ import { useCallback, useState } from "react";
 import TransactionTable from "./components/TransactionTable";
 import SalesTable from "./components/SalesTable";
 import ProductPicker, { SubmittedItem } from "./components/ProductPicker";
-import ViewTransactionModal from "./components/ViewTransactionModal";
+import ReceiptModal from "./components/ReceiptModal";
+import { ReceiptData, receiptFromTransaction } from "./components/Receipt";
 import { ErrorStack } from "@/components/ErrorCard";
 import Loading from "./loading";
-import { Transaction } from "@/lib/types/transaction";
 
 export default function TransactionsPage() {
-  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [items, setItems] = useState<SubmittedItem[]>([]);
   const [errors, setErrors] = useState<{ id: string; message: string }[]>([]);
   const [loading, setLoading] = useState(true);
-  const [tr, setTr] = useState<Transaction | undefined>(undefined);
+  const [receipt, setReceipt] = useState<ReceiptData | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
 
   const addError = useCallback(
@@ -68,17 +67,11 @@ export default function TransactionsPage() {
           refreshKey={refreshKey}
           onError={addError}
           onLoadingChange={setLoading}
-          onViewClick={(tr) => {
-            setTr(tr);
-            setIsViewModalOpen(true);
-          }}
+          onViewClick={(tr) => setReceipt(receiptFromTransaction(tr))}
         />
 
-        {isViewModalOpen && (
-          <ViewTransactionModal
-            onClose={() => setIsViewModalOpen(false)}
-            transaction={tr}
-          />
+        {receipt && (
+          <ReceiptModal data={receipt} onClose={() => setReceipt(null)} />
         )}
         <ErrorStack errors={errors} />
       </main>
