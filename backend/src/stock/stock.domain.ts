@@ -1,5 +1,10 @@
 // Pure stock rules: no database, no Nest, no clock.
-import { conflict, DomainError, invalid } from "src/util/domain-error";
+import {
+  conflict,
+  DomainError,
+  forbidden,
+  invalid,
+} from "src/util/domain-error";
 import { err, ok, Result } from "src/util/results.util";
 
 export interface StockInput {
@@ -64,3 +69,13 @@ export const ensureDeletable = (
   soldCount > 0
     ? err(conflict("This stock batch has sales records and can't be deleted."))
     : ok(true);
+
+// only owners/admins can change how many units a batch has
+export const ensureCanAdjustQuantity = (
+  currentQty: number,
+  newQty: number | undefined,
+  isManager: boolean,
+): Result<true, DomainError> =>
+  newQty === undefined || newQty === currentQty || isManager
+    ? ok(true)
+    : err(forbidden("Only an owner can change stock quantity."));

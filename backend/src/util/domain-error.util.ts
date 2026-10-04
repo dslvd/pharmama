@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   ConflictException,
+  ForbiddenException,
   HttpException,
   NotFoundException,
   UnauthorizedException,
@@ -20,6 +21,8 @@ const toHttpException = (e: DomainError): HttpException => {
       return new ConflictException(e.message);
     case "Unauthorized":
       return new UnauthorizedException(e.message);
+    case "Forbidden":
+      return new ForbiddenException(e.message);
   }
 };
 

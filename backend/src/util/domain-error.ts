@@ -3,7 +3,8 @@ export type DomainError =
   | { readonly kind: "NotFound"; readonly message: string }
   | { readonly kind: "Invalid"; readonly message: string }
   | { readonly kind: "Conflict"; readonly message: string }
-  | { readonly kind: "Unauthorized"; readonly message: string };
+  | { readonly kind: "Unauthorized"; readonly message: string }
+  | { readonly kind: "Forbidden"; readonly message: string };
 
 export const notFound = (message: string): DomainError => ({
   kind: "NotFound",
@@ -19,6 +20,10 @@ export const conflict = (message: string): DomainError => ({
 });
 export const unauthorized = (message: string): DomainError => ({
   kind: "Unauthorized",
+  message,
+});
+export const forbidden = (message: string): DomainError => ({
+  kind: "Forbidden",
   message,
 });
 

@@ -1,5 +1,6 @@
 import {
   ensureBatchIsNew,
+  ensureCanAdjustQuantity,
   ensureDeletable,
   parseExpiryDate,
   toStockData,
@@ -62,5 +63,26 @@ describe("stock.domain", () => {
   it("ensureDeletable blocks batches with sales", () => {
     expect(ensureDeletable(0).ok).toBe(true);
     expect(ensureDeletable(2).ok).toBe(false);
+  });
+
+  describe("ensureCanAdjustQuantity", () => {
+    it("lets staff resend the same quantity or leave it out", () => {
+      expect(ensureCanAdjustQuantity(10, 10, false).ok).toBe(true);
+      expect(ensureCanAdjustQuantity(10, undefined, false).ok).toBe(true);
+    });
+
+    it("stops staff from changing the quantity", () => {
+      expect(ensureCanAdjustQuantity(10, 7, false)).toEqual({
+        ok: false,
+        error: {
+          kind: "Forbidden",
+          message: "Only an owner can change stock quantity.",
+        },
+      });
+    });
+
+    it("lets owners and admins change the quantity", () => {
+      expect(ensureCanAdjustQuantity(10, 7, true).ok).toBe(true);
+    });
   });
 });
