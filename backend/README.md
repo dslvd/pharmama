@@ -71,7 +71,7 @@ Domain code never throws for expected failures. It returns a `Result` (`util/res
 type Result<T, E> = { ok: true; value: T } | { ok: false; error: E };
 ```
 
-Steps are chained with `map`, `andThen`, `andThenAsync`, `fromNullable`, `sequence`, `traverseAsync`, `fold` and `tapAsync`. Errors are a small union (`util/domain-error.ts`) that `unwrap()` maps to HTTP status codes:
+Services are plain `async/await`: check a `Result`, and return early with it when it isn't `ok`. Errors are a small union (`util/domain-error.ts`) that `unwrap()` maps to HTTP status codes:
 
 | `DomainError` kind | HTTP status |
 | ------------------ | ----------- |
@@ -79,8 +79,9 @@ Steps are chained with `map`, `andThen`, `andThenAsync`, `fromNullable`, `sequen
 | `Invalid`          | 400         |
 | `Conflict`         | 409         |
 | `Unauthorized`     | 401         |
+| `Forbidden`        | 403         |
 
-`runInTransaction()` (`util/domain-error.util.ts`) runs a pipeline in a Prisma transaction and rolls it back when the result is an error, so a failed sale never leaves stock half-deducted.
+Inside `prisma.$transaction(...)`, a failed check throws `new DomainException(error)` so Prisma rolls the transaction back (a failed sale never leaves stock half-deducted). The service catches it in a `try/catch` and returns `err(e.error)`.
 
 ### Audit log
 
@@ -90,10 +91,12 @@ Every create, update, delete, cancel and refund of a product, stock batch or tra
 
 | Role    | Who                 | Access                                                                    |
 | ------- | ------------------- | ------------------------------------------------------------------------- |
-| `STAFF` | Pharmacy personnel  | Products (read), stock (read/add/edit), transactions                       |
+| `STAFF` | Pharmacy personnel  | Products (read), stock (read/add/edit, but not an existing batch's quantity), transactions (sell and cancel, no refunds) |
 | `OWNER` | Pharmacy owner      | Everything, including product writes, stock deletes, sales overview, audit log and creating accounts |
 
-New accounts default to `STAFF`. Deactivated accounts (`isActive = false`) can't log in.
+New accounts default to `STAFF`. Deactivated accounts (`isActive = false`) can't log in, and their existing tokens stop working on the next request. The role is read from the database on every request, so a role change applies right away.
+
+Every route behind `RolesGuard` needs `@Roles` on the method or the controller. A route without one is denied.
 
 ## API
 
@@ -124,7 +127,7 @@ All routes except `GET /` and `POST /auth/login` need an `Authorization: Bearer 
 | ------ | ------------ | ------------ | ------------------------------------------------------------------------------------------- |
 | GET    | `/stock`     | any          | All batches, each with its `product`                                                        |
 | POST   | `/stock`     | any          | `{ productId, batchNumber, quantity, expiryDate }`. Expiry must be in the future; the batch number must be unique for the product |
-| PATCH  | `/stock/:id` | any          | Any subset of the create fields; same checks for the fields being changed                   |
+| PATCH  | `/stock/:id` | any          | Any subset of the create fields; changing `quantity` is OWNER only (logged as STOCK_ADJUSTMENT) |
 | DELETE | `/stock/:id` | OWNER        | 409 if the batch has sales                                                                  |
 
 ### Transactions
@@ -133,7 +136,7 @@ All routes except `GET /` and `POST /auth/login` need an `Authorization: Bearer 
 | ------ | ------------------------------- | ----- | ---------------------------------------------------------------------------- |
 | GET    | `/transaction`                  | any   | All transactions with their items, products and cashier                      |
 | POST   | `/transaction`                  | any   | `{ transactionItems: [{ stockId, quantity }] }`                              |
-| PATCH  | `/transaction/:id/updateStatus` | any   | `{ status: "CANCELLED" \| "REFUNDED" }`                                      |
+| PATCH  | `/transaction/:id/updateStatus` | any   | `{ status: "CANCELLED" \| "REFUNDED" }`; refunding is OWNER only             |
 
 Creating a sale:
 
@@ -143,13 +146,13 @@ Creating a sale:
 - Deducts stock with a conditional decrement, so two cashiers can't sell the same last units (409 "Stock changed during checkout").
 - Saves the sale as `COMPLETED`, handled by the signed-in user.
 
-Only a `COMPLETED` transaction can change status, and only once. Cancelling or refunding puts the stock back. A cancel is logged as `CANCEL`; a refund is logged as `UPDATE`.
+Only a `COMPLETED` transaction can change status, and only once. Cancelling or refunding puts the stock back, once, even if two requests arrive at the same time (the second gets a 409). Refunding is OWNER only. A cancel is logged as `CANCEL`; a refund is logged as `UPDATE`.
 
 ### Sales overview & audit log
 
 | Method | Path              | Roles        | Notes                                                                                      |
 | ------ | ----------------- | ------------ | ------------------------------------------------------------------------------------------ |
-| GET    | `/sales/overview` | OWNER        | `?period=Today\|Week\|Month\|Year` (default `Today`) → `[{ label, value }]`, completed sales only, grouped by hour / day / week / month |
+| GET    | `/sales/overview` | OWNER        | `?period=Today\|Week\|Month\|Year` (default `Today`) → `[{ label, value }]`, completed sales only, in Asia/Manila time, grouped by hour / day / week (1st-7th, 8th-14th, ...) / month, up to now, with 0 for empty buckets |
 | GET    | `/audit-log`      | OWNER        | All audit entries with the user who made them                                              |
 
 ## Database
