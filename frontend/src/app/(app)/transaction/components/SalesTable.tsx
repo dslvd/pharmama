@@ -38,6 +38,10 @@ import {
 } from "@/components/ui/table";
 import ConfirmDialog from "@/components/ConfirmDialog";
 
+// a sale can only move from COMPLETED to one of these
+const changeOptions = (canRefund: boolean): TransactionStatus[] =>
+  canRefund ? ["CANCELLED", "REFUNDED"] : ["CANCELLED"];
+
 // total units sold, not batch lines
 const itemCount = (t: Transaction) =>
   t.transactionItems?.reduce((sum, item) => sum + item.quantity, 0) ?? 0;
@@ -48,6 +52,8 @@ interface SalesTableProps {
   onViewClick?: (tr: Transaction) => void;
   onError?: (message: string) => void;
   onLoadingChange?: (loading: boolean) => void;
+  // only owners/admins can refund; the backend enforces it too
+  canRefund?: boolean;
 }
 
 const inputClasses =
@@ -59,6 +65,7 @@ export default function SalesTable({
   onError,
   onLoadingChange,
   refreshKey = 0,
+  canRefund = false,
 }: SalesTableProps) {
   const [allSales, setAllSales] = useState<Transaction[]>(initialRecords);
   const [status, setStatus] = useState<TransactionStatus | undefined>(
@@ -273,7 +280,7 @@ export default function SalesTable({
                     }
                   >
                     <div role="listbox" aria-label="Transaction status">
-                      {STATUS_VALUES.map((option) => (
+                      {changeOptions(canRefund).map((option) => (
                         <button
                           key={option}
                           type="button"
