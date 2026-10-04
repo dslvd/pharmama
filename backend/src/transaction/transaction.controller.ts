@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  ForbiddenException,
   Get,
   Param,
   ParseIntPipe,
@@ -9,7 +10,11 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import { TransactionService } from "./transaction.service";
-import { Role, Transaction } from "src/generated/prisma/client";
+import {
+  Role,
+  Transaction,
+  TransactionStatus,
+} from "src/generated/prisma/client";
 import {
   CreateTransactionDto,
   TransactionWithItems,
@@ -58,6 +63,9 @@ export class TransactionController {
     @Body() dto: UpdateTransactionStatusDto,
     @CurrentUser() user: AuthenticatedUser,
   ): Promise<Transaction> {
+    if (dto.status === TransactionStatus.REFUNDED && user.role === Role.STAFF) {
+      throw new ForbiddenException("Only an owner can refund a sale.");
+    }
     return unwrap(
       await this.trService.updateTransactionStatus(id, dto.status, user.id),
     );
