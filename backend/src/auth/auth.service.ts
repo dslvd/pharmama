@@ -2,7 +2,7 @@
 import { Injectable } from "@nestjs/common";
 import { toSafeUser } from "../users/users.domain";
 import { unauthorized } from "src/util/domain-error";
-import { fromNullable } from "src/util/results.util";
+import { err, ok } from "src/util/results.util";
 import * as bcrypt from "bcrypt";
 import { UsersService } from "../users/users.service";
 import { JwtService } from "@nestjs/jwt";
@@ -24,10 +24,10 @@ export class AuthService {
     return toSafeUser(user);
   }
 
-  me(userId: number) {
-    return this.usersService
-      .findActiveSafeById(userId)
-      .then(fromNullable(unauthorized("Account not found or deactivated.")));
+  async me(userId: number) {
+    const user = await this.usersService.findActiveSafeById(userId);
+    if (!user) return err(unauthorized("Account not found or deactivated."));
+    return ok(user);
   }
 
   async login(user: { id: number; email: string; role: string }) {

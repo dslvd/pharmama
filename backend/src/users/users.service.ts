@@ -5,7 +5,7 @@ import { CreateUserDto } from "./users.validation";
 import { safeUserSelect } from "./users.select";
 import { ensureEmailFree, toSafeUser } from "./users.domain";
 import { DomainError } from "src/util/domain-error";
-import { andThenAsync, AsyncResult, ok } from "src/util/results.util";
+import { AsyncResult, ok } from "src/util/results.util";
 import { User } from "src/generated/prisma/client";
 
 type SafeUser = Omit<User, "hashedPassword">;
@@ -29,24 +29,19 @@ export class UsersService {
     });
   }
 
-  create(dto: CreateUserDto): AsyncResult<SafeUser, DomainError> {
-    return this.findByEmail(dto.email)
-      .then(ensureEmailFree)
-      .then(andThenAsync(() => bcrypt.hash(dto.password, 10).then(ok)))
-      .then(
-        andThenAsync((hashedPassword) =>
-          this.prisma.user
-            .create({
-              data: {
-                name: dto.name,
-                email: dto.email,
-                hashedPassword,
-                ...(dto.role && { role: dto.role }),
-              },
-            })
-            .then(toSafeUser)
-            .then(ok),
-        ),
-      );
+  async create(dto: CreateUserDto): AsyncResult<SafeUser, DomainError> {
+    const emailFree = ensureEmailFree(await this.findByEmail(dto.email));
+    if (!emailFree.ok) return emailFree;
+
+    const hashedPassword = await bcrypt.hash(dto.password, 10);
+    const user = await this.prisma.user.create({
+      data: {
+        name: dto.name,
+        email: dto.email,
+        hashedPassword,
+        ...(dto.role && { role: dto.role }),
+      },
+    });
+    return ok(toSafeUser(user));
   }
 }

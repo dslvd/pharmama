@@ -3,7 +3,7 @@
 import { Prisma } from "src/generated/prisma/client";
 import { AuditAction, TransactionStatus } from "src/generated/prisma/enums";
 import { conflict, DomainError, invalid } from "src/util/domain-error";
-import { err, ok, Result, sequence } from "src/util/results.util";
+import { err, ok, Result } from "src/util/results.util";
 
 export interface ItemInput {
   readonly stockId: number;
@@ -78,15 +78,16 @@ export const priceItems =
   (
     stocks: readonly StockRow[],
     items: readonly ItemInput[],
-  ): Result<readonly LineItem[], DomainError> =>
-    sequence(
-      mergeItems(items).map((item) =>
-        priceItem(now)(
-          stocks.find((s) => s.id === item.stockId),
-          item,
-        ),
-      ),
-    );
+  ): Result<readonly LineItem[], DomainError> => {
+    const lines: LineItem[] = [];
+    for (const item of mergeItems(items)) {
+      const stock = stocks.find((s) => s.id === item.stockId);
+      const line = priceItem(now)(stock, item);
+      if (!line.ok) return line;
+      lines.push(line.value);
+    }
+    return ok(lines);
+  };
 
 export const totalOf = (lines: readonly LineItem[]): Prisma.Decimal =>
   lines.reduce((sum, line) => sum.add(line.subtotal), new Prisma.Decimal(0));

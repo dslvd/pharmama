@@ -21,3 +21,11 @@ export const unauthorized = (message: string): DomainError => ({
   kind: "Unauthorized",
   message,
 });
+
+// Throw this inside prisma.$transaction to roll it back. The service catches
+// it and returns err(e.error).
+export class DomainException extends Error {
+  constructor(readonly error: DomainError) {
+    super(error.message);
+  }
+}
