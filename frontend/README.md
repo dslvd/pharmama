@@ -32,7 +32,7 @@ Run the dev server on port 3000. The backend's CORS only allows `localhost:3000`
 | `/transaction` | everyone       | POS: product picker, current sale, receipt after checkout, sales history with cancel/refund and receipts |
 | `/logbook`     | owners         | Audit trail with search and filters                                                                |
 
-"Owners" means the `OWNER` and `ADMIN` roles. `/` redirects to the user's home page: `/dashboard` for owners, `/transaction` for staff.
+`/` redirects to the user's home page: `/dashboard` for owners, `/transaction` for staff.
 
 ## Structure
 

@@ -92,7 +92,6 @@ Every create, update, delete, cancel and refund of a product, stock batch or tra
 | ------- | ------------------- | ------------------------------------------------------------------------- |
 | `STAFF` | Pharmacy personnel  | Products (read), stock (read/add/edit), transactions                       |
 | `OWNER` | Pharmacy owner      | Everything, including product writes, stock deletes, sales overview, audit log and creating accounts |
-| `ADMIN` | Developers          | Same permissions as `OWNER`; can't be created through the API              |
 
 New accounts default to `STAFF`. Deactivated accounts (`isActive = false`) can't log in.
 
@@ -106,16 +105,16 @@ All routes except `GET /` and `POST /auth/login` need an `Authorization: Bearer 
 | ------ | ------------- | ------------ | ----------------------------------------------------------------------------- |
 | POST   | `/auth/login` | public       | `{ email, password }` → `{ access_token, user }`. Tokens expire after 1 day.  |
 | GET    | `/auth/me`    | any          | The signed-in user (`id, name, email, role`)                                  |
-| POST   | `/users`      | OWNER, ADMIN | `{ name, email, password (min 8), role? ("STAFF" \| "OWNER") }`               |
+| POST   | `/users`      | OWNER        | `{ name, email, password (min 8), role? ("STAFF" \| "OWNER") }`               |
 
 ### Products
 
 | Method | Path           | Roles        | Body / notes                                                                       |
 | ------ | -------------- | ------------ | ---------------------------------------------------------------------------------- |
 | GET    | `/product`     | any          | All products                                                                       |
-| POST   | `/product`     | OWNER, ADMIN | `{ name, genericName, category, price }`                                           |
-| PATCH  | `/product/:id` | OWNER, ADMIN | Any subset of the create fields                                                    |
-| DELETE | `/product/:id` | OWNER, ADMIN | 409 if the product has sales or stock batches                                      |
+| POST   | `/product`     | OWNER        | `{ name, genericName, category, price }`                                           |
+| PATCH  | `/product/:id` | OWNER        | Any subset of the create fields                                                    |
+| DELETE | `/product/:id` | OWNER        | 409 if the product has sales or stock batches                                      |
 
 `category` is one of `ANALGESICS, ANTIBIOTICS, ANTIHISTAMINES, VITAMINS, SUPPLEMENTS, ANTACIDS, HYGIENE, OTHERS`.
 
@@ -126,7 +125,7 @@ All routes except `GET /` and `POST /auth/login` need an `Authorization: Bearer 
 | GET    | `/stock`     | any          | All batches, each with its `product`                                                        |
 | POST   | `/stock`     | any          | `{ productId, batchNumber, quantity, expiryDate }`. Expiry must be in the future; the batch number must be unique for the product |
 | PATCH  | `/stock/:id` | any          | Any subset of the create fields; same checks for the fields being changed                   |
-| DELETE | `/stock/:id` | OWNER, ADMIN | 409 if the batch has sales                                                                  |
+| DELETE | `/stock/:id` | OWNER        | 409 if the batch has sales                                                                  |
 
 ### Transactions
 
@@ -151,8 +150,8 @@ Only a `COMPLETED` transaction can change status, and only once. Cancelling or r
 
 | Method | Path              | Roles        | Notes                                                                                      |
 | ------ | ----------------- | ------------ | ------------------------------------------------------------------------------------------ |
-| GET    | `/sales/overview` | OWNER, ADMIN | `?period=Today\|Week\|Month\|Year` (default `Today`) → `[{ label, value }]`, completed sales only, grouped by hour / day / week / month |
-| GET    | `/audit-log`      | OWNER, ADMIN | All audit entries with the user who made them                                              |
+| GET    | `/sales/overview` | OWNER        | `?period=Today\|Week\|Month\|Year` (default `Today`) → `[{ label, value }]`, completed sales only, grouped by hour / day / week / month |
+| GET    | `/audit-log`      | OWNER        | All audit entries with the user who made them                                              |
 
 ## Database
 
