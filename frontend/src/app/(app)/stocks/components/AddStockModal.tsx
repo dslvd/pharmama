@@ -16,6 +16,9 @@ interface AddStockModalProps {
   stock?: Stock;
   onClose: () => void;
   onSuccess?: () => void;
+  // only owners/admins can change an existing batch's quantity;
+  // the backend enforces it too
+  canAdjustQuantity?: boolean;
 }
 
 const inputClasses =
@@ -26,8 +29,10 @@ export default function AddStockModal({
   stock,
   onClose,
   onSuccess,
+  canAdjustQuantity = false,
 }: AddStockModalProps) {
   const isEditing = !!stock;
+  const quantityLocked = isEditing && !canAdjustQuantity;
   const [batchNumber, setBatchNumber] = useState(stock?.batchNumber ?? "");
   const [quantity, setQuantity] = useState(
     stock ? String(stock.quantity) : "",
@@ -160,9 +165,15 @@ export default function AddStockModal({
                 value={quantity}
                 placeholder="0"
                 onChange={(e) => handleQuantityInput(e.target.value)}
-                className="h-full w-full border-0 bg-transparent px-3 text-left text-base font-medium text-foreground outline-none placeholder:text-muted-foreground"
+                readOnly={quantityLocked}
+                aria-describedby={
+                  quantityLocked ? "quantity-locked-hint" : undefined
+                }
+                className="h-full w-full border-0 bg-transparent px-3 text-left text-base font-medium text-foreground outline-none placeholder:text-muted-foreground read-only:cursor-not-allowed read-only:text-muted-foreground"
               />
-              <div className="flex w-10 flex-col border-l border-border">
+              <div
+                className={`flex w-10 flex-col border-l border-border ${quantityLocked ? "hidden" : ""}`}
+              >
                 <button
                   type="button"
                   onClick={() => adjustQuantity("increment")}
@@ -181,6 +192,14 @@ export default function AddStockModal({
                 </button>
               </div>
             </div>
+            {quantityLocked && (
+              <p
+                id="quantity-locked-hint"
+                className="mt-1.5 text-xs text-muted-foreground"
+              >
+                Only an owner can change the quantity.
+              </p>
+            )}
             {quantityError && (
               <p className="mt-1.5 text-sm text-destructive">{quantityError}</p>
             )}

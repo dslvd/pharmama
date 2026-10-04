@@ -38,6 +38,10 @@ import {
 } from "@/components/ui/table";
 import ConfirmDialog from "@/components/ConfirmDialog";
 
+// a sale can only move from COMPLETED to one of these
+const changeOptions = (canRefund: boolean): TransactionStatus[] =>
+  canRefund ? ["CANCELLED", "REFUNDED"] : ["CANCELLED"];
+
 // total units sold, not batch lines
 const itemCount = (t: Transaction) =>
   t.transactionItems?.reduce((sum, item) => sum + item.quantity, 0) ?? 0;
@@ -48,6 +52,8 @@ interface SalesTableProps {
   onViewClick?: (tr: Transaction) => void;
   onError?: (message: string) => void;
   onLoadingChange?: (loading: boolean) => void;
+  // only owners/admins can refund; the backend enforces it too
+  canRefund?: boolean;
 }
 
 const inputClasses =
@@ -59,6 +65,7 @@ export default function SalesTable({
   onError,
   onLoadingChange,
   refreshKey = 0,
+  canRefund = false,
 }: SalesTableProps) {
   const [allSales, setAllSales] = useState<Transaction[]>(initialRecords);
   const [status, setStatus] = useState<TransactionStatus | undefined>(
@@ -248,59 +255,73 @@ export default function SalesTable({
                   {peso(record.totalAmount)}
                 </Td>
                 <Td>
-                  <Dropdown
-                    open={openStatusId === record.id}
-                    onOpenChange={(open) =>
-                      setOpenStatusId(open ? record.id : null)
-                    }
-                    className="w-36 p-1.5"
-                    trigger={
-                      <button
-                        type="button"
-                        aria-label={`Change status of ${txnId(record.id)}`}
-                        className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-medium transition-shadow focus:outline-none focus:ring-2 focus:ring-ring/20 ${statusClass(
-                          record.status,
-                        )}`}
-                      >
-                        {titleCase(record.status)}
-                        <ChevronDown
-                          size={12}
-                          className={`transition-transform duration-200 ${
-                            openStatusId === record.id ? "rotate-180" : ""
-                          }`}
-                        />
-                      </button>
-                    }
-                  >
-                    <div role="listbox" aria-label="Transaction status">
-                      {STATUS_VALUES.map((option) => (
+                  {/* cancelled/refunded sales are final, so no dropdown */}
+                  {record.status !== "COMPLETED" ? (
+                    <span
+                      className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium ${statusClass(
+                        record.status,
+                      )}`}
+                    >
+                      {titleCase(record.status)}
+                    </span>
+                  ) : (
+                    <Dropdown
+                      open={openStatusId === record.id}
+                      onOpenChange={(open) =>
+                        setOpenStatusId(open ? record.id : null)
+                      }
+                      className="w-36 p-1.5"
+                      trigger={
                         <button
-                          key={option}
                           type="button"
-                          role="option"
-                          aria-selected={record.status === option}
-                          onClick={() => {
-                            if (option === record.status) return;
-                            setOpenStatusId(null);
-                            if (option === "CANCELLED" || option === "REFUNDED")
-                              setPendingStatus({
-                                id: record.id,
-                                status: option,
-                              });
-                            else handleStatusChange(record.id, option);
-                          }}
-                          className={`flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-xs text-foreground transition-colors hover:bg-background ${
-                            record.status === option
-                              ? "bg-background font-semibold"
-                              : ""
-                          }`}
+                          aria-label={`Change status of ${txnId(record.id)}`}
+                          className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-medium transition-shadow focus:outline-none focus:ring-2 focus:ring-ring/20 ${statusClass(
+                            record.status,
+                          )}`}
                         >
-                          {titleCase(option)}
-                          {record.status === option && <Check size={14} />}
+                          {titleCase(record.status)}
+                          <ChevronDown
+                            size={12}
+                            className={`transition-transform duration-200 ${
+                              openStatusId === record.id ? "rotate-180" : ""
+                            }`}
+                          />
                         </button>
-                      ))}
-                    </div>
-                  </Dropdown>
+                      }
+                    >
+                      <div role="listbox" aria-label="Transaction status">
+                        {changeOptions(canRefund).map((option) => (
+                          <button
+                            key={option}
+                            type="button"
+                            role="option"
+                            aria-selected={record.status === option}
+                            onClick={() => {
+                              if (option === record.status) return;
+                              setOpenStatusId(null);
+                              if (
+                                option === "CANCELLED" ||
+                                option === "REFUNDED"
+                              )
+                                setPendingStatus({
+                                  id: record.id,
+                                  status: option,
+                                });
+                              else handleStatusChange(record.id, option);
+                            }}
+                            className={`flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-xs text-foreground transition-colors hover:bg-background ${
+                              record.status === option
+                                ? "bg-background font-semibold"
+                                : ""
+                            }`}
+                          >
+                            {titleCase(option)}
+                            {record.status === option && <Check size={14} />}
+                          </button>
+                        ))}
+                      </div>
+                    </Dropdown>
+                  )}
                 </Td>
                 <Td align="right">
                   <button

@@ -11,6 +11,7 @@ import {
   receiptFromTransaction,
 } from "./components/Receipt";
 import { useAuth } from "@/lib/auth";
+import { isManager } from "@/lib/roles";
 import { ErrorStack } from "@/components/ErrorCard";
 import Loading from "./loading";
 import { useLeaveWarning } from "@/lib/leaveGuard";
@@ -19,7 +20,7 @@ export default function TransactionsPage() {
   const [items, setItems] = useState<SubmittedItem[]>([]);
   const [errors, setErrors] = useState<{ id: string; message: string }[]>([]);
   const [loading, setLoading] = useState(true);
-  const { user } = useAuth();
+  const { user, role } = useAuth();
   // justSold: opened by checkout rather than "View"
   const [receipt, setReceipt] = useState<{
     data: ReceiptData;
@@ -88,6 +89,7 @@ export default function TransactionsPage() {
 
         <SalesTable
           refreshKey={refreshKey}
+          canRefund={isManager(role)}
           onError={addError}
           onLoadingChange={setLoading}
           onViewClick={(tr) =>

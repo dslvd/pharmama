@@ -240,6 +240,7 @@ export default function StockPage() {
         {showAddStockModal && (
           <AddStockModal
             stock={editingStock}
+            canAdjustQuantity={isManager(role)}
             onClose={closeModal}
             onSuccess={() => setRefreshKey((k) => k + 1)}
           />
