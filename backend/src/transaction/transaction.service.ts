@@ -132,6 +132,25 @@ export class TransactionService {
         const status = transitionStatus(existing.status, to);
         if (!status.ok) throw new DomainException(status.error);
 
+        // only flips if it's still COMPLETED, so two requests at once
+        // can't both restock the same sale
+        const { count } = await tx.transaction.updateMany({
+          where: { id, status: TransactionStatus.COMPLETED },
+          data: { status: status.value },
+        });
+        if (count !== 1) {
+          const current = await tx.transaction.findUniqueOrThrow({
+            where: { id },
+            select: { status: true },
+          });
+          const retry = transitionStatus(current.status, to);
+          throw new DomainException(
+            retry.ok
+              ? conflict("Transaction changed. Please try again.")
+              : retry.error,
+          );
+        }
+
         for (const item of restockPlan(existing.transactionItems)) {
           await tx.stock.update({
             where: { id: item.stockId },
@@ -139,9 +158,8 @@ export class TransactionService {
           });
         }
 
-        const updated = await tx.transaction.update({
+        const updated = await tx.transaction.findUniqueOrThrow({
           where: { id },
-          data: { status: status.value },
         });
         await createAuditLog(tx, {
           user: handledBy,
