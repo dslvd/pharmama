@@ -1,30 +1,14 @@
-import { bucketFor, toSalesPoints } from "./sales.domain";
+import { toSalesPoints } from "./sales.domain";
 
 describe("sales.domain", () => {
-  it("maps each period to its chart bucket", () => {
-    expect(bucketFor).toEqual({
-      Today: "hour",
-      Week: "day",
-      Month: "week",
-      Year: "month",
-    });
-  });
-
-  it("converts totals to numbers and numbers weeks in order", () => {
+  it("keeps the labels and converts totals to numbers", () => {
     const rows = [
-      { bucket: new Date(2026, 8, 7), total: "150.50" },
-      { bucket: new Date(2026, 8, 14), total: "20" },
+      { label: "Wk 1", total: "150.50" },
+      { label: "Wk 2", total: 0 },
     ];
-    expect(toSalesPoints("Month")(rows)).toEqual([
+    expect(toSalesPoints(rows)).toEqual([
       { label: "Wk 1", value: 150.5 },
-      { label: "Wk 2", value: 20 },
+      { label: "Wk 2", value: 0 },
     ]);
-  });
-
-  it("labels months by short name", () => {
-    const [point] = toSalesPoints("Year")([
-      { bucket: new Date(2026, 0, 1), total: 5 },
-    ]);
-    expect(point).toEqual({ label: "Jan", value: 5 });
   });
 });
