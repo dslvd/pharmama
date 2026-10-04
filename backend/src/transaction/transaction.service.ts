@@ -98,13 +98,6 @@ export class TransactionService {
     }
   }
 
-  cancelTransaction(
-    id: number,
-    handledBy: number,
-  ): AsyncResult<Transaction, DomainError> {
-    return this.changeStatus(id, TransactionStatus.CANCELLED, handledBy);
-  }
-
   updateTransactionStatus(
     id: number,
     to: TransactionStatus,

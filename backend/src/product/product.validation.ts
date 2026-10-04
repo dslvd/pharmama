@@ -6,6 +6,7 @@ import {
   IsNumber,
   IsPositive,
   IsString,
+  Max,
 } from "class-validator";
 import { Category } from "src/generated/prisma/enums";
 
@@ -21,9 +22,11 @@ export class CreateProductDto {
   @Transform(({ value }) => value?.trim())
   @IsEnum(Category)
   category!: Category;
+  // matches the Decimal(10, 2) price column
   @Type(() => Number)
-  @IsNumber()
+  @IsNumber({ maxDecimalPlaces: 2 })
   @IsPositive()
+  @Max(99999999.99)
   price!: number;
 }
 

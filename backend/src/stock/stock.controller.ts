@@ -50,7 +50,9 @@ export class StockController {
     @Body() body: UpdateStockDto,
     @CurrentUser() user: AuthenticatedUser,
   ): Promise<Stock> {
-    return unwrap(await this.stService.updateStock(id, body, user.id));
+    return unwrap(
+      await this.stService.updateStock(id, body, user.id, user.role),
+    );
   }
 
   @Delete(":id")

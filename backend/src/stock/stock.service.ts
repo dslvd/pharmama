@@ -3,6 +3,7 @@ import {
   AuditAction,
   AuditEntity,
   Prisma,
+  Role,
   Stock,
 } from "src/generated/prisma/client";
 import { PrismaService } from "src/prisma/prisma.service";
@@ -13,6 +14,7 @@ import {
 } from "./stock.validation";
 import {
   ensureBatchIsNew,
+  ensureCanAdjustQuantity,
   ensureDeletable,
   StockData,
   toStockData,
@@ -103,6 +105,7 @@ export class StockService {
     id: number,
     body: UpdateStockDto,
     handledBy: number,
+    role: Role,
     now: Date = new Date(),
   ): AsyncResult<Stock, DomainError> {
     const patch = toStockPatch(now)(body);
@@ -113,6 +116,14 @@ export class StockService {
         const existing = await tx.stock.findUnique({ where: { id } });
         if (!existing) throw new DomainException(notFound("Stock not found."));
 
+        const isManager = role === Role.OWNER || role === Role.ADMIN;
+        const canAdjust = ensureCanAdjustQuantity(
+          existing.quantity,
+          patch.value.quantity,
+          isManager,
+        );
+        if (!canAdjust.ok) throw new DomainException(canAdjust.error);
+
         const merged = { ...existing, ...patch.value };
         await ensureProductExists(tx, merged.productId);
         await ensureBatchFree(tx, merged, id);
@@ -122,11 +133,15 @@ export class StockService {
           data: patch.value,
         });
         const changedKeys = Object.keys(body) as (keyof StockData)[];
+        const action =
+          updated.quantity !== existing.quantity
+            ? AuditAction.STOCK_ADJUSTMENT
+            : AuditAction.UPDATE;
         await audit(
           tx,
           handledBy,
           id,
-          AuditAction.UPDATE,
+          action,
           diffFields(changedKeys)(existing, updated),
         );
         return updated;

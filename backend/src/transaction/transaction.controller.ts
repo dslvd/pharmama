@@ -38,15 +38,6 @@ export class TransactionController {
     return this.trService.getTransactionList();
   }
 
-  @Patch(":id")
-  @Roles(Role.STAFF, Role.OWNER, Role.ADMIN)
-  async cancelTr(
-    @Param("id", ParseIntPipe) id: number,
-    @CurrentUser() user: AuthenticatedUser,
-  ): Promise<Transaction> {
-    return unwrap(await this.trService.cancelTransaction(id, user.id));
-  }
-
   @Post()
   @Roles(Role.STAFF, Role.OWNER, Role.ADMIN)
   async createTr(
