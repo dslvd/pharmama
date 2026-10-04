@@ -12,31 +12,12 @@ import { createAuditLog } from "src/util/audit-log.util";
 import { diffFields } from "src/util/audit-diff.util";
 import {
   DomainError,
+  DomainException,
   notFound,
-  runInTransaction,
 } from "src/util/domain-error.util";
-import {
-  andThenAsync,
-  AsyncResult,
-  fromNullable,
-  map,
-  ok,
-  tapAsync,
-} from "src/util/results.util";
+import { AsyncResult, err, ok } from "src/util/results.util";
 
 type Tx = Prisma.TransactionClient;
-
-// ---- effects ---------------------------------------------------------------
-
-const loadProduct = (tx: Tx, id: number) =>
-  tx.product
-    .findUnique({ where: { id } })
-    .then(fromNullable(notFound("Product not found.")));
-
-const loadUsage = async (tx: Tx, id: number) => ({
-  soldCount: await tx.transactionItem.count({ where: { productId: id } }),
-  stockCount: await tx.stock.count({ where: { productId: id } }),
-});
 
 const audit = (
   tx: Tx,
@@ -53,8 +34,6 @@ const audit = (
     changes,
   });
 
-// ---- service ---------------------------------------------------------------
-
 @Injectable()
 export class ProductService {
   constructor(private prisma: PrismaService) {}
@@ -63,71 +42,74 @@ export class ProductService {
     return this.prisma.product.findMany();
   }
 
-  createProduct(
+  async createProduct(
     data: CreateProductDto,
     handledBy: number,
   ): AsyncResult<Product, DomainError> {
-    return runInTransaction(this.prisma, (tx) =>
-      tx.product
-        .create({ data })
-        .then(
-          tapAsync((product) =>
-            audit(tx, handledBy, product.id, AuditAction.CREATE),
-          ),
-        ),
-    );
+    const product = await this.prisma.$transaction(async (tx) => {
+      const created = await tx.product.create({ data });
+      await audit(tx, handledBy, created.id, AuditAction.CREATE);
+      return created;
+    });
+    return ok(product);
   }
 
-  updateProduct(
+  async updateProduct(
     id: number,
     body: UpdateProductDto,
     handledBy: number,
   ): AsyncResult<Product, DomainError> {
-    return runInTransaction(this.prisma, (tx) =>
-      loadProduct(tx, id).then(
-        andThenAsync((existing) =>
-          tx.product
-            .update({ where: { id }, data: body })
-            .then(
-              tapAsync((updated) =>
-                audit(
-                  tx,
-                  handledBy,
-                  id,
-                  AuditAction.UPDATE,
-                  diffFields(Object.keys(body) as (keyof UpdateProductDto)[])(
-                    existing,
-                    updated,
-                  ),
-                ),
-              ),
-            ),
-        ),
-      ),
-    );
+    try {
+      const product = await this.prisma.$transaction(async (tx) => {
+        const existing = await tx.product.findUnique({ where: { id } });
+        if (!existing) {
+          throw new DomainException(notFound("Product not found."));
+        }
+
+        const updated = await tx.product.update({ where: { id }, data: body });
+        const changedKeys = Object.keys(body) as (keyof UpdateProductDto)[];
+        await audit(
+          tx,
+          handledBy,
+          id,
+          AuditAction.UPDATE,
+          diffFields(changedKeys)(existing, updated),
+        );
+        return updated;
+      });
+      return ok(product);
+    } catch (e) {
+      if (e instanceof DomainException) return err(e.error);
+      throw e;
+    }
   }
 
-  deleteProduct(
+  async deleteProduct(
     id: number,
     handledBy: number,
   ): AsyncResult<Product, DomainError> {
-    return runInTransaction(this.prisma, (tx) =>
-      loadProduct(tx, id)
-        .then(
-          andThenAsync((existing) =>
-            loadUsage(tx, id)
-              .then(ensureDeletable)
-              .then(map(() => existing)),
-          ),
-        )
-        .then(
-          andThenAsync(
-            tapAsync(() => audit(tx, handledBy, id, AuditAction.DELETE)),
-          ),
-        )
-        .then(
-          andThenAsync(() => tx.product.delete({ where: { id } }).then(ok)),
-        ),
-    );
+    try {
+      const product = await this.prisma.$transaction(async (tx) => {
+        const existing = await tx.product.findUnique({ where: { id } });
+        if (!existing) {
+          throw new DomainException(notFound("Product not found."));
+        }
+
+        const deletable = ensureDeletable({
+          soldCount: await tx.transactionItem.count({
+            where: { productId: id },
+          }),
+          stockCount: await tx.stock.count({ where: { productId: id } }),
+        });
+        if (!deletable.ok) throw new DomainException(deletable.error);
+
+        await audit(tx, handledBy, id, AuditAction.DELETE);
+        return tx.product.delete({ where: { id } });
+      });
+      return ok(product);
+    } catch (e) {
+      if (e instanceof DomainException) return err(e.error);
+      throw e;
+    }
   }
 }

@@ -1,6 +1,6 @@
 // Pure stock rules: no database, no Nest, no clock.
 import { conflict, DomainError, invalid } from "src/util/domain-error";
-import { err, map, ok, Result } from "src/util/results.util";
+import { err, ok, Result } from "src/util/results.util";
 
 export interface StockInput {
   readonly productId: number;
@@ -31,21 +31,22 @@ export const parseExpiryDate =
 
 export const toStockData =
   (now: Date) =>
-  (input: StockInput): Result<StockData, DomainError> =>
-    map((expiryDate: Date) => ({ ...input, expiryDate }))(
-      parseExpiryDate(now)(input.expiryDate),
-    );
+  (input: StockInput): Result<StockData, DomainError> => {
+    const expiry = parseExpiryDate(now)(input.expiryDate);
+    if (!expiry.ok) return expiry;
+    return ok({ ...input, expiryDate: expiry.value });
+  };
 
 // an update only re-validates the expiry date when it's being changed
 export const toStockPatch =
   (now: Date) =>
   (input: Partial<StockInput>): Result<Partial<StockData>, DomainError> => {
     const { expiryDate, ...rest } = input;
-    return expiryDate === undefined
-      ? ok(rest)
-      : map((parsed: Date) => ({ ...rest, expiryDate: parsed }))(
-          parseExpiryDate(now)(expiryDate),
-        );
+    if (expiryDate === undefined) return ok(rest);
+
+    const expiry = parseExpiryDate(now)(expiryDate);
+    if (!expiry.ok) return expiry;
+    return ok({ ...rest, expiryDate: expiry.value });
   };
 
 export const ensureBatchIsNew = (
