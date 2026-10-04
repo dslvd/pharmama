@@ -2,7 +2,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { NotFoundException } from "@nestjs/common";
 import { TransactionController } from "./transaction.controller";
 import { TransactionService } from "./transaction.service";
-import { Role } from "src/generated/prisma/enums";
+import { Role, TransactionStatus } from "src/generated/prisma/enums";
 import { err, ok } from "src/util/results.util";
 import { notFound } from "src/util/domain-error";
 
@@ -11,7 +11,6 @@ describe("TransactionController", () => {
   const service = {
     getTransactionList: jest.fn(),
     createTransaction: jest.fn(),
-    cancelTransaction: jest.fn(),
     updateTransactionStatus: jest.fn(),
   };
   const user = { id: 3, email: "staff@pharmama.com", role: Role.STAFF };
@@ -40,12 +39,16 @@ describe("TransactionController", () => {
   });
 
   it("turns a NotFound result into a 404", async () => {
-    service.cancelTransaction.mockResolvedValue(
+    service.updateTransactionStatus.mockResolvedValue(
       err(notFound("Transaction not found.")),
     );
 
-    await expect(controller.cancelTr(9, user)).rejects.toBeInstanceOf(
-      NotFoundException,
-    );
+    await expect(
+      controller.updateTrStatus(
+        9,
+        { status: TransactionStatus.CANCELLED },
+        user,
+      ),
+    ).rejects.toBeInstanceOf(NotFoundException);
   });
 });

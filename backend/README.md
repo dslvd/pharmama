@@ -134,7 +134,6 @@ All routes except `GET /` and `POST /auth/login` need an `Authorization: Bearer 
 | GET    | `/transaction`                  | any   | All transactions with their items, products and cashier                      |
 | POST   | `/transaction`                  | any   | `{ transactionItems: [{ stockId, quantity }] }`                              |
 | PATCH  | `/transaction/:id/updateStatus` | any   | `{ status: "CANCELLED" \| "REFUNDED" }`                                      |
-| PATCH  | `/transaction/:id`              | any   | Shortcut for cancelling (no body)                                            |
 
 Creating a sale:
 
