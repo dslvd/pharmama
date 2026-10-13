@@ -4,5 +4,5 @@ export const isManager = (role?: string) =>
 export const homeFor = (role?: string) =>
   isManager(role) ? "/dashboard" : "/transaction";
 
-// pages staff can't open (keep in sync with the `roles` in your Navigation)
+// pages staff can't open (keep in sync with the roles in Navigation.tsx)
 export const managerOnly = ["/dashboard", "/products", "/logbook"];

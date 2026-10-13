@@ -1,7 +1,6 @@
-// auth/decorator/current-user.decorator.ts
 import { createParamDecorator, ExecutionContext } from "@nestjs/common";
 
-// gets the current user
+// the signed-in user, set by the JWT strategy
 export const CurrentUser = createParamDecorator(
   (_data: unknown, ctx: ExecutionContext) => {
     const request = ctx.switchToHttp().getRequest();

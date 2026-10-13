@@ -17,7 +17,7 @@ interface StockRowProps {
   onDeleted?: (id: number) => void;
   onEdit?: (stock: Stock) => void;
   onError?: (message: string) => void;
-  // only owners/admins can delete stock
+  // only owners can delete stock
   canDelete?: boolean;
   // current time from the page, for expiry checks
   now: number;

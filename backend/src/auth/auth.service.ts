@@ -1,4 +1,3 @@
-// auth/auth.service.ts
 import { Injectable } from "@nestjs/common";
 import { toSafeUser } from "../users/users.domain";
 import { unauthorized } from "src/util/domain-error";

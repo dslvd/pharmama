@@ -53,7 +53,7 @@ interface SalesTableProps {
   onLoadingChange?: (loading: boolean) => void;
   // called after a cancel/refund, since that puts stock back
   onStatusChanged?: () => void;
-  // only owners/admins can refund; the backend enforces it too
+  // only owners can refund (the backend checks too)
   canRefund?: boolean;
 }
 

@@ -1,19 +1,18 @@
-// Pure sales-overview rules: how each period's buckets are labelled and how
-// query rows become chart points. No database, no Nest.
+// turns the sales query rows into chart points
 import { Period, SalesPoint } from "./sales.validation";
 
-// the pharmacy's local time; the query buckets sales in this timezone too
+// the pharmacy's timezone, for both the grouping and the labels
 export const TIMEZONE = "Asia/Manila";
 
 export interface SalesRow {
   readonly bucket: Date; // start of the bucket
-  readonly total: unknown; // SUM() of a Decimal column comes back as a Decimal/string
+  readonly total: unknown; // Postgres returns SUM() as a Decimal
 }
 
 const dayOfMonth = (d: Date) =>
   Number(d.toLocaleDateString("en-US", { day: "numeric", timeZone: TIMEZONE }));
 
-// one label function per period, picked by key
+// how each period labels its bars
 const labelFor: Readonly<Record<Period, (bucket: Date) => string>> = {
   Today: (d) =>
     d.toLocaleTimeString("en-US", { hour: "numeric", timeZone: TIMEZONE }),

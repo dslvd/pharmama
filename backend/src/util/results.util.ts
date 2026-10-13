@@ -7,7 +7,7 @@ export type AsyncResult<T, E = string> = Promise<Result<T, E>>;
 export const ok = <T>(value: T): Result<T, never> => ({ ok: true, value });
 export const err = <E>(error: E): Result<never, E> => ({ ok: false, error });
 
-// list of results -> result of list, stopping at the first error
+// turns a list of results into one, stopping at the first error
 export const sequence = <T, E>(
   results: readonly Result<T, E>[],
 ): Result<readonly T[], E> =>

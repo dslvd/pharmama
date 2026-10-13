@@ -22,8 +22,7 @@ export const useAuth = () => useContext(AuthContext)!;
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(() => !!getToken());
-  // kept in localStorage so a refresh doesn't drop out of pharmacist view
-  // without the password. UI-only: the API still sees the manager's token.
+  // saved so a refresh stays in pharmacist view. UI only: the API still gets the owner's token
   const [staffView, setStaffView] = useState(
     () =>
       typeof window !== "undefined" &&

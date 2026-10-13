@@ -1,4 +1,4 @@
-// Pure product rules: no database, no Nest.
+// product rules, no database access
 import { conflict, DomainError } from "src/util/domain-error";
 import { err, ok, Result } from "src/util/results.util";
 

@@ -1,7 +1,6 @@
 import Skeleton from "@/components/ui/Skeleton";
 
-// mirrors transaction/page.tsx: product picker + current sale side by side
-// (same fixed heights), then the sales history table
+// same layout as the transaction page
 
 const CARD_HEIGHT = "h-[520px] sm:h-[560px] lg:h-[620px]";
 const SALES_COLS = "grid-cols-[1fr_1.2fr_1fr_0.6fr_0.8fr_1fr_5rem]";

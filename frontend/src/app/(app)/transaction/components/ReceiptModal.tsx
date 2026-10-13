@@ -51,8 +51,7 @@ export default function ReceiptModal({
         </button>
       </div>
 
-      {/* print-only copy straight under <body>, so printing doesn't fight
-          the dialog's positioning; see .receipt-print in globals.css */}
+      {/* print-only copy in <body>, see .receipt-print in globals.css */}
       {createPortal(
         <div className="receipt-print">
           <Receipt data={data} />

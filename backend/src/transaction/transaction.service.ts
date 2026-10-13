@@ -62,7 +62,7 @@ export class TransactionService {
         const lines = priceItems(now)(stocks, data.transactionItems);
         if (!lines.ok) throw new DomainException(lines.error);
 
-        // conditional decrement guards against a concurrent sale taking the stock
+        // only decrements if the stock is still there, in case another sale took it
         for (const line of lines.value) {
           const { count } = await tx.stock.updateMany({
             where: { id: line.stockId, quantity: { gte: line.quantity } },
@@ -99,7 +99,7 @@ export class TransactionService {
     }
   }
 
-  // cancel/refund: validate the transition, put stock back, record it
+  // cancel or refund a sale and put its stock back
   async updateTransactionStatus(
     id: number,
     to: TransactionStatus,
@@ -118,8 +118,7 @@ export class TransactionService {
         const status = transitionStatus(existing.status, to);
         if (!status.ok) throw new DomainException(status.error);
 
-        // only flips if it's still COMPLETED, so two requests at once
-        // can't both restock the same sale
+        // only updates if it's still COMPLETED, so two requests can't both restock
         const { count } = await tx.transaction.updateMany({
           where: { id, status: TransactionStatus.COMPLETED },
           data: { status: status.value },

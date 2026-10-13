@@ -28,7 +28,7 @@ export default function StockPage() {
   );
   const [refreshKey, setRefreshKey] = useState(0);
   const [loading, setLoading] = useState(true);
-  // fixed at mount, like the dashboard; used for expiry badges
+  // when the page loaded, for the expiry badges
   const [now] = useState(() => Date.now());
   const [errors, setErrors] = useState<{ id: string; message: string }[]>([]);
 

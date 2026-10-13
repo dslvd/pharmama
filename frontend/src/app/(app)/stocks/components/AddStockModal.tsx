@@ -16,8 +16,7 @@ interface AddStockModalProps {
   stock?: Stock;
   onClose: () => void;
   onSuccess?: () => void;
-  // only owners/admins can change an existing batch's quantity;
-  // the backend enforces it too
+  // only owners can change an existing batch's quantity (the backend checks too)
   canAdjustQuantity?: boolean;
 }
 
@@ -104,8 +103,7 @@ export default function AddStockModal({
       expiryDate: new Date(expiryDate),
     };
 
-    // an edit only sends what changed, so e.g. renaming an expired batch
-    // doesn't get rejected for its old expiry date
+    // only send what changed, so editing an expired batch isn't rejected
     if (isEditing) {
       if (payload.productId === stock.productId) delete payload.productId;
       if (batchNumber === stock.batchNumber) delete payload.batchNumber;

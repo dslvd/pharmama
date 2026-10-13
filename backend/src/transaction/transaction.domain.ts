@@ -1,5 +1,4 @@
-// Pure transaction rules: no database, no Nest, no clock.
-// The service loads data, passes it through these functions, then writes.
+// sale rules, no database access
 import { Prisma } from "src/generated/prisma/client";
 import { AuditAction, TransactionStatus } from "src/generated/prisma/enums";
 import { conflict, DomainError, invalid } from "src/util/domain-error";
@@ -79,7 +78,7 @@ export const priceItems =
     stocks: readonly StockRow[],
     items: readonly ItemInput[],
   ): Result<readonly LineItem[], DomainError> =>
-    // merge repeated batches -> price each item -> collect (first error wins)
+    // stops at the first item that fails
     sequence(
       mergeItems(items).map((item) =>
         priceItem(now)(

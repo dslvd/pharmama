@@ -1,4 +1,4 @@
-// Pure user rules: no database, no Nest, no hashing.
+// user rules, no database access
 import { conflict, DomainError } from "src/util/domain-error";
 import { err, ok, Result } from "src/util/results.util";
 
@@ -7,7 +7,7 @@ export const ensureEmailFree = (
 ): Result<true, DomainError> =>
   existing ? err(conflict("Email already in use.")) : ok(true);
 
-// drop the password hash before a user leaves the service
+// removes the password hash before a user is sent out
 export const toSafeUser = <T extends { hashedPassword: string }>({
   hashedPassword: _,
   ...safe

@@ -1,7 +1,6 @@
 import { cn } from "cn";
 
-// Shared table styling so every list in the app looks the same.
-// Plain elements with consistent classes; no behavior.
+// shared table parts so every list looks the same
 
 type Align = "left" | "right" | "center";
 

@@ -1,4 +1,3 @@
-// auth/auth.controller.ts
 import { Controller, Post, UseGuards, Request, Get } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { AuthService } from "./auth.service";
@@ -10,7 +9,7 @@ import type { AuthenticatedUser } from "./types/jwt-payload.type";
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  @UseGuards(AuthGuard("local")) // runs the local.strategy
+  @UseGuards(AuthGuard("local")) // checks the email and password
   @Post("login")
   async login(@Request() req) {
     return this.authService.login(req.user);

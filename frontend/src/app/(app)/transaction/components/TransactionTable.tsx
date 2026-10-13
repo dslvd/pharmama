@@ -42,8 +42,7 @@ export default function TransactionTable({
     setLoading(false);
   };
 
-  // one row per product; a big quantity can be split across several stock
-  // batches (earliest expiry first), but the cashier only needs the total
+  // one row per product, even when it's split across batches
   const lines = useMemo(() => {
     const byProduct = new Map<
       number,

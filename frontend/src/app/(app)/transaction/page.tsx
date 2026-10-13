@@ -20,7 +20,7 @@ export default function TransactionsPage() {
   const [errors, setErrors] = useState<{ id: string; message: string }[]>([]);
   const [loading, setLoading] = useState(true);
   const { role } = useAuth();
-  // justSold: opened by checkout rather than "View"
+  // justSold: opened right after checkout, not from "View"
   const [receipt, setReceipt] = useState<{
     data: ReceiptData;
     justSold: boolean;

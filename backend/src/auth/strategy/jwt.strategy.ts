@@ -1,10 +1,9 @@
-// jwt.strategy.ts
 import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
 import { ExtractJwt, Strategy } from "passport-jwt";
 import { UsersService } from "../../users/users.service";
 
-// verify the attached jwt token
+// checks the Bearer token on each request
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(private usersService: UsersService) {
@@ -20,8 +19,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  // checks the DB on every request, so a deactivated user is locked out
-  // right away and a role change applies without logging in again
+  // reload the user so a deactivation or role change applies right away
   async validate(payload: { sub: number; email: string; role: string }) {
     const user = await this.usersService.findActiveSafeById(payload.sub);
     if (!user) {

@@ -97,8 +97,7 @@ export default function Navigation({ isOpen, onNavigate }: NavigationProps) {
     .filter((s) => s.items.length > 0); // hide empty section headers
 
   return (
-    // slides over the page instead of pushing it; inert while hidden so
-    // its links can't be tabbed to
+    // slides over the page; inert while closed so its links can't be tabbed to
     <aside
       className={`fixed inset-y-0 left-0 z-50 w-56 bg-primary shadow-xl transition-transform duration-200 [--ring:var(--sidebar-ring)] ${
         isOpen ? "translate-x-0" : "-translate-x-full shadow-none"

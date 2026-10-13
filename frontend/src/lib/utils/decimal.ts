@@ -3,8 +3,7 @@ import { Stock } from "../types/stock";
 import { Transaction } from "../types/transaction";
 import { Result } from "./errorHandling";
 
-// Prisma sends Decimal columns as strings in JSON; convert them to numbers
-// so the frontend types (and toLocaleString formatting) hold.
+// Prisma sends Decimal columns as strings, so turn them into numbers
 
 export const mapResult = <T, U>(r: Result<T>, fn: (v: T) => U): Result<U> =>
   r.ok ? { ok: true, value: fn(r.value) } : r;

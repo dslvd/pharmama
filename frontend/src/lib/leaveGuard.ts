@@ -1,13 +1,12 @@
 import { useEffect } from "react";
 
-// Warning to show before leaving a page with unsaved work (null = nothing
-// to lose). Module-level so the sidebar can check it at click time.
+// warning for leaving a page with unsaved work (null = nothing to lose).
+// Kept at module level so the sidebar can read it when a link is clicked.
 let warning: string | null = null;
 
 export const getLeaveWarning = () => warning;
 
-// for a confirmed full-page leave (e.g. logout), so the browser's own
-// "leave site?" prompt doesn't show on top of ours
+// for a confirmed leave like logout, so the browser's own prompt doesn't show too
 export const clearLeaveWarning = () => {
   warning = null;
 };

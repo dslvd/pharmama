@@ -58,7 +58,7 @@ function ErrorCard({
   );
 }
 
-// stack
+// error cards stacked in the bottom-right corner
 export function ErrorStack({
   errors = [],
 }: {
