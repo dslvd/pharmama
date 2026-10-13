@@ -1,5 +1,6 @@
 import { PartialType } from "@nestjs/mapped-types";
 import { Transform, Type } from "class-transformer";
+import { trim } from "src/util/trim.util";
 import {
   IsEnum,
   IsNotEmpty,
@@ -11,15 +12,15 @@ import {
 import { Category } from "src/generated/prisma/enums";
 
 export class CreateProductDto {
-  @Transform(({ value }) => value?.trim())
+  @Transform(trim)
   @IsString()
   @IsNotEmpty()
   name!: string;
-  @Transform(({ value }) => value?.trim())
+  @Transform(trim)
   @IsString()
   @IsNotEmpty()
   genericName!: string;
-  @Transform(({ value }) => value?.trim())
+  @Transform(trim)
   @IsEnum(Category)
   category!: Category;
   // matches the Decimal(10, 2) price column

@@ -7,6 +7,7 @@ import {
 } from "class-validator";
 import { PartialType } from "@nestjs/mapped-types";
 import { Transform, Type } from "class-transformer";
+import { trim } from "src/util/trim.util";
 import { Prisma } from "src/generated/prisma/client";
 
 export class CreateStockDto {
@@ -14,7 +15,7 @@ export class CreateStockDto {
   @IsInt()
   @IsPositive()
   productId!: number;
-  @Transform(({ value }) => value?.trim())
+  @Transform(trim)
   @IsString()
   @IsNotEmpty()
   batchNumber!: string;
@@ -22,7 +23,7 @@ export class CreateStockDto {
   @IsInt()
   @IsPositive()
   quantity!: number;
-  @Transform(({ value }) => value?.trim()) @IsDateString() expiryDate!: string;
+  @Transform(trim) @IsDateString() expiryDate!: string;
 }
 
 export class UpdateStockDto extends PartialType(CreateStockDto) {}
