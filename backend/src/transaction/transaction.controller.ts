@@ -43,7 +43,7 @@ export class TransactionController {
   async createTr(
     @Body() trData: CreateTransactionDto,
     @CurrentUser() user: AuthenticatedUser,
-  ): Promise<Transaction> {
+  ): Promise<TransactionWithItems> {
     return unwrap(await this.trService.createTransaction(trData, user.id));
   }
 

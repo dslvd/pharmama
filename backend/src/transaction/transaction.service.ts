@@ -27,24 +27,24 @@ import {
 } from "src/util/domain-error.util";
 import { AsyncResult, err, ok } from "src/util/results.util";
 
+const withItems = {
+  transactionItems: { include: { product: true } },
+  user: { select: safeUserSelect },
+} as const;
+
 @Injectable()
 export class TransactionService {
   constructor(private prisma: PrismaService) {}
 
   getTransactionList(): Promise<TransactionWithItems[]> {
-    return this.prisma.transaction.findMany({
-      include: {
-        transactionItems: { include: { product: true } },
-        user: { select: safeUserSelect },
-      },
-    });
+    return this.prisma.transaction.findMany({ include: withItems });
   }
 
   async createTransaction(
     data: CreateTransactionDto,
     handledBy: number,
     now: Date = new Date(),
-  ): AsyncResult<Transaction, DomainError> {
+  ): AsyncResult<TransactionWithItems, DomainError> {
     try {
       const transaction = await this.prisma.$transaction(async (tx) => {
         const stocks = await tx.stock.findMany({
@@ -82,6 +82,7 @@ export class TransactionService {
             handledBy,
             transactionItems: { createMany: { data: [...lines.value] } },
           },
+          include: withItems,
         });
         await createAuditLog(tx, {
           user: handledBy,
