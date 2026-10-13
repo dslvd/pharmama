@@ -52,6 +52,8 @@ interface SalesTableProps {
   onViewClick?: (tr: Transaction) => void;
   onError?: (message: string) => void;
   onLoadingChange?: (loading: boolean) => void;
+  // called after a cancel/refund, since that puts stock back
+  onStatusChanged?: () => void;
   // only owners/admins can refund; the backend enforces it too
   canRefund?: boolean;
 }
@@ -64,6 +66,7 @@ export default function SalesTable({
   onViewClick,
   onError,
   onLoadingChange,
+  onStatusChanged,
   refreshKey = 0,
   canRefund = false,
 }: SalesTableProps) {
@@ -133,6 +136,7 @@ export default function SalesTable({
       setAllSales((prev) =>
         prev.map((s) => (s.id === id ? { ...s, status: newStatus } : s)),
       );
+      onStatusChanged?.();
     } else {
       onError?.(result.error);
     }

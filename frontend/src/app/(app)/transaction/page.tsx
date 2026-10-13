@@ -75,7 +75,11 @@ export default function TransactionsPage() {
             items={items}
             setItems={setItems}
             onCancelTransaction={() => setItems([])}
-            onError={addError}
+            onError={(message) => {
+              addError(message);
+              // the stock may have changed under the cart, so reload it
+              setRefreshKey((k) => k + 1);
+            }}
             onSuccess={(tx) => {
               setRefreshKey((k) => k + 1);
               setReceipt({
@@ -91,6 +95,7 @@ export default function TransactionsPage() {
           canRefund={isManager(role)}
           onError={addError}
           onLoadingChange={setLoading}
+          onStatusChanged={() => setRefreshKey((k) => k + 1)}
           onViewClick={(tr) =>
             setReceipt({ data: receiptFromTransaction(tr), justSold: false })
           }
