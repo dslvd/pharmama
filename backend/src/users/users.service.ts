@@ -19,10 +19,6 @@ export class UsersService {
     return this.prisma.user.findUnique({ where: { email } });
   }
 
-  findById(id: number) {
-    return this.prisma.user.findUnique({ where: { id } });
-  }
-
   findActiveSafeById(id: number) {
     return this.prisma.user.findFirst({
       where: { id, isActive: true },

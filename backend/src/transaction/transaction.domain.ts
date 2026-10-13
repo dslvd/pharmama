@@ -28,7 +28,7 @@ export interface LineItem {
 }
 
 // combine repeated stockIds so each batch is checked and reserved once
-export const mergeItems = (items: readonly ItemInput[]): readonly ItemInput[] =>
+const mergeItems = (items: readonly ItemInput[]): readonly ItemInput[] =>
   items.reduce<readonly ItemInput[]>(
     (merged, item) =>
       merged.some((m) => m.stockId === item.stockId)
@@ -45,7 +45,7 @@ const batchLabel = (stock: StockRow) =>
   `${stock.product.name} (batch ${stock.batchNumber})`;
 
 // one item against its batch; price always comes from the product
-export const priceItem =
+const priceItem =
   (now: Date) =>
   (
     stock: StockRow | undefined,

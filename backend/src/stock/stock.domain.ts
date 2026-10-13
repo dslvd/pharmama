@@ -21,7 +21,7 @@ export interface StockData {
   readonly expiryDate: Date;
 }
 
-export const parseExpiryDate =
+const parseExpiryDate =
   (now: Date) =>
   (value: string): Result<Date, DomainError> => {
     const parsed = new Date(value);

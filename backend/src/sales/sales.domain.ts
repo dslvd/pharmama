@@ -14,7 +14,7 @@ const dayOfMonth = (d: Date) =>
   Number(d.toLocaleDateString("en-US", { day: "numeric", timeZone: TIMEZONE }));
 
 // one label function per period, picked by key
-export const labelFor: Readonly<Record<Period, (bucket: Date) => string>> = {
+const labelFor: Readonly<Record<Period, (bucket: Date) => string>> = {
   Today: (d) =>
     d.toLocaleTimeString("en-US", { hour: "numeric", timeZone: TIMEZONE }),
   Week: (d) =>
