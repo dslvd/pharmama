@@ -94,13 +94,6 @@ export default function FilterBar({
         const isSelect =
           titleKey === "ORDER" ||
           titleKey.includes("SORT");
-        const checkedItems = currentSelected.filter((item) =>
-          group.sub.includes(item),
-        );
-        const uncheckedItems = group.sub.filter(
-          (item) => !currentSelected.includes(item),
-        );
-        const orderedSubOptions = [...checkedItems, ...uncheckedItems];
         const isOpen = openDropdown === group.title;
         const selectedOption = currentSelected[0];
 
@@ -165,7 +158,8 @@ export default function FilterBar({
               </div>
             ) : (
               <div className="flex flex-wrap gap-2">
-                {orderedSubOptions.map((sub) => {
+                {/* fixed order, so a pill doesn't jump when it's picked */}
+                {group.sub.map((sub) => {
                   const isChecked = currentSelected.includes(sub);
                   return (
                     <label
