@@ -70,6 +70,23 @@ export const ensureDeletable = (
     ? err(conflict("This stock batch has sales records and can't be deleted."))
     : ok(true);
 
+// sales point at both the batch and its product, so a sold batch has to stay
+// under the same product
+export const ensureCanChangeProduct = (
+  currentProductId: number,
+  newProductId: number | undefined,
+  soldCount: number,
+): Result<true, DomainError> =>
+  newProductId === undefined ||
+  newProductId === currentProductId ||
+  soldCount === 0
+    ? ok(true)
+    : err(
+        conflict(
+          "This batch has sales records, so its product can't be changed.",
+        ),
+      );
+
 // only owners/admins can change how many units a batch has
 export const ensureCanAdjustQuantity = (
   currentQty: number,

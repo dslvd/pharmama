@@ -15,6 +15,7 @@ import {
 import {
   ensureBatchIsNew,
   ensureCanAdjustQuantity,
+  ensureCanChangeProduct,
   ensureDeletable,
   StockData,
   toStockData,
@@ -123,6 +124,16 @@ export class StockService {
           isManager,
         );
         if (!canAdjust.ok) throw new DomainException(canAdjust.error);
+
+        const newProductId = patch.value.productId;
+        if (newProductId !== undefined && newProductId !== existing.productId) {
+          const canChange = ensureCanChangeProduct(
+            existing.productId,
+            newProductId,
+            await tx.transactionItem.count({ where: { stockId: id } }),
+          );
+          if (!canChange.ok) throw new DomainException(canChange.error);
+        }
 
         const merged = { ...existing, ...patch.value };
         await ensureProductExists(tx, merged.productId);
