@@ -39,7 +39,7 @@ export class ProductService {
   constructor(private prisma: PrismaService) {}
 
   getProductList(): Promise<Product[]> {
-    return this.prisma.product.findMany();
+    return this.prisma.product.findMany({ orderBy: { id: "asc" } });
   }
 
   async createProduct(
