@@ -1,4 +1,3 @@
-// sales.service.ts
 import { Injectable } from "@nestjs/common";
 import { Prisma } from "src/generated/prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
@@ -54,8 +53,8 @@ export class SalesService {
     return this.completedSalesBy(ranges[period]).then(toSalesPoints(period));
   }
 
-  // every bucket up to now, with ₱0 for buckets that had no sales.
-  // All SQL pieces come from the fixed `ranges` map, never from user input.
+  // one row per bucket up to now (0 if nothing sold). The SQL pieces only
+  // come from `ranges`, never from user input.
   private completedSalesBy(range: Range) {
     return this.prisma.$queryRaw<SalesRow[]>`
       WITH buckets AS (

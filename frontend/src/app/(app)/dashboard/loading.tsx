@@ -1,7 +1,6 @@
 import Skeleton from "@/components/ui/Skeleton";
 
-// mirrors dashboard/page.tsx: header, 4 stat cards, chart + watchlist,
-// recent transactions
+// same layout as the dashboard
 
 function StatCardSkeleton() {
   return (

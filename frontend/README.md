@@ -79,7 +79,8 @@ src/
 **Point of sale.**
 - `ProductPicker` takes stock from the earliest-expiring batches first and splits a quantity across batches if needed. It skips expired batches and anything already in the cart.
 - The cart shows one line per product. It sends `{ stockId, quantity }` pairs; the backend sets the prices.
-- After checkout, `ReceiptModal` shows a receipt that can be printed (`.receipt-print` in `globals.css`).
+- After checkout, `ReceiptModal` shows a receipt built from the saved sale that the API returns. It can be printed (`.receipt-print` in `globals.css`).
+- The picker reloads stock after a sale, a cancel or refund, or a failed checkout.
 - `useLeaveWarning` asks for confirmation before navigating away from an unconfirmed cart.
 
 **Conventions.**

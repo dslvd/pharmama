@@ -7,7 +7,6 @@ import ProductPicker, { SubmittedItem } from "./components/ProductPicker";
 import ReceiptModal from "./components/ReceiptModal";
 import {
   ReceiptData,
-  receiptFromSale,
   receiptFromTransaction,
 } from "./components/Receipt";
 import { useAuth } from "@/lib/auth";
@@ -20,8 +19,8 @@ export default function TransactionsPage() {
   const [items, setItems] = useState<SubmittedItem[]>([]);
   const [errors, setErrors] = useState<{ id: string; message: string }[]>([]);
   const [loading, setLoading] = useState(true);
-  const { user, role } = useAuth();
-  // justSold: opened by checkout rather than "View"
+  const { role } = useAuth();
+  // justSold: opened right after checkout, not from "View"
   const [receipt, setReceipt] = useState<{
     data: ReceiptData;
     justSold: boolean;
@@ -76,11 +75,15 @@ export default function TransactionsPage() {
             items={items}
             setItems={setItems}
             onCancelTransaction={() => setItems([])}
-            onError={addError}
-            onSuccess={(tx, sold) => {
+            onError={(message) => {
+              addError(message);
+              // the stock may have changed under the cart, so reload it
+              setRefreshKey((k) => k + 1);
+            }}
+            onSuccess={(tx) => {
               setRefreshKey((k) => k + 1);
               setReceipt({
-                data: receiptFromSale(tx, sold, user?.name ?? "—"),
+                data: receiptFromTransaction(tx),
                 justSold: true,
               });
             }}
@@ -92,6 +95,7 @@ export default function TransactionsPage() {
           canRefund={isManager(role)}
           onError={addError}
           onLoadingChange={setLoading}
+          onStatusChanged={() => setRefreshKey((k) => k + 1)}
           onViewClick={(tr) =>
             setReceipt({ data: receiptFromTransaction(tr), justSold: false })
           }

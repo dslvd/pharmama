@@ -1,4 +1,4 @@
-// Pure stock rules: no database, no Nest, no clock.
+// stock rules, no database access
 import {
   conflict,
   DomainError,
@@ -21,7 +21,7 @@ export interface StockData {
   readonly expiryDate: Date;
 }
 
-export const parseExpiryDate =
+const parseExpiryDate =
   (now: Date) =>
   (value: string): Result<Date, DomainError> => {
     const parsed = new Date(value);
@@ -70,7 +70,23 @@ export const ensureDeletable = (
     ? err(conflict("This stock batch has sales records and can't be deleted."))
     : ok(true);
 
-// only owners/admins can change how many units a batch has
+// a sale line points at both the batch and its product, so a sold batch keeps its product
+export const ensureCanChangeProduct = (
+  currentProductId: number,
+  newProductId: number | undefined,
+  soldCount: number,
+): Result<true, DomainError> =>
+  newProductId === undefined ||
+  newProductId === currentProductId ||
+  soldCount === 0
+    ? ok(true)
+    : err(
+        conflict(
+          "This batch has sales records, so its product can't be changed.",
+        ),
+      );
+
+// only an owner can change a batch's quantity
 export const ensureCanAdjustQuantity = (
   currentQty: number,
   newQty: number | undefined,

@@ -1,4 +1,4 @@
-// Pure: before/after values of the given keys, for audit log `changes`.
+// old and new values of the given fields, for the audit log
 export const diffFields =
   <K extends string>(keys: readonly K[]) =>
   <T extends Record<K, unknown>>(

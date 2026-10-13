@@ -1,13 +1,6 @@
-import {
-  IsIn,
-  IsInt,
-  IsNotEmpty,
-  IsOptional,
-  IsPositive,
-  IsString,
-} from "class-validator";
+import { IsIn, IsOptional } from "class-validator";
 
-export const PERIODS = ["Today", "Week", "Month", "Year"] as const;
+const PERIODS = ["Today", "Week", "Month", "Year"] as const;
 export type Period = (typeof PERIODS)[number];
 
 export class SalesOverviewQuery {
@@ -16,7 +9,8 @@ export class SalesOverviewQuery {
   period: Period = "Today";
 }
 
-export class SalesPoint {
-  @IsString() @IsNotEmpty() label!: string;
-  @IsInt() @IsPositive() value!: number;
+// one bar on the dashboard sales chart
+export interface SalesPoint {
+  label: string;
+  value: number;
 }

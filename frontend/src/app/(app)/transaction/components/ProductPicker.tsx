@@ -129,7 +129,7 @@ export default function ProductPicker({
     );
 
   const handleAdd = (product: Product) => {
-    // typing more than what's left is reported by the allocation below
+    // asking for more than what's left is caught below
     const qty = atLeastOne(getQty(product.id));
 
     // sell from the earliest-expiring batches first, splitting across batches
@@ -164,8 +164,7 @@ export default function ProductPicker({
     setQty(product.id, "1");
   };
 
-  // why a product can't be sold right now, or null if it can. Unsellable
-  // products stay listed (greyed out) so it's clear why they can't be added.
+  // why a product can't be sold right now (null if it can); these stay listed, greyed out
   const unavailableReason = (productId: number): string | null => {
     const batches = stock.filter(
       (s) => s.productId === productId && s.quantity > 0,

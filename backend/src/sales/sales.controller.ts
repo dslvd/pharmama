@@ -1,4 +1,3 @@
-// sales.controller.ts
 import { Controller, Get, Query, UseGuards } from "@nestjs/common";
 import { SalesService } from "./sales.service";
 import { SalesOverviewQuery } from "./sales.validation";

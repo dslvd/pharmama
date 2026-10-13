@@ -10,7 +10,6 @@ interface CategoryDropdownProps {
   onChange: (category: Category) => void;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  error?: string;
 }
 
 export default function CategoryDropdown({
@@ -18,7 +17,6 @@ export default function CategoryDropdown({
   onChange,
   open,
   onOpenChange,
-  error,
 }: CategoryDropdownProps) {
   return (
     <Dropdown
@@ -27,10 +25,7 @@ export default function CategoryDropdown({
       trigger={
         <button
           type="button"
-          className={cn(
-            "flex w-full items-center justify-between rounded-md border border-border bg-input px-3 py-2.5 text-left text-sm text-foreground outline-none transition-colors duration-200 hover:border-ring focus:border-ring focus:ring-2 focus:ring-ring/20",
-            error && "border-destructive",
-          )}
+          className="flex w-full items-center justify-between rounded-md border border-border bg-input px-3 py-2.5 text-left text-sm text-foreground outline-none transition-colors duration-200 hover:border-ring focus:border-ring focus:ring-2 focus:ring-ring/20"
         >
           <span className="font-semibold uppercase tracking-[0.02em]">
             {value}

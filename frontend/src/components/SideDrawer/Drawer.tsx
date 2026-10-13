@@ -1,14 +1,12 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { usePathname } from 'next/navigation'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import Navigation from './Navigation'
 
 export default function Drawer({ children }: { children: React.ReactNode }) {
   // overlay menu: closed by default so the page gets the full width
   const [isOpen, setIsOpen] = useState(false)
-  const pathname = usePathname()
 
   // Esc closes the menu; clicking outside it does not
   useEffect(() => {
@@ -19,9 +17,6 @@ export default function Drawer({ children }: { children: React.ReactNode }) {
     document.addEventListener('keydown', onKey)
     return () => document.removeEventListener('keydown', onKey)
   }, [isOpen])
-
-  // login page renders without the app shell
-  if (pathname.startsWith('/auth')) return <>{children}</>
 
   return (
     <div className="min-h-screen">

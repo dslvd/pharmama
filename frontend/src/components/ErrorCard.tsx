@@ -1,13 +1,12 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-
-// errors dismiss themselves after this long (paused while hovered)
-const AUTO_DISMISS_MS = 8000;
 import { Ban, X } from "lucide-react";
 
-// card
-export function ErrorCard({
+// errors close on their own after 8 seconds (paused while hovered)
+const AUTO_DISMISS_MS = 8000;
+
+function ErrorCard({
   err,
   depth = 0,
   onClose,
@@ -59,7 +58,7 @@ export function ErrorCard({
   );
 }
 
-// stack
+// error cards stacked in the bottom-right corner
 export function ErrorStack({
   errors = [],
 }: {

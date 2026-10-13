@@ -3,12 +3,9 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/*
- * Design tokens: the single source of truth for colors and radii.
- * Components use the Tailwind classes these generate (bg-primary,
- * text-success, border-border, ...). Never hardcode a color in a
- * component; add or change a token here instead.
- */
+/* All colors and radii. Components use the classes these generate
+   (bg-primary, text-success, ...), so change a token here instead of
+   hardcoding a color. */
 :root {
   color-scheme: light;
 
@@ -145,8 +142,7 @@
   body {
     @apply bg-background text-foreground;
   }
-  /* keyboard focus is always visible; inputs that draw their own ring
-     opt out with focus:outline-none */
+  /* always show keyboard focus; inputs with their own ring use focus:outline-none */
   :where(a, button, input, select, textarea, [tabindex]):focus-visible {
     @apply outline-2 outline-offset-2 outline-ring;
   }
@@ -173,8 +169,7 @@
       50% / calc(var(--zigzag) * 2) 100%;
 }
 
-/* printing a receipt: ReceiptModal portals a copy into <body>; print
-   only that, sized for an 80mm roll */
+/* printing: only the receipt copy ReceiptModal puts in <body>, sized for an 80mm roll */
 .receipt-print {
   display: none;
 }
@@ -217,7 +212,7 @@
   }
 }
 
-/* Custom Scrollbar Styling */
+/* scrollbars */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -240,7 +235,7 @@
   background-clip: padding-box;
 }
 
-/* Firefox Scrollbar */
+/* Firefox */
 * {
   scrollbar-color: var(--scrollbar) transparent;
   scrollbar-width: thin;

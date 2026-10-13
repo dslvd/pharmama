@@ -26,7 +26,7 @@ const toHttpException = (e: DomainError): HttpException => {
   }
 };
 
-// the edge of the app: turn a Result into a value or an HTTP error
+// returns the value, or throws the matching HTTP error
 export const unwrap = <T>(r: Result<T, DomainError>): T => {
   if (!r.ok) throw toHttpException(r.error);
   return r.value;

@@ -47,12 +47,13 @@ const itemCount = (t: Transaction) =>
   t.transactionItems?.reduce((sum, item) => sum + item.quantity, 0) ?? 0;
 
 interface SalesTableProps {
-  initialRecords?: Transaction[];
   refreshKey?: number;
   onViewClick?: (tr: Transaction) => void;
   onError?: (message: string) => void;
   onLoadingChange?: (loading: boolean) => void;
-  // only owners/admins can refund; the backend enforces it too
+  // called after a cancel/refund, since that puts stock back
+  onStatusChanged?: () => void;
+  // only owners can refund (the backend checks too)
   canRefund?: boolean;
 }
 
@@ -60,14 +61,14 @@ const inputClasses =
   "rounded-full border border-border bg-card py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring/20";
 
 export default function SalesTable({
-  initialRecords = [],
   onViewClick,
   onError,
   onLoadingChange,
+  onStatusChanged,
   refreshKey = 0,
   canRefund = false,
 }: SalesTableProps) {
-  const [allSales, setAllSales] = useState<Transaction[]>(initialRecords);
+  const [allSales, setAllSales] = useState<Transaction[]>([]);
   const [status, setStatus] = useState<TransactionStatus | undefined>(
     undefined,
   );
@@ -133,6 +134,7 @@ export default function SalesTable({
       setAllSales((prev) =>
         prev.map((s) => (s.id === id ? { ...s, status: newStatus } : s)),
       );
+      onStatusChanged?.();
     } else {
       onError?.(result.error);
     }

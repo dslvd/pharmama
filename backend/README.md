@@ -11,10 +11,6 @@ For the project overview and full local setup, see the [root README](../README.m
 | `npm run start:dev`     | Start in watch mode                                             |
 | `npm run build`         | Compile to `dist/`                                              |
 | `npm run start:prod`    | Run the compiled build (`node dist/main`)                       |
-| `npm test`              | Unit tests (no database needed)                                 |
-| `npm run test:cov`      | Unit tests with coverage                                        |
-| `npm run test:e2e`      | End-to-end tests; boots the whole app, so needs a working `.env` |
-| `npm run lint`          | ESLint with `--fix`                                             |
 | `npx prisma migrate dev`| Apply migrations locally (create one after editing the schema)  |
 | `npx prisma generate`   | Regenerate the client into `src/generated/prisma`               |
 
@@ -57,7 +53,7 @@ Each feature module is split into three layers:
 
 | File                 | Role                                                                                                     |
 | -------------------- | -------------------------------------------------------------------------------------------------------- |
-| `*.domain.ts`        | **Pure rules.** No database, no Nest, no clock. Functions take plain data (and `now` when time matters) and return a `Result`. Covered by `*.domain.spec.ts`. |
+| `*.domain.ts`        | **Pure rules.** No database, no Nest, no clock. Functions take plain data (and `now` when time matters) and return a `Result`. |
 | `*.service.ts`       | **Effects.** Loads data, runs it through the domain functions, writes, and records the audit entry, all inside one DB transaction. |
 | `*.controller.ts`    | **HTTP edge.** Guards and roles, DTO validation, and `unwrap()` to turn a `Result` into a response or an HTTP error. |
 
@@ -127,7 +123,7 @@ All routes except `GET /` and `POST /auth/login` need an `Authorization: Bearer 
 | ------ | ------------ | ------------ | ------------------------------------------------------------------------------------------- |
 | GET    | `/stock`     | any          | All batches, each with its `product`                                                        |
 | POST   | `/stock`     | any          | `{ productId, batchNumber, quantity, expiryDate }`. Expiry must be in the future; the batch number must be unique for the product |
-| PATCH  | `/stock/:id` | any          | Any subset of the create fields; changing `quantity` is OWNER only (logged as STOCK_ADJUSTMENT) |
+| PATCH  | `/stock/:id` | any          | Any subset of the create fields; changing `quantity` is OWNER only (logged as STOCK_ADJUSTMENT). 409 when changing the product of a batch with sales |
 | DELETE | `/stock/:id` | OWNER        | 409 if the batch has sales                                                                  |
 
 ### Transactions
@@ -135,7 +131,7 @@ All routes except `GET /` and `POST /auth/login` need an `Authorization: Bearer 
 | Method | Path                            | Roles | Body / notes                                                                 |
 | ------ | ------------------------------- | ----- | ---------------------------------------------------------------------------- |
 | GET    | `/transaction`                  | any   | All transactions with their items, products and cashier                      |
-| POST   | `/transaction`                  | any   | `{ transactionItems: [{ stockId, quantity }] }`                              |
+| POST   | `/transaction`                  | any   | `{ transactionItems: [{ stockId, quantity }] }` → the saved sale with its items and cashier |
 | PATCH  | `/transaction/:id/updateStatus` | any   | `{ status: "CANCELLED" \| "REFUNDED" }`; refunding is OWNER only             |
 
 Creating a sale:

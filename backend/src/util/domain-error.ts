@@ -1,4 +1,4 @@
-// Errors the domain returns as values. Pure: no Nest or Prisma imports.
+// expected errors, returned instead of thrown
 export type DomainError =
   | { readonly kind: "NotFound"; readonly message: string }
   | { readonly kind: "Invalid"; readonly message: string }
@@ -27,8 +27,7 @@ export const forbidden = (message: string): DomainError => ({
   message,
 });
 
-// Throw this inside prisma.$transaction to roll it back. The service catches
-// it and returns err(e.error).
+// throw inside prisma.$transaction to roll it back; the service catches it
 export class DomainException extends Error {
   constructor(readonly error: DomainError) {
     super(error.message);

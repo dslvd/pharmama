@@ -6,7 +6,6 @@ import { Check, ChevronDown } from "lucide-react";
 export interface FilterProps {
   title: string;
   sub: readonly string[];
-  type?: "pills" | "select";
 }
 
 interface FilterBarProps {
@@ -54,7 +53,6 @@ export default function FilterBar({
     if (text === "STOCK_ADJUSTMENT") return "Stock Adjustment";
     if (text === "RESTORE_STOCK") return "Restored Stock";
     if (text === "TRANSACTIONITEM") return "Transaction Item";
-    if (text === "genericName") return "Generic Name";
     if (text === "expiryDate") return "Expiry Date";
     if (text === "createdAt") return "Created At";
     return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
@@ -94,7 +92,6 @@ export default function FilterBar({
             ? [rawValue]
             : [];
         const isSelect =
-          group.type === "select" ||
           titleKey === "ORDER" ||
           titleKey.includes("SORT");
         const checkedItems = currentSelected.filter((item) =>

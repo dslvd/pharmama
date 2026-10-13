@@ -37,7 +37,6 @@ Live: <https://se3pharmama.vercel.app>
 | Frontend | [Next.js](https://nextjs.org/) 16, React 19, Tailwind CSS 4, Base UI, Recharts, lucide-react             |
 | Backend  | [NestJS](https://nestjs.com/) 11, [Prisma](https://www.prisma.io/) 7, Passport (JWT), bcrypt, class-validator |
 | Database | [PostgreSQL](https://www.postgresql.org/)                                                               |
-| Testing  | Jest                                                                                                    |
 | Hosting  | Vercel (frontend), Render (backend)                                                                     |
 | Tools    | GitHub (version control), Excalidraw (wireframes & mockups), Trello (sprint management)                 |
 

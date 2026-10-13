@@ -1,14 +1,4 @@
-"use client";
-
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-
+// (app)/layout.tsx sends "/" to the user's home page
 export default function Page() {
-  const router = useRouter();
-
-  useEffect(() => {
-    router.replace("/auth");
-  }, [router]);
-
   return null;
 }

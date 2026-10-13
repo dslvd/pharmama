@@ -13,8 +13,8 @@ interface TransactionTableProps {
   setItems: React.Dispatch<React.SetStateAction<SubmittedItem[]>>;
   onCancelTransaction?: () => void;
   onError?: (message: string) => void;
-  // the saved transaction plus the cart that was sold, for the receipt
-  onSuccess?: (transaction: Transaction, sold: SubmittedItem[]) => void;
+  // the saved sale, for the receipt
+  onSuccess?: (transaction: Transaction) => void;
 }
 
 export default function TransactionTable({
@@ -34,7 +34,7 @@ export default function TransactionTable({
     });
 
     if (result.ok) {
-      onSuccess?.(result.value, items);
+      onSuccess?.(result.value);
       setItems([]);
     } else {
       onError?.(result.error);
@@ -42,8 +42,7 @@ export default function TransactionTable({
     setLoading(false);
   };
 
-  // one row per product; a big quantity can be split across several stock
-  // batches (earliest expiry first), but the cashier only needs the total
+  // one row per product, even when it's split across batches
   const lines = useMemo(() => {
     const byProduct = new Map<
       number,

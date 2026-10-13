@@ -1,5 +1,4 @@
-// Pure transaction rules: no database, no Nest, no clock.
-// The service loads data, passes it through these functions, then writes.
+// sale rules, no database access
 import { Prisma } from "src/generated/prisma/client";
 import { AuditAction, TransactionStatus } from "src/generated/prisma/enums";
 import { conflict, DomainError, invalid } from "src/util/domain-error";
@@ -28,7 +27,7 @@ export interface LineItem {
 }
 
 // combine repeated stockIds so each batch is checked and reserved once
-export const mergeItems = (items: readonly ItemInput[]): readonly ItemInput[] =>
+const mergeItems = (items: readonly ItemInput[]): readonly ItemInput[] =>
   items.reduce<readonly ItemInput[]>(
     (merged, item) =>
       merged.some((m) => m.stockId === item.stockId)
@@ -45,7 +44,7 @@ const batchLabel = (stock: StockRow) =>
   `${stock.product.name} (batch ${stock.batchNumber})`;
 
 // one item against its batch; price always comes from the product
-export const priceItem =
+const priceItem =
   (now: Date) =>
   (
     stock: StockRow | undefined,
@@ -79,7 +78,7 @@ export const priceItems =
     stocks: readonly StockRow[],
     items: readonly ItemInput[],
   ): Result<readonly LineItem[], DomainError> =>
-    // merge repeated batches -> price each item -> collect (first error wins)
+    // stops at the first item that fails
     sequence(
       mergeItems(items).map((item) =>
         priceItem(now)(

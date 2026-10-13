@@ -16,8 +16,7 @@ interface AddStockModalProps {
   stock?: Stock;
   onClose: () => void;
   onSuccess?: () => void;
-  // only owners/admins can change an existing batch's quantity;
-  // the backend enforces it too
+  // only owners can change an existing batch's quantity (the backend checks too)
   canAdjustQuantity?: boolean;
 }
 
@@ -37,9 +36,10 @@ export default function AddStockModal({
   const [quantity, setQuantity] = useState(
     stock ? String(stock.quantity) : "",
   );
-  const [expiryDate, setExpiryDate] = useState(
-    stock ? new Date(stock.expiryDate).toISOString().slice(0, 10) : "",
-  );
+  const initialExpiry = stock
+    ? new Date(stock.expiryDate).toISOString().slice(0, 10)
+    : "";
+  const [expiryDate, setExpiryDate] = useState(initialExpiry);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isProductOpen, setIsProductOpen] = useState(false);
@@ -102,6 +102,19 @@ export default function AddStockModal({
       quantity: Number(quantity),
       expiryDate: new Date(expiryDate),
     };
+
+    // only send what changed, so editing an expired batch isn't rejected
+    if (isEditing) {
+      if (payload.productId === stock.productId) delete payload.productId;
+      if (batchNumber === stock.batchNumber) delete payload.batchNumber;
+      if (payload.quantity === stock.quantity) delete payload.quantity;
+      if (expiryDate === initialExpiry) delete payload.expiryDate;
+      if (Object.keys(payload).length === 0) {
+        setSubmitting(false);
+        onClose();
+        return;
+      }
+    }
 
     const result = isEditing
       ? await updateStock(stock.id, payload)

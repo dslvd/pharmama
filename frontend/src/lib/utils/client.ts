@@ -23,8 +23,8 @@ export async function apiFetch<T>(
       },
     });
 
-    // expired/invalid token -> kick to login. A wrong password on /auth/login
-    // is also a 401, so skip it (bad login, or re-checking the password)
+    // bad or expired token: back to login. Not for /auth/login, where a 401
+    // just means a wrong password
     if (res.status === 401 && token && endpoint !== "/auth/login") {
       localStorage.removeItem("token");
       localStorage.removeItem(STAFF_VIEW_KEY);
