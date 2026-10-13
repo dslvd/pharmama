@@ -4,8 +4,9 @@ import * as bcrypt from "bcrypt";
 import { CreateUserDto } from "./users.validation";
 import { safeUserSelect } from "./users.select";
 import { ensureEmailFree, toSafeUser } from "./users.domain";
-import { DomainError } from "src/util/domain-error";
-import { AsyncResult, ok } from "src/util/results.util";
+import { conflict, DomainError } from "src/util/domain-error";
+import { AsyncResult, err, ok } from "src/util/results.util";
+import { isUniqueViolation } from "src/util/prisma-error.util";
 import { User } from "src/generated/prisma/client";
 
 type SafeUser = Omit<User, "hashedPassword">;
@@ -34,14 +35,20 @@ export class UsersService {
     if (!emailFree.ok) return emailFree;
 
     const hashedPassword = await bcrypt.hash(dto.password, 10);
-    const user = await this.prisma.user.create({
-      data: {
-        name: dto.name,
-        email: dto.email,
-        hashedPassword,
-        ...(dto.role && { role: dto.role }),
-      },
-    });
-    return ok(toSafeUser(user));
+    try {
+      const user = await this.prisma.user.create({
+        data: {
+          name: dto.name,
+          email: dto.email,
+          hashedPassword,
+          ...(dto.role && { role: dto.role }),
+        },
+      });
+      return ok(toSafeUser(user));
+    } catch (e) {
+      // someone else took the email after the check above
+      if (isUniqueViolation(e)) return err(conflict("Email already in use."));
+      throw e;
+    }
   }
 }

@@ -24,11 +24,17 @@ import {
 import { createAuditLog } from "src/util/audit-log.util";
 import { diffFields } from "src/util/audit-diff.util";
 import {
+  conflict,
   DomainError,
   DomainException,
   notFound,
 } from "src/util/domain-error.util";
 import { AsyncResult, err, ok } from "src/util/results.util";
+import { isUniqueViolation } from "src/util/prisma-error.util";
+
+const batchTaken = conflict(
+  "That batch number already exists for this product.",
+);
 
 type Tx = Prisma.TransactionClient;
 
@@ -98,6 +104,7 @@ export class StockService {
       return ok(stock);
     } catch (e) {
       if (e instanceof DomainException) return err(e.error);
+      if (isUniqueViolation(e)) return err(batchTaken);
       throw e;
     }
   }
@@ -160,6 +167,7 @@ export class StockService {
       return ok(stock);
     } catch (e) {
       if (e instanceof DomainException) return err(e.error);
+      if (isUniqueViolation(e)) return err(batchTaken);
       throw e;
     }
   }
